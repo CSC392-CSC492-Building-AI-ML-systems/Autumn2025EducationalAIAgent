@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-import os, re, json, gzip, argparse
+import os
+import re
+import json
+import argparse
 from pathlib import Path
-from typing import List
+from typing import List, Iterator
 from tqdm import tqdm
 
 CHUNK_RE = re.compile(
@@ -33,64 +36,70 @@ def build_groups(output_path: str, chunks: List[str]) -> List[int]:
             current_group += 1
     return groups
 
-def make_examples_for_pair(
+def stream_examples_all_prior(
     xml_path: str,
     out_path: str,
     sys_prompt: str,
-    K: int,
-    stride: int,
-) -> List[dict]:
+) -> Iterator[dict]:
     chunks = chunk_input(xml_path)
     groups = build_groups(out_path, chunks)
 
-    accumulated: List[str] = []
-    examples: List[dict] = []
+    instruction = sys_prompt.strip() + "\n\n"
+    prior_text = ""
 
-    INSTRUCTION = sys_prompt.strip() + "\n\n"
+    iterator = enumerate(zip(chunks, groups))
+    iterator = tqdm(iterator, total=len(chunks), desc=f"{os.path.basename(xml_path)} chunks", unit="ev", leave=False)
 
-    iterator = zip(chunks, groups)
-    desc_name = f"{os.path.basename(xml_path)} chunks"
-    iterator = tqdm(list(iterator), desc=desc_name, unit="ev", leave=False)
-
-    for i, (chunk_xml, g) in enumerate(iterator):
-        prior = accumulated[-(K-1):] if K > 0 else accumulated[:]
+    for i, (chunk_xml, g) in iterator:
         current = chunk_xml.replace(">", ' sortme="True">', 1)
-        user_xml = "\n".join(prior + [current])
+        user_xml = prior_text + current
 
         if i == 0:
             target = "Answer: NEW"
         else:
-            prev_group = groups[i - 1]
-            target = f"Answer: {g}" if g == prev_group else "Answer: NEW"
+            prev_g = groups[i - 1]
+            target = f"Answer: {g}" if g == prev_g else "Answer: NEW"
 
-        examples.append({
-            "instruction": INSTRUCTION,
+        yield {
+            "instruction": instruction,
             "input": user_xml,
             "response": target,
-        })
+        }
 
-        accumulated.append(chunk_xml.replace(">", f' group="{g}">', 1))
+        prior_text += chunk_xml.replace(">", f' group="{g}">', 1) + "\n"
 
-    if stride > 1:
-        examples = [ex for idx, ex in enumerate(examples) if idx % stride == 0]
-    return examples
-
-def write_per_file_gz(examples: List[dict], out_dir: str, base: str) -> str:
+def write_per_file_streaming(
+    xml_path: str,
+    out_path: str,
+    sys_prompt: str,
+    out_dir: str,
+    flush_every: int = 10_000,
+) -> int:
+    base = get_base(xml_path)
     Path(out_dir).mkdir(parents=True, exist_ok=True)
-    out_path = os.path.join(out_dir, f"{base}.jsonl.gz")
-    with gzip.open(out_path, "wt", encoding="utf-8") as fh:
-        for ex in examples:
-            fh.write(json.dumps(ex, ensure_ascii=False) + "\n")
-    return out_path
+    final_path = os.path.join(out_dir, f"{base}.jsonl")
+
+    rows = 0
+    with open(final_path, "w", encoding="utf-8") as fh:
+        for ex in stream_examples_all_prior(
+            xml_path=xml_path,
+            out_path=out_path,
+            sys_prompt=sys_prompt,
+        ):
+            fh.write(json.dumps(ex, ensure_ascii=False))
+            fh.write("\n")
+            rows += 1
+            if (rows % flush_every) == 0:
+                fh.flush()
+                os.fsync(fh.fileno())
+    return rows
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--inputs", required=True, help="Folder with XML files")
-    ap.add_argument("--outputs", required=True, help="Folder with marker files")
-    ap.add_argument("--system_prompt", required=True, help="Path to system prompt file")
-    ap.add_argument("--out_dir", required=True, help="Output folder for per-file .jsonl.gz")
-    ap.add_argument("--k", type=int, default=0, help="Sliding window size. Use 0 to include all prior events.")
-    ap.add_argument("--stride", type=int, default=1, help="Keep every Nth example")
+    ap.add_argument("--inputs", required=True, help="Folder with XML input files")
+    ap.add_argument("--outputs", required=True, help="Folder with marker files (*.xml.txt)")
+    ap.add_argument("--system_prompt", required=True, help="Path to system_prompt.txt")
+    ap.add_argument("--out_dir", required=True, help="Output folder for per-file .jsonl")
     args = ap.parse_args()
 
     sys_prompt = read_text(args.system_prompt)
@@ -98,12 +107,10 @@ def main():
     outputs_map = { get_base(f): os.path.join(args.outputs, f) for f in os.listdir(args.outputs) }
     print(outputs_map)
 
-    total_rows = 0
     input_files = sorted(os.listdir(args.inputs))
+    total_rows = 0
 
-    for fname in tqdm(input_files, desc="Processing files", unit="file"):
-        tqdm.write(fname)
-
+    for fname in tqdm(input_files, desc="Processing files", unit="file", mininterval=0.2):
         base = get_base(fname)
         if base not in outputs_map:
             tqdm.write(f"[WARN] No matching output file for {fname}; skipping.")
@@ -112,15 +119,18 @@ def main():
         xml_path = os.path.join(args.inputs, fname)
         out_path = outputs_map[base]
 
-        exs = make_examples_for_pair(
-            xml_path, out_path,
-            sys_prompt=sys_prompt,
-            K=args.k,
-            stride=args.stride,
-        )
-        out_file = write_per_file_gz(exs, args.out_dir, base)
-        total_rows += len(exs)
-        tqdm.write(f"[OK] {fname} -> {len(exs)} rows -> {out_file}")
+        try:
+            rows = write_per_file_streaming(
+                xml_path=xml_path,
+                out_path=out_path,
+                sys_prompt=sys_prompt,
+                out_dir=args.out_dir,
+                flush_every=10_000,
+            )
+            total_rows += rows
+            tqdm.write(f"[OK] {fname} -> {rows} rows -> {os.path.join(args.out_dir, base + '.jsonl')}")
+        except Exception as e:
+            tqdm.write(f"[ERROR] {fname}: {e}")
 
     print(f"[DONE] Wrote {total_rows} rows across {args.out_dir}")
 
