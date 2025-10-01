@@ -1,0 +1,64 @@
+base_model: deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+# hub_model_id: username/custom_model_name
+
+plugins:
+  - axolotl.integrations.cut_cross_entropy.CutCrossEntropyPlugin
+strict: false
+
+# === Your dataset: Instruction loader (instruction/input/response) ===
+datasets:
+  - path: "hugging face url"
+    type: instruction
+    field_instruction: instruction
+    field_input: input
+    field_output: response
+    split: train
+
+val_set_size: 0.0
+output_dir: ./outputs/out
+dataset_prepared_path: last_run_prepared
+
+sequence_len: 2048
+sample_packing: true
+eval_sample_packing: true
+
+load_in_4bit: false # qlora
+load_in_8bit: true # disable for full weights
+adapter: lora
+lora_r: 16
+lora_alpha: 16
+lora_dropout: 0.0
+bias: "none"
+
+wandb_project:
+wandb_entity:
+wandb_watch:
+wandb_name:
+wandb_log_model:
+
+gradient_accumulation_steps: 1
+micro_batch_size: 2
+num_epochs: 5
+# optimizer: adamw_torch_fused
+optimizer: adamw_bnb_8bit
+lr_scheduler: linear
+learning_rate: 2.0e-4
+
+bf16: true
+tf32: true
+
+gradient_checkpointing: true
+resume_from_checkpoint:
+logging_steps: 10
+flash_attention: true
+
+warmup_steps: 50
+evals_per_epoch: 0
+saves_per_epoch: 0
+weight_decay: 0.01
+special_tokens:
+
+train_on_inputs: false
+train_on_eos: turn
+
+# save_first_step: true  # uncomment to quickly verify checkpoint saving
