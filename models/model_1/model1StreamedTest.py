@@ -460,7 +460,6 @@ def generate_pairs(m1: AutoModelForCausalLM, tok: AutoTokenizer, messages: List[
     return text
 
 
-
 def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
     """Parse alternating lines: depth (int), then summary (string). Forgiving about blank lines."""
     lines = [ln.strip() for ln in text.splitlines()]
@@ -480,7 +479,6 @@ def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
         if i >= len(lines):
             break
         depth = int(lines[i]); i += 1
-
         pairs.append((depth, summary))
         i += 1
     return pairs
