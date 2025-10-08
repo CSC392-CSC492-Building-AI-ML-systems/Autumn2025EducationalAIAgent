@@ -464,12 +464,12 @@ Scanning linux images... [======================================================
 </system_output>
   <system_output timestamp="137.378252">Scanning linux images... [====================================================================================================================================================================================================================================================================================================]
 </system_output>
-  <system_output timestamp="137.382422">Scanning linux images...                                                                                                                                                                                                                                                                                                       
+  <system_output timestamp="137.382422">Scanning linux images...  
+</system_output>                                                                                                                                                                                                                                                                                                     
 <annotation>
 </annotation>
 </event>
 <event depth="-2">
-</system_output>
   <system_output timestamp="137.383961">
 Running kernel seems to be up-to-date.
 
