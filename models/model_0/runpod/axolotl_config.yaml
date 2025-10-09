@@ -1,24 +1,21 @@
 base_model: deepseek-ai/DeepSeek-R1-Distill-Llama-8B
-# hub_model_id: username/custom_model_name
 
 plugins:
   - axolotl.integrations.cut_cross_entropy.CutCrossEntropyPlugin
 strict: false
 
-# === Your dataset: Instruction loader (instruction/input/response) ===
+hf_use_auth_token: true
 datasets:
-  - path: "hugging face url"
-    type: instruction
-    field_instruction: instruction
-    field_input: input
-    field_output: response
+  - path: patea4/educational-ai-agent
+    type: alpaca
     split: train
+
 
 val_set_size: 0.0
 output_dir: ./outputs/out
 dataset_prepared_path: last_run_prepared
 
-sequence_len: 2048
+sequence_len: 8192
 sample_packing: true
 eval_sample_packing: true
 
@@ -28,19 +25,22 @@ adapter: lora
 lora_r: 16
 lora_alpha: 16
 lora_dropout: 0.0
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
 bias: "none"
 
-wandb_project:
-wandb_entity:
-wandb_watch:
-wandb_name:
-wandb_log_model:
 
-gradient_accumulation_steps: 1
-micro_batch_size: 2
-num_epochs: 5
-# optimizer: adamw_torch_fused
-optimizer: adamw_bnb_8bit
+gradient_accumulation_steps: 8
+micro_batch_size: 1
+num_epochs: 1
+optimizer: adamw_torch_fused
+#optimizer: adamw_bnb_8bit
 lr_scheduler: linear
 learning_rate: 2.0e-4
 
