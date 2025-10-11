@@ -262,33 +262,35 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 
     # Core instructions (without examples)
     core = f"""
-You are Model-1 (annotator).
+    Developer: You are Model-1 (annotator).
 
-Given:
-- currDepth (≤ 0): {pkg['currDepth']}
-- neighbor_tail (already annotated, for context; may be empty):
-{neighbors_text}
-- TARGET_EVENT: A single event's XML.
+    Given:
+    - currDepth (≤ 0): {pkg['currDepth']}
+    - neighbor_tail (already annotated, for context; may be empty):
+    {neighbors_text}
+    - TARGET_EVENT: A single event's XML.
 
-THINK FIRST (hidden):
-- Think inside <think>...</think> about what is happening in the event and whether the event starts a nested subtask (→ -1),
-  continues at the same level (→ 0), or exits up (→ k).
-- Think inside <think>...</think> to understand what is happening at a higher level to generate a summary
-- Use neighbors ONLY for continuity; do not invent. Keep the <think> section compact.
+    Begin with a concise checklist (3–7 bullets) of what you will do; keep items conceptual, not implementation-level.
 
-Then OUTPUT (exactly two lines; order matters):
-1) one-sentence annotation of what happened in the target event (≤ {SUMMARY_WORD_LIMIT} words)
-2) a single integer 'depth' (use -1 for subevent, 0 for same level, >0 to exit levels)
-{extra}
+    THINK FIRST (hidden):
+    - Use the <think>...</think> section to analyze what is happening in the event and assess whether the event starts a nested subtask (→ -1), continues at the same level (→ 0), or exits one or more levels up (→ k).
+    - In <think>...</think>, generate a concise summary at a higher level, considering broader context.
+    - Use neighbors ONLY for continuity; do not invent context. Keep <think> concise.
 
-Rules:
-- Output ONLY the two lines (and the final sentinel if required). No numbering, no JSON, no prose.
-- Respect the stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth.
-- Never let the running currDepth become > 0.
-- Do not simply say what the user is typing or that they are typing something, we want to know what they are doing and the reason behind it.
-- Write action-oriented summaries. Do NOT mention “user”, “they”, “typed/typing”, “by typing”, “inputs”, or “enters a command”.
-- Start with a verb that describes the action’s intent (e.g., “List…”, “Open…”, “Initiate…”, “Install…”, “Exit…”).
-""".strip()
+    After completing your annotation, verify that both the summary and depth output match the format and task requirements. If there is an inconsistency, self-correct the output before finalizing.
+
+    Then OUTPUT (exactly two lines, in order):
+    1) A single-sentence annotation describing the action that occurred in the target event (≤ {SUMMARY_WORD_LIMIT} words)
+    2) A single integer 'depth': use -1 for a subevent, 0 for same level, or >0 to exit up by that many levels
+    {extra}
+
+    Rules:
+    - Output exactly two lines (plus the final sentinel, if required). Do not include numbering, JSON, or prose.
+    - Maintain the stack invariant: currDepth ≤ 0. Update currDepth as follows: if depth == -1, then currDepth -= 1; if depth > 0, then currDepth += depth.
+    - currDepth must never exceed 0.
+    - Avoid describing events as typing or mentioning "user", "they", "typed/typing", "inputs", or "enters a command".
+    - Summaries should be action-oriented, starting with a verb representing the intent (e.g., "List...", "Open...", "Initiate...", "Install...", "Exit...").
+    """.strip()
 
     # Conditionally include examples
     examples_part = f"\n\n{FEWSHOTS_BLOCK}\n" if use_fewshots else ""
