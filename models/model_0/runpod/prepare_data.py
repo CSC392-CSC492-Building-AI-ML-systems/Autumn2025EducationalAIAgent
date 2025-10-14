@@ -5,11 +5,8 @@ import json
 import argparse
 from pathlib import Path
 from typing import List, Iterator
-from bisect import bisect_right
 from tqdm import tqdm
 from transformers import AutoTokenizer
-
-MARGIN = 60  # target_tokens - MARGIN is the cap
 
 CHUNK_RE = re.compile(
     r"<(?:user_input|system_output)\b[^>]*?(?:/>|>.*?</(?:user_input|system_output)>)",
@@ -40,37 +37,19 @@ def build_groups(output_path: str, chunks: List[str]) -> List[int]:
             current_group += 1
     return groups
 
-def tok_len(tok, s: str) -> int:
-    return len(tok.encode(s, add_special_tokens=False))
 
-def pretokenize_chunks(tok, chunks: List[str], groups: List[int]):
-    grouped_txt = []
-    grouped_len = []
-    sortme_txt = []
-    sortme_len = []
+def pretokenize_chunks(tokenizer, chunks: List[str]) -> List[int]:
+    return [len(tokenizer.encode(chunk, add_special_tokens=False)) for chunk in chunks]
 
-    for ch, g in zip(chunks, groups):
-        gtxt = ch.replace(">", f' group="{g}">', 1)
-        stxt = ch.replace(">", ' sortme="True">', 1)
-        grouped_txt.append(gtxt)
-        sortme_txt.append(stxt)
-        grouped_len.append(tok_len(tok, gtxt) + 1)
-        sortme_len.append(tok_len(tok, stxt))
+def alpaca_len_pretokenized(
+    template_overhead: int,
+    instruction_tokens: int,
+    input_tokens: int,
+    output_tokens: int
+) -> int:
+    return template_overhead + instruction_tokens + input_tokens + output_tokens
 
-    rev_grouped_len = list(reversed(grouped_len))
-    rev_cumsum = [0] * len(rev_grouped_len)
-    running = 0
-    for i, L in enumerate(rev_grouped_len):
-        running += L
-        rev_cumsum[i] = running
-
-    return grouped_txt, grouped_len, sortme_txt, sortme_len, rev_cumsum
-
-def find_max_prior(rev_cumsum: List[int], budget_for_prior: int) -> int:
-    idx = bisect_right(rev_cumsum, budget_for_prior)  # position to insert
-    return idx  # k = number of prior events to include
-
-def stream_examples_fast(
+def stream_examples_simple(
     tokenizer,
     xml_path: str,
     out_path: str,
@@ -79,47 +58,81 @@ def stream_examples_fast(
 ) -> Iterator[dict]:
     chunks = chunk_input(xml_path)
     groups = build_groups(out_path, chunks)
-
-    instruction = sys_prompt.strip() + "\n\n"
-    instr_len = tok_len(tokenizer, instruction)
-
-    # Pre-tokenize
-    grouped_txt, grouped_len, sortme_txt, sortme_len, rev_cumsum = pretokenize_chunks(
-        tokenizer, chunks, groups
-    )
-
     n = len(chunks)
+
+    chunk_token_lens = pretokenize_chunks(tokenizer, chunks)
+
+    system_prompt = "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request."
+    template_parts = f"""{system_prompt}
+
+### Instruction:
+
+
+### Input:
+
+
+### Response:
+"""
+    template_overhead_tokens = len(tokenizer.encode(template_parts, add_special_tokens=True)) + 1
+
+    instruction_tokens = len(tokenizer.encode(sys_prompt, add_special_tokens=False))
+
+    output_new_tokens = len(tokenizer.encode("Answer: NEW", add_special_tokens=False))
+
+    newline_tokens = len(tokenizer.encode("\n", add_special_tokens=False))
+
     for i in tqdm(range(n), total=n, desc=f"{os.path.basename(xml_path)} chunks", unit="ev", leave=False):
-        current_txt = sortme_txt[i]
-        current_toks = sortme_len[i]
+        current_txt = chunks[i].replace(">", ' sortme="True">', 1)
+        current_tokens = len(tokenizer.encode(current_txt, add_special_tokens=False))
 
         if i == 0:
             target = "Answer: NEW"
+            output_tokens = output_new_tokens
         else:
-            target = f"Answer: {groups[i]}" if groups[i] == groups[i-1] else "Answer: NEW"
-
-        budget_prior = target_tokens - MARGIN - instr_len - current_toks
-        if budget_prior <= 0 or i == 0:
-            input_text = current_txt
-        else:
-            lo, hi = 0, i  # k in [0..i]
-            while lo < hi:
-                mid = (lo + hi + 1) // 2
-                if rev_cumsum[mid - 1] <= budget_prior:
-                    lo = mid
-                else:
-                    hi = mid - 1
-            k = lo  # number of prior events we can include
-
-            if k == 0:
-                input_text = current_txt
+            if groups[i] == groups[i-1]:
+                target = f"Answer: {groups[i]}"
+                output_tokens = len(tokenizer.encode(target, add_special_tokens=False))
             else:
-                # Take the last k prior events = grouped_txt[i-k : i]
-                prior_slice = grouped_txt[i-k:i]
-                input_text = "\n".join(prior_slice + [current_txt])
+                target = "Answer: NEW"
+                output_tokens = output_new_tokens
+
+        prior_indices = []
+        prior_token_count = current_tokens
+
+        for j in range(i - 1, -1, -1):
+            chunk_with_group_tokens = chunk_token_lens[j] + 15  # rough overhead for group attribute
+            trial_tokens = prior_token_count + chunk_with_group_tokens + newline_tokens
+
+            total_tokens = alpaca_len_pretokenized(
+                template_overhead_tokens,
+                instruction_tokens,
+                trial_tokens,
+                output_tokens
+            )
+
+            if total_tokens <= target_tokens:
+                prior_indices.insert(0, j)
+                prior_token_count = trial_tokens
+            else:
+                break
+
+        prior = [chunks[j].replace(">", f' group="{groups[j]}">', 1) for j in prior_indices]
+        input_text = "\n".join(prior + [current_txt]) if prior else current_txt
+
+        input_tokens = len(tokenizer.encode(input_text, add_special_tokens=False))
+        while alpaca_len_pretokenized(template_overhead_tokens, instruction_tokens, input_tokens, output_tokens) > target_tokens:
+            if "\n" not in input_text:
+                input_text = current_txt
+                break
+            parts = input_text.split("\n")
+            if len(parts) <= 1:
+                input_text = current_txt
+                break
+            input_text = "\n".join(parts[1:])
+            input_tokens = len(tokenizer.encode(input_text, add_special_tokens=False))
 
         yield {
-            "instruction": instruction,
+            "instruction": sys_prompt,
             "input": input_text,
             "output": target,
         }
@@ -136,10 +149,9 @@ def write_per_file_streaming(
     base = get_base(xml_path)
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     final_path = os.path.join(out_dir, f"{base}.jsonl")
-
     rows = 0
     with open(final_path, "w", encoding="utf-8") as fh:
-        for ex in stream_examples_fast(
+        for ex in stream_examples_simple(
             tokenizer=tokenizer,
             xml_path=xml_path,
             out_path=out_path,
@@ -162,15 +174,15 @@ def main():
     ap.add_argument("--out_dir", required=True, help="Output folder for per-file .jsonl")
     ap.add_argument("--tokenizer_model", default="deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
                     help="HF model id or local path for tokenizer")
-    ap.add_argument("--target_tokens", type=int, default=2000,
-                    help="Token cap for instruction + input (MARGIN reserved)")
+    ap.add_argument("--target_tokens", type=int, default=2048,
+                    help="Cap for full Alpaca prompt")
     args = ap.parse_args()
 
     sys_prompt = read_text(args.system_prompt)
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_model, use_fast=True)
 
-    outputs_map = { get_base(f): os.path.join(args.outputs, f) for f in os.listdir(args.outputs) }
-    print(outputs_map)
+    outputs_map = {get_base(f): os.path.join(args.outputs, f)
+                   for f in os.listdir(args.outputs)}
 
     input_files = sorted(os.listdir(args.inputs))
     total_rows = 0
@@ -183,7 +195,6 @@ def main():
 
         xml_path = os.path.join(args.inputs, fname)
         out_path = outputs_map[base]
-
         try:
             rows = write_per_file_streaming(
                 tokenizer=tokenizer,
