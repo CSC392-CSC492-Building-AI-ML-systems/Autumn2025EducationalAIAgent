@@ -6,16 +6,18 @@ strict: false
 
 hf_use_auth_token: true
 datasets:
-  - path: patea4/educational-ai-agent
-    type: alpaca
-    split: train
+  # - path: patea4/educational-ai-agent-small
+  #   type: alpaca
+  #   split: train
+    - path: ../output/
+      type: alpaca
 
 
 val_set_size: 0.0
 output_dir: ./outputs/out
 dataset_prepared_path: last_run_prepared
 
-sequence_len: 8192
+sequence_len: 2048
 sample_packing: true
 eval_sample_packing: true
 
@@ -37,7 +39,7 @@ bias: "none"
 
 
 gradient_accumulation_steps: 8
-micro_batch_size: 1
+micro_batch_size: 2
 num_epochs: 1
 optimizer: adamw_torch_fused
 #optimizer: adamw_bnb_8bit
