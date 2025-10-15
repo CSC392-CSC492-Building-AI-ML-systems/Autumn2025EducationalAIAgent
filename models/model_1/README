@@ -1,0 +1,15 @@
+To Train:
+python model1StreamedAxolotl.py
+python -m axolotl.cli.train axolotl.yaml
+
+To Run:
+Go in model1StreamedTest.py go to MODEL_ID and change it to the location of the trained lora adapters.
+
+Notes:
+Is able to train on 2048 sequence_len in axolotl.yaml on lab machines however it drops many files due to size exceeding sequence_len
+
+Some Todos:
+Update it to use new prompt
+Test trained model output (on 2k sequence_len max input its very bad)
+check if is trainable with longer sequence_len eg 32k+
+

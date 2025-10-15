@@ -29,7 +29,8 @@ XML_PATH = "../../data/model_1/inputs/first_julia_rec_parsed.xml"
 GT_PATH = "../../data/model_1/outputs/first_julia_rec_training.txt"  # (unused here, kept for future)
 
 # Model settings
-MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"  # instruction-tuned
+# MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"  # instruction-tuned
+MODEL_ID = "./qwen3-4b-qlora"  # instruction-tuned
 USE_INT4 = True  # set False to prefer BF16/FP16 speed if you have VRAM
 MAX_NEW_TOKENS = 48
 SUMMARY_WORD_LIMIT = 50
@@ -362,18 +363,21 @@ class TwoLineFormatProcessor(LogitsProcessor):
 # ------------------------------
 
 def load_model_and_tokenizer():
-    tok = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True, use_fast=True)
+    import os, json, torch
+    from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+    try:
+        from peft import AutoPeftModelForCausalLM  # for LoRA adapters
+        has_peft = True
+    except Exception:
+        has_peft = False
 
-    # Optional 4-bit quantization if available
+    local_path = MODEL_ID  # may be local dir or HF repo id
+
+    # Set optional 4-bit quant if requested and available
     quant_config = None
-    has_bnb = False
     if USE_INT4 and torch.cuda.is_available():
         try:
-            import bitsandbytes as bnb  # noqa: F401
-            has_bnb = True
-        except Exception:
-            has_bnb = False
-        if has_bnb:
+            import bitsandbytes as bnb  # noqa
             compute_dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
             quant_config = BitsAndBytesConfig(
                 load_in_4bit=True,
@@ -381,15 +385,52 @@ def load_model_and_tokenizer():
                 bnb_4bit_quant_type="nf4",
                 bnb_4bit_use_double_quant=True,
             )
+        except Exception:
+            quant_config = None  # silently fall back
 
-    m1 = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID,
-        device_map="auto",
-        dtype=torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16,
-        trust_remote_code=True,
-        low_cpu_mem_usage=True,
-        quantization_config=quant_config,
-    )
+    def _dtype():
+        if torch.cuda.is_available():
+            return torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        return torch.float32
+
+    # Heuristic: LoRA adapter folder has adapter_config.json
+    is_lora = os.path.exists(os.path.join(local_path, "adapter_config.json"))
+
+    if is_lora and has_peft:
+        # Try to get base model from adapter_config.json (if present)
+        base_model = None
+        try:
+            with open(os.path.join(local_path, "adapter_config.json"), "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+            base_model = cfg.get("base_model_name_or_path")
+        except Exception:
+            pass
+
+        # Load tokenizer: prefer adapter folder (if it has tokenizer), else base
+        tok_src = local_path if os.path.exists(os.path.join(local_path, "tokenizer_config.json")) else (base_model or local_path)
+        tok = AutoTokenizer.from_pretrained(tok_src, trust_remote_code=True, use_fast=True)
+
+        # Load the LoRA adapter on top of the base using AutoPeftModelForCausalLM
+        m1 = AutoPeftModelForCausalLM.from_pretrained(
+            local_path,
+            device_map="auto",
+            torch_dtype=_dtype(),
+            trust_remote_code=True,
+            low_cpu_mem_usage=True,
+            quantization_config=quant_config,
+        )
+
+    else:
+        # Merged (or plain) model path
+        tok = AutoTokenizer.from_pretrained(local_path, trust_remote_code=True, use_fast=True)
+        m1 = AutoModelForCausalLM.from_pretrained(
+            local_path,
+            device_map="auto",
+            dtype=_dtype(),
+            trust_remote_code=True,
+            low_cpu_mem_usage=True,
+            quantization_config=quant_config,
+        )
 
     # Speed settings
     m1.config.use_cache = True
@@ -397,21 +438,18 @@ def load_model_and_tokenizer():
         m1.generation_config.use_cache = True
     m1.config.attn_implementation = "sdpa"
 
-    # Prefer Flash + MemEfficient on Ada
+    # Try enabling Flash/MemEfficient attention
     try:
         from torch.nn.attention import sdpa_kernel as _sdpa_kernel  # type: ignore
         with _sdpa_kernel(enable_flash=True, enable_mem_efficient=True, enable_math=False):
             pass
     except Exception:
         try:
-            torch.backends.cuda.sdp_kernel(
-                enable_flash=True, enable_math=False, enable_mem_efficient=True
-            )
+            torch.backends.cuda.sdp_kernel(enable_flash=True, enable_math=False, enable_mem_efficient=True)
         except Exception:
             pass
 
     return m1, tok
-
 
 # ------------------------------
 # Generation & parsing

@@ -1,17 +1,18 @@
 """
-Model-1 preprocessing script for Axolotl (no CLI args)
+Model-1 preprocessing script for Axolotl
 
 - Loads HF dataset: redaMM/educational-ai-agent-small-annotation-depth (split=train)
 - Uses formatting_func() to build `messages`
 - Writes ./prepared_train.jsonl that Axolotl can ingest with type: chat_template
-- Run:  PYTHONPATH=. python model1StreamedAxolotl.py
+- Run:  python model1StreamedAxolotl.py
 """
 
 import json
-from typing import Dict, List
+from typing import Dict
+from datasets import load_dataset
 
 # ==============================
-# Parameters (edit here only)
+# Parameter
 # ==============================
 DATASET_ID = "redaMM/educational-ai-agent-small-annotation-depth"
 DATASET_SPLIT = "train"
@@ -20,10 +21,12 @@ INCLUDE_FEWSHOTS_DEFAULT = True
 SUMMARY_WORD_LIMIT = 50
 MAX_NEIGH = 16  # cap neighbor_tail length
 
+DEBUG=True
+
 # ------------------------------
 # Static Vars
 # ------------------------------
-
+   
 EXAMPLE_NEIGHBORS_TEXT = """- id=20 depth=-1 summary=Enter editing /etc/ntopng/ntopng.conf to tweak capture settings.
 - id=21 depth=0  summary=Scroll within the editor; reviewing options.
 - id=22 depth=-1 summary=Open a shell from editor to list /var/log for recent errors.
@@ -81,18 +84,60 @@ Typing an ssh command within the same shell does not enter a nested tool yet; it
 # ------------------------------
 # Helpers
 # ------------------------------
+def normalize_pkg(ex: Dict) -> Dict:
+    """
+    Normalize a raw dataset example `ex` into a compact package consumed by the
+    prompt builder (`build_instruction`). This isolates all field-shaping logic
+    in one place so the rest of the pipeline can rely on a consistent schema.
 
-def make_pkg_from_example(ex: Dict) -> Dict:
+    Expected keys in `ex`:
+      - "currDepth": the current stack depth (integer can be 0 or -1)
+      - "neighbors": list of neighbor items, each with:
+            {
+              "id": <int-like>,
+              "depth": <int-like>   # depth *delta/class* already annotated for that neighbor:
+                                    #   -1 = descend into a nested subtask
+                                    #    0 = continue at same level
+                                    #   >0 = exit up k levels
+            }
+            and "annotation": <str> summary for that neighbor
+      - "target_idx": the integer ID of the target event within the recording
+      - "target_xml": the XML string of the target event
+
+    Returns:
+      {
+        "currDepth": int,
+        "neighbor_tail": [ { "id": int, "depth": int, "summary": str }, ... ],
+        "target_events": [ { "id": int, "xml": str } ],  # list for future multi-targets
+        "target_idxs": [int],     # parallel list of target IDs
+      }
+    """
+    # Coerce to integers in case the dataset stores numeric fields as strings.
+    curr_depth = int(ex["currDepth"])
+
+    # Optional light validation (non-fatal): ensure currDepth is not positive.
+    # Comment out or adjust if your data legitimately allows positive currDepth.
+    if curr_depth > 0:
+        raise ValueError(f"currDepth should be <= 0, got {curr_depth}")
+
+    neighbor_tail = []
+
+    for n in ex["neighbors"]:
+        nid = int(n["id"])
+        ndepth = int(n["depth"])  # may be -1, 0, or >0 (e.g., 1, 2, ...)
+        nsummary = n["annotation"]
+        neighbor_tail.append({"id": nid, "depth": ndepth, "summary": nsummary})
+
+    target_id = int(ex["target_idx"])
+    target_xml = ex["target_xml"]
+
     return {
-        "currDepth": int(ex["currDepth"]),
-        "neighbor_tail": [
-            {"id": int(n["id"]), "depth": int(n["depth"]), "summary": n["annotation"]}
-            for n in ex["neighbors"]
-        ],
-        "parent_xml": None,
-        "target_events": [{"id": int(ex["target_idx"]), "xml": ex["target_xml"]}],
-        "target_idxs": [int(ex["target_idx"])],
+        "currDepth": curr_depth,
+        "neighbor_tail": neighbor_tail,
+        "target_events": [{"id": target_id, "xml": target_xml}],
+        "target_idxs": [target_id],
     }
+
 
 def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
     # Neighbors summary (real context)
@@ -156,61 +201,104 @@ def build_answer(ex: Dict) -> str:
     return ex["annotation"].strip() + "\n" + str(int(ex["depth"])) + "\n"
 
 # Axolotl-style formatter we’ll reuse for pre-materialization
-def formatting_func(example_batch: Dict):
-    outs = []
-    for ex in example_batch["data"]:
-        if len(ex.get("neighbors", [])) > MAX_NEIGH:
-            ex = dict(ex)
-            ex["neighbors"] = ex["neighbors"][-MAX_NEIGH:]
+def formatting_func(ex: Dict):
+    if len(ex.get("neighbors", [])) > MAX_NEIGH:
+        ex = dict(ex)
+        ex["neighbors"] = ex["neighbors"][-MAX_NEIGH:]
 
-        pkg = make_pkg_from_example(ex)
-        user_prompt = build_instruction(pkg, use_fewshots=False)
+    pkg = normalize_pkg(ex)
 
-        outs.append({
-            "messages": [
-                {"role": "system", "content": "You are Model-1. Follow formatting strictly."},
-                {"role": "user", "content": user_prompt},
-                {"role": "assistant", "content": build_answer(ex)},
-            ]
-        })
-    return outs
+    user_prompt = build_instruction(pkg, use_fewshots=False)
+
+    # print("\n" + "="*80)
+    # print(f"[DEBUG] Example prompt for target_id={pkg['target_events'][0]['id']}")
+    # print("="*80)
+    # print(user_prompt)
+    # print("="*80 + "\n")
+
+    return {
+        "messages": [
+            {"role": "system", "content": "You are Model-1. Follow formatting strictly."},
+            {"role": "user", "content": user_prompt},
+            {"role": "assistant", "content": build_answer(ex)},
+        ]
+    }
 
 # ------------------------------
 # Pre-materialization runner
 # ------------------------------
 
 def _write_prepared_jsonl():
-    try:
-        from datasets import load_dataset
-    except ImportError as e:
-        raise SystemExit("`datasets` library not installed. pip install datasets") from e
+    """
+    Stream the HF dataset to a JSONL file where each line is a single training
+    example shaped like: {"messages": [ ... ]}. This is intended for Axolotl
+    ingestion with type: chat_template.
 
+    Behavior:
+    - Loads `DATASET_ID` / `DATASET_SPLIT` via `datasets.load_dataset`.
+    - For each example `ex`, calls `formatting_func({"data": [ex]})` to produce
+      one or more chat records (usually one).
+    - Writes each record as a compact JSON line to `OUTPUT_JSONL`.
+    - Counts and reports how many rows were written vs. skipped.
+    - Any exception on a row causes that row to be skipped (silently), matching
+      the original behavior.
+    """
+
+    # Announce which dataset/split we are about to load (useful when scripts are re-used).
     print(f"[pre] Loading dataset: {DATASET_ID} (split={DATASET_SPLIT})")
+
+    # Hugging Face streaming is not used here; the full split is loaded in memory.
+    # If memory becomes an issue, this could be replaced with an iterable dataset.
     ds = load_dataset(DATASET_ID, split=DATASET_SPLIT)
+    print(f"rows: {ds.num_rows}")         # number of rows
+    first = ds[0]
+    print(f"headers: {first.keys()}")
+    print(f"schema: {ds.features}")
 
     total, skipped = 0, 0
     print(f"[pre] Writing: {OUTPUT_JSONL}")
-    with open(OUTPUT_JSONL, "w") as f:
+
+    # Open the output JSONL file for writing. Each record is a single line.
+    # Using default newline handling is fine; UTF-8 ensures non-ASCII survives.
+    with open(OUTPUT_JSONL, "w", encoding="utf-8") as f:
+        # Iterate over raw dataset examples
         for ex in ds:
             try:
-                recs = formatting_func({"data": [ex]})
+                # Call the formatter on a single-item batch. It returns a list of
+                # Axolotl-ready dicts, typically with a "messages" field.
+                recs = formatting_func(ex)
+                
+                # If the formatter returned nothing, consider this example skipped.
+
                 if not recs:
                     skipped += 1
                     continue
-                for r in recs:
-                    msgs = r.get("messages")
-                    if not isinstance(msgs, list) or not msgs:
-                        skipped += 1
-                        continue
-                    json.dump(r, f)
-                    f.write("\n")
-                    total += 1
+                    
+
+                # Some examples may expand to multiple records (keep parity with original logic).
+                msgs = recs.get("messages")
+
+                # Validate the minimal contract: messages must be a non-empty list.
+                if not isinstance(msgs, list) or not msgs:
+                    skipped += 1
+                    continue
+
+                # Serialize each record as a compact JSON line.
+                # `ensure_ascii=False` preserves Unicode; mirrors json.dump defaults otherwise.
+                json.dump(recs, f, ensure_ascii=False)
+                f.write("\n")
+                total += 1
+
             except Exception:
+                # Intentionally swallow all per-example errors to keep processing,
+                # incrementing the skipped counter (matches original behavior).
                 skipped += 1
                 continue
 
+    # Final summary for quick visibility in logs/CI.
     print(f"[pre] Done. Wrote {total} records to {OUTPUT_JSONL}. Skipped {skipped} rows.")
 
 # Auto-run when invoked as a script
 if __name__ == "__main__":
+
     _write_prepared_jsonl()
