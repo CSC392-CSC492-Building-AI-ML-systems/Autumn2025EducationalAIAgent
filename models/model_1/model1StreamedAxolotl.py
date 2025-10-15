@@ -209,13 +209,6 @@ def formatting_func(ex: Dict):
     pkg = normalize_pkg(ex)
 
     user_prompt = build_instruction(pkg, use_fewshots=False)
-
-    # print("\n" + "="*80)
-    # print(f"[DEBUG] Example prompt for target_id={pkg['target_events'][0]['id']}")
-    # print("="*80)
-    # print(user_prompt)
-    # print("="*80 + "\n")
-
     return {
         "messages": [
             {"role": "system", "content": "You are Model-1. Follow formatting strictly."},
@@ -274,7 +267,6 @@ def _write_prepared_jsonl():
                     skipped += 1
                     continue
                     
-
                 # Some examples may expand to multiple records (keep parity with original logic).
                 msgs = recs.get("messages")
 
