@@ -2,7 +2,7 @@
 import random
 from pathlib import Path
 import argparse
-from huggingface_hub import HfApi
+from datasets import load_dataset
 
 def main():
     ap = argparse.ArgumentParser()
@@ -33,22 +33,13 @@ def main():
     train_selected = selected[:cutoff_index] # 70% of files is training set
     test_selected = selected[cutoff_index:] # 30% of files is test set
 
-    api = HfApi()
-    for f in train_selected:
-        api.upload_file(
-            path_or_fileobj=str(f),
-            path_in_repo='train/'+f.name,
-            repo_id=REPO_ID,
-            repo_type="dataset"
-        )
+    data = {
+        "train": [str(f) for f in train_selected],
+        "test": [str(f) for f in test_selected]
+    }
 
-    for f in test_selected:
-        api.upload_file(
-            path_or_fileobj=str(f),
-            path_in_repo='test/'+f.name,
-            repo_id=REPO_ID,
-            repo_type="dataset"
-        )
+    ds = load_dataset("json", data_files=data)
+    ds.push_to_hub(REPO_ID)
 
 if __name__ == "__main__":
     main()
