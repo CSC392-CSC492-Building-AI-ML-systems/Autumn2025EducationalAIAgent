@@ -24,6 +24,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 from formatConstraints import make_prefix_allowed_tokens_fn
 import json
+
+from logitProcessors import AsciiOnlyProcessor
 # ------------------------------
 # Config
 # ------------------------------
@@ -215,6 +217,60 @@ input xml:
 output (two lines):
 fetch service status from http://192.168.0.5:8080/status.
 0
+
+example f — package install with apt (depth = 0)
+neighbor_tail:
+- id=70 depth=0  summary:initiate SSH connection to 10.0.7.138
+- id=71 depth=-1 summary:authenticate and open remote shell
+currDepth before target: -1
+<event depth="-2">
+  <system_output timestamp="0.0">user@host:~$ </system_output>
+  <user_input>s</user_input>
+  <system_output>s</system_output>
+  <user_input>u</user_input>
+  <system_output>u</system_output>
+  <user_input>d</user_input>
+  <system_output>d</system_output>
+  <user_input>o</user_input>
+  <system_output>o</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>a</user_input>
+  <system_output>a</system_output>
+  <user_input>p</user_input>
+  <system_output>p</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>i</user_input>
+  <system_output>i</system_output>
+  <user_input>n</user_input>
+  <system_output>n</system_output>
+  <user_input>s</user_input>
+  <system_output>s</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input>a</user_input>
+  <system_output>a</system_output>
+  <user_input>l</user_input>
+  <system_output>l</system_output>
+  <user_input>l</user_input>
+  <system_output>l</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>h</user_input>
+  <system_output>h</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input>o</user_input>
+  <system_output>o</system_output>
+  <user_input>p</user_input>
+  <system_output>p</system_output>
+</event>
+output (two lines):
+User installs htop package using sudo apt
+0
 """.strip()
 
 
@@ -381,14 +437,20 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
         "- if the target event contains an <annotation> tag or depth value ignore it"
     )
 
-    prompt = f"""<role>you are an event annotator</role>
-
+    prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
 
 <output_format>
   {{"annotation": "<one sentence (≤ {SUMMARY_WORD_LIMIT} words)>", "depth": <An integer greater than or equal to -1>}}
 </output_format>
 
+<think_first>
+- Use the <think>...</think> section to analyze what is happening in the event and assess whether the event starts a nested subtask (-1), continues at the same level (0), or exits one or more levels up (k).
+- In <think>...</think>, generate a concise summary at a higher level, considering broader context.
+- Use neighbors ONLY for continuity; do not invent context. Keep <think> concise.
+</think_first>
+
 <rules>
+- the user’s keystrokes appear separately; combine them to form the full command before interpreting it
 - depth is an integer (≥ -1); -1 for subevent, 0 for same level, >0 to exit levels
 - maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
 - write action-oriented summaries; avoid “user”, “they”, “typed”, “inputs”, “enters a command
@@ -497,6 +559,17 @@ def generate_pairs(m1, tok, messages, curr_depth: int) -> str:
 
     prefix_fn = make_prefix_allowed_tokens_fn(tok, curr_depth=curr_depth)
 
+    always_allow = set()
+    if tok.eos_token_id is not None:
+        always_allow.add(tok.eos_token_id)
+    try:
+        im_end_id = tok.convert_tokens_to_ids("<|im_end|>")
+        if isinstance(im_end_id, int) and im_end_id != -1:
+            always_allow.add(im_end_id)
+    except Exception:
+        pass
+    ascii_gate = LogitsProcessorList([AsciiOnlyProcessor(tok, allow_controls=False, always_allow=always_allow)])
+
     out_ids = m1.generate(
         input_ids=inputs,
         max_new_tokens=MAX_NEW_TOKENS,
@@ -507,6 +580,7 @@ def generate_pairs(m1, tok, messages, curr_depth: int) -> str:
         pad_token_id=tok.eos_token_id,
         eos_token_id=eos_ids,
         prefix_allowed_tokens_fn=prefix_fn,
+        logits_processor=ascii_gate,
         use_cache=True,
     )
 
