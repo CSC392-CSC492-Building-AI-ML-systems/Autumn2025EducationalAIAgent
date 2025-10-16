@@ -25,10 +25,8 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,
 )
 
-# Load dataset
 dataset = load_dataset("patea4/educational-ai-agent-small", split="train")
 
-# Alpaca prompt format
 alpaca_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
 
 ### Instruction:
@@ -60,7 +58,6 @@ def formatting_prompts_func(examples):
 
 dataset = dataset.map(formatting_prompts_func, batched=True)
 
-# Use UnslothTrainer (faster than HF Trainer)
 trainer = SFTTrainer(
     model=model,
     tokenizer=tokenizer,
@@ -69,10 +66,10 @@ trainer = SFTTrainer(
     max_seq_length=max_seq_length,
     data_collator=None,
     dataset_num_proc=2,
-    packing=False,  # Notebook uses False for reasoning models
-    args=UnslothTrainingArguments(  # Use UnslothTrainingArguments!
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=8,
+    packing=False,
+    args=UnslothTrainingArguments(
+        per_device_train_batch_size=3,
+        gradient_accumulation_steps=4,
         warmup_steps=5,
         num_train_epochs=1,
         learning_rate=2e-4,
@@ -84,13 +81,12 @@ trainer = SFTTrainer(
         lr_scheduler_type="linear",
         seed=3407,
         output_dir="outputs",
-        report_to="none",  # Disable wandb
+        report_to="none",
         save_steps=1000,
         save_total_limit=2,
     ),
 )
 
-# Train with Unsloth optimizations
 trainer_stats = trainer.train()
 
 model.save_pretrained("lora_model")
