@@ -22,11 +22,15 @@ from lxml import etree
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, LogitsProcessor, LogitsProcessorList
 
+from formatConstraints import make_prefix_allowed_tokens_fn
+import json
+
+from logitProcessors import AsciiOnlyProcessor
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/inputs/first_julia_rec_parsed.xml"
-GT_PATH = "../../data/model_1/outputs/first_julia_rec_training.txt"  # (unused here, kept for future)
+XML_PATH = "../../data/model_1/inputs/1727009412_parsed.xml"
+GT_PATH = "../../data/model_1/outputs/1727009412_training.txt"  # (unused here, kept for future)
 
 # Model settings
 MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"  # instruction-tuned
@@ -44,61 +48,232 @@ N_NEIGH = 20  # preceding neighbors to include
 
 INCLUDE_FEWSHOTS_DEFAULT = True
 
+COLLAPSE_ECHO_INPUTS = False
+
 # ------------------------------
 # Statics
 # ------------------------------
-EXAMPLE_NEIGHBORS_TEXT = """- id=20 depth=-1 summary=Enter editing /etc/ntopng/ntopng.conf to tweak capture settings.
-- id=21 depth=0  summary=Scroll within the editor; reviewing options.
-- id=22 depth=-1 summary=Open a shell from editor to list /var/log for recent errors.
-- id=23 depth=1  summary=Return from the shell to the editor context.
-- id=24 depth=0  summary=Save the config and keep editing."""
-
 FEWSHOTS_BLOCK = f"""
-EXAMPLES (FOR FORMAT/LOGIC ONLY — DO NOT OUTPUT THESE IN YOUR ANSWER)
+examples (for format/logic only — do not output these)
 
-Example neighbor_tail (dense):
-{EXAMPLE_NEIGHBORS_TEXT}
+note: event xml often shows keystroke-by-keystroke input with echoed characters, not a full command.
 
-Example A — NEW nested subtask (depth = -1)
-Example currDepth before target: -1
-Example INPUT XML:
-<event><user_input>:!grep -i error /var/log/syslog</user_input><system_output>[shell] matching lines...</system_output></event>
-Example OUTPUT (two lines):
-Spawn shell from editor to grep syslog for errors.
+example a — new nested subtask (depth = -1)
+neighbor_tail:
+- id=10 depth=0  summary=open editor on /etc/ntopng/ntopng.conf
+- id=11 depth=0  summary=navigate within config to log options
+currDepth before target: -1
+input xml:
+<event>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>!</user_input><system_output>!</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>-</user_input><system_output>-</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>y</user_input><system_output>y</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+</event>
+output (two lines):
+spawn shell from editor to grep syslog for errors.
 -1
-EXAMPLE RATIONALE (do not output):
-Action starts a nested tool (shell) inside the editor workflow; that descends one level → depth = -1.
 
-Example B — Same-level continuation (depth = 0)
-Example currDepth before target: -2
-Example INPUT XML:
-<event><user_input>less /var/log/syslog</user_input><system_output>--- syslog ---</system_output></event>
-Example OUTPUT (two lines):
-View syslog content within the spawned shell.
+example b — same-level continuation (depth = 0)
+neighbor_tail:
+- id=20 depth=-1 summary:spawn shell from editor
+- id=21 depth=0  summary:view /var/log/syslog in pager
+currDepth before target: -2
+input xml:
+<event>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <system_output>--- syslog ---</system_output>
+</event>
+output (two lines):
+view syslog content within the spawned shell.
 0
-EXAMPLE RATIONALE (do not output):
-Still operating in the same nested shell context (no new subtask, no exit); remain at current level → depth = 0.
 
-Example C — Exit one level (depth = +1)
-Example currDepth before target: -1
-Example INPUT XML:
-<event><user_input>:wq</user_input><system_output>[wrote config] demo@host:/etc/ntopng$ </system_output></event>
-Example OUTPUT (two lines):
-Save changes and exit the editor back to the shell.
+example c — exit one level (depth = +1)
+neighbor_tail:
+- id=30 depth=-1 summary:open file in editor from shell
+- id=31 depth=0  summary:edit configuration options
+currDepth before target: -1
+input xml:
+<event>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>w</user_input><system_output>w</system_output>
+  <user_input>q</user_input><system_output>q</system_output>
+  <system_output>[wrote config] demo@host:/etc/ntopng$ </system_output>
+</event>
+output (two lines):
+save changes and exit the editor back to the shell.
 1
-EXAMPLE RATIONALE (do not output):
-Exiting the editor returns to the parent shell context, popping one level → depth = +1.
 
-Example D — Same-level command (depth = 0)
-Example currDepth before target: 0
-Example INPUT XML:
-<event>  <system_output timestamp="0.096022">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>  <user_input timestamp="9.163614">s</user_input>  <system_output timestamp="9.164051">s</system_output>  <user_input timestamp="9.365744">s</user_input>  <system_output timestamp="9.366263">s</system_output>  <user_input timestamp="9.589844">h</user_input>  <system_output timestamp="9.59026">h</system_output>  <user_input timestamp="9.708352"> </user_input>  <system_output timestamp="9.708844"> </system_output>  <user_input timestamp="10.1118">1</user_input>  <system_output timestamp="10.112236">1</system_output>  <user_input timestamp="10.270878">0</user_input>  <system_output timestamp="10.271223">0</system_output>  <user_input timestamp="10.471565">.</user_input>  <system_output timestamp="10.471898">.</system_output>  <user_input timestamp="10.594981">0</user_input>  <system_output timestamp="10.595383">0</system_output>  <user_input timestamp="10.757499">.</user_input>  <system_output timestamp="10.757882">.</system_output>  <user_input timestamp="11.140897">7</user_input>  <system_output timestamp="11.14119">7</system_output>  <user_input timestamp="11.603706">.</user_input>  <system_output timestamp="11.604019">.</system_output>  <user_input timestamp="12.330584">1</user_input>  <system_output timestamp="12.331455">1</system_output>  <user_input timestamp="12.632256">3</user_input>  <system_output timestamp="12.633323">3</system_output>  <user_input timestamp="13.446626">8</user_input>  <system_output timestamp="13.447562">8</system_output>  <user_input timestamp="14.510021"></user_input>  <system_output timestamp="14.511984">[?2004l</system_output></event>
-Example OUTPUT (two lines):
-User initiates SSH connection to server 10.0.7.138
+example d — same-level keystroke sequence (depth = 0)
+neighbor_tail:
+- id=40 depth=0  summary:interactive shell at home directory
+- id=41 depth=0  summary:prepare to connect to a remote host
+currDepth before target: 0
+input xml:
+<event>
+  <system_output>demo@boxtop:~$ </system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>7</user_input><system_output>7</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>3</user_input><system_output>3</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+</event>
+output (two lines):
+initiate ssh connection to 10.0.7.138.
 0
-EXAMPLE RATIONALE (do not output):
-Typing an ssh command within the same shell does not enter a nested tool yet; it stays at the current level → depth = 0.
+
+example e — explicit address allowed (depth = 0)
+neighbor_tail:
+- id=50 depth=0  summary:running curl to query service endpoint
+- id=51 depth=0  summary:checking api health for troubleshooting
+currDepth before target: 0
+input xml:
+<event>
+  <system_output>demo@host:~$ </system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>9</user_input><system_output>9</system_output>
+  <user_input>2</user_input><system_output>2</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>6</user_input><system_output>6</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>5</user_input><system_output>5</system_output>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+</event>
+output (two lines):
+fetch service status from http://192.168.0.5:8080/status.
+0
+
+example f — package install with apt (depth = 0)
+neighbor_tail:
+- id=70 depth=0  summary:initiate SSH connection to 10.0.7.138
+- id=71 depth=-1 summary:authenticate and open remote shell
+currDepth before target: -1
+<event depth="-2">
+  <system_output timestamp="0.0">user@host:~$ </system_output>
+  <user_input>s</user_input>
+  <system_output>s</system_output>
+  <user_input>u</user_input>
+  <system_output>u</system_output>
+  <user_input>d</user_input>
+  <system_output>d</system_output>
+  <user_input>o</user_input>
+  <system_output>o</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>a</user_input>
+  <system_output>a</system_output>
+  <user_input>p</user_input>
+  <system_output>p</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>i</user_input>
+  <system_output>i</system_output>
+  <user_input>n</user_input>
+  <system_output>n</system_output>
+  <user_input>s</user_input>
+  <system_output>s</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input>a</user_input>
+  <system_output>a</system_output>
+  <user_input>l</user_input>
+  <system_output>l</system_output>
+  <user_input>l</user_input>
+  <system_output>l</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>h</user_input>
+  <system_output>h</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input>o</user_input>
+  <system_output>o</system_output>
+  <user_input>p</user_input>
+  <system_output>p</system_output>
+</event>
+output (two lines):
+User installs htop package using sudo apt
+0
 """.strip()
+
+
 
 # ------------------------------
 # Data types
@@ -160,6 +335,10 @@ def load_events(xml_path: str) -> List[Event]:
     with open(xml_path, "r", encoding="utf-8", errors="ignore") as f:
         raw = f.read()
     recording_xml = _extract_recording_block(raw)
+
+    if COLLAPSE_ECHO_INPUTS:
+        recording_xml = collapse_recording_xml(recording_xml)
+
     root = etree.fromstring(recording_xml.encode("utf-8"))
 
     evs: List[Event] = []
@@ -241,62 +420,58 @@ def make_flush_package(upto_idx: int, K: int = K_TARGET, N: int = N_NEIGH) -> Di
 
 
 def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
-    # Neighbors summary (real context)
-    neigh_lines = []
-    for n in pkg["neighbor_tail"]:
-        neigh_lines.append(f"- id={n['id']} depth={n['depth']} summary={n['summary']}")
-    neighbors_text = "\n".join(neigh_lines) if neigh_lines else "(none)"
+    neighbors_xml = "\n".join(
+        [f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
+         for n in pkg.get("neighbor_tail", [])]
+    ) or "    <neighbor>(none)</neighbor>"
 
-    # Targets block
-    targets_block = "\n".join(
-        [f"\n<BEGIN_TARGET id={t['id']}>\n{t['xml']}\n<END_TARGET>\n" for t in pkg["target_events"]]
+    targets_xml = "\n".join(
+        [f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in pkg["target_events"]]
     )
 
-    # Output constraints
+    examples_xml = f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
+
     extra = (
-        f"\n- Output EXACTLY TWO LINES per target. "
-        f"- Line 1 (summary) MUST be ≤ {SUMMARY_WORD_LIMIT} words. Be concise and factual.\n"
-        "- Line 2 MUST be a single integer depth (−1, 0, or >0). No extra text.\n"
-        "- Do NOT copy XML tags/attributes. No repeated phrases.\n"
+        "- do not copy xml tags or attributes; no repeated phrases\n"
+        "- do not mention an address that was not explicitly mentioned in the event\n"
+        "- if the target event contains an <annotation> tag or depth value ignore it"
     )
 
-    # Core instructions (without examples)
-    core = f"""
-You are Model-1 (annotator).
+    prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
 
-Given:
-- currDepth (≤ 0): {pkg['currDepth']}
-- neighbor_tail (already annotated, for context; may be empty):
-{neighbors_text}
-- TARGET_EVENT: A single event's XML.
+<output_format>
+  {{"annotation": "<one sentence (≤ {SUMMARY_WORD_LIMIT} words)>", "depth": <An integer greater than or equal to -1>}}
+</output_format>
 
-THINK FIRST (hidden):
-- Think inside <think>...</think> about what is happening in the event and whether the event starts a nested subtask (→ -1),
-  continues at the same level (→ 0), or exits up (→ k).
-- Think inside <think>...</think> to understand what is happening at a higher level to generate a summary
-- Use neighbors ONLY for continuity; do not invent. Keep the <think> section compact.
+<think_first>
+- Use the <think>...</think> section to analyze what is happening in the event and assess whether the event starts a nested subtask (-1), continues at the same level (0), or exits one or more levels up (k).
+- In <think>...</think>, generate a concise summary at a higher level, considering broader context.
+- Use neighbors ONLY for continuity; do not invent context. Keep <think> concise.
+</think_first>
 
-Then OUTPUT (exactly two lines; order matters):
-1) one-sentence annotation of what happened in the target event (≤ {SUMMARY_WORD_LIMIT} words)
-2) a single integer 'depth' (use -1 for subevent, 0 for same level, >0 to exit levels)
+<rules>
+- the user’s keystrokes appear separately; combine them to form the full command before interpreting it
+- depth is an integer (≥ -1); -1 for subevent, 0 for same level, >0 to exit levels
+- maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
+- write action-oriented summaries; avoid “user”, “they”, “typed”, “inputs”, “enters a command
+- depth is relative to the previous events and nothing else”
 {extra}
+</rules>{examples_xml}
 
-Rules:
-- Output ONLY the two lines (and the final sentinel if required). No numbering, no JSON, no prose.
-- Respect the stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth.
-- Never let the running currDepth become > 0.
-- Do not simply say what the user is typing or that they are typing something, we want to know what they are doing and the reason behind it.
-- Write action-oriented summaries. Do NOT mention “user”, “they”, “typed/typing”, “by typing”, “inputs”, or “enters a command”.
-- Start with a verb that describes the action’s intent (e.g., “List…”, “Open…”, “Initiate…”, “Install…”, “Exit…”).
-""".strip()
+<instruction>
+for each target_event, output exactly one json with "annotation" first, then "depth".
+</instruction>
 
-    # Conditionally include examples
-    examples_part = f"\n\n{FEWSHOTS_BLOCK}\n" if use_fewshots else ""
-
-    instructions = (
-        core + examples_part + "\n\nNow produce the pairs for the targets below:\n" + targets_block
-    )
-    return instructions
+<inputs>
+  <curr_depth_max>0</curr_depth_max>
+  <neighbors>
+{neighbors_xml}
+  </neighbors>
+  <target_events>
+{targets_xml}
+  </target_events>
+</inputs>"""
+    return prompt
 
 
 
@@ -307,55 +482,6 @@ def build_messages(user_content: str) -> List[Dict[str, str]]:
         {"role": "system", "content": "You are Model-1. Follow formatting strictly."},
         {"role": "user", "content": user_content},
     ]
-
-# ------------------------------
-# Logit Processors
-# ------------------------------
-
-class TwoLineFormatProcessor(LogitsProcessor):
-    def __init__(self, tokenizer):
-        import torch
-        self.tok = tokenizer
-        self.state = "line1"
-        # IDs for special chars
-        self.id_nl = self.tok.convert_tokens_to_ids("\n")
-        self.id_minus = self.tok.convert_tokens_to_ids("-")
-        # digits might be multiple tokens; we collect all that encode as digits
-        self.digit_ids = set(self.tok.encode("0123456789", add_special_tokens=False))
-        self.torch = torch  # avoid re-import in __call__
-
-    def _mask_to(self, scores, allowed_ids):
-        mask = self.torch.full_like(scores, float("-inf"))
-        if allowed_ids:
-            idxs = list(allowed_ids)
-            mask[:, idxs] = scores[:, idxs]
-        return mask
-
-    def __call__(self, input_ids, scores):
-        last = input_ids[0, -1].item()
-
-        # if we just saw a newline, move from line1 -> waiting_linebreak
-        if self.state == "line1":
-            if last == self.id_nl:
-                self.state = "waiting_linebreak"
-            return scores
-
-        # first token of line 2: must be '-' or digit (or newline to end early)
-        if self.state == "waiting_linebreak":
-            allowed = set([self.id_nl]) | self.digit_ids
-            if isinstance(self.id_minus, int) and self.id_minus != -1:
-                allowed.add(self.id_minus)
-            self.state = "line2"
-            return self._mask_to(scores, allowed)
-
-        # subsequent tokens of line 2: allow '-', digits, newline
-        if self.state == "line2":
-            allowed = set([self.id_nl]) | self.digit_ids
-            if isinstance(self.id_minus, int) and self.id_minus != -1:
-                allowed.add(self.id_minus)
-            return self._mask_to(scores, allowed)
-
-        return scores
 
 # ------------------------------
 # Model loading
@@ -417,15 +543,9 @@ def load_model_and_tokenizer():
 # Generation & parsing
 # ------------------------------
 @torch.inference_mode()
-def generate_pairs(m1: AutoModelForCausalLM, tok: AutoTokenizer, messages: List[Dict[str, str]]) -> str:
-    """Generate assistant-only text using chat template and slice off the prompt tokens.
-    Fixes the echoing of 'system/user' you observed.
-    """
-    # Build input ids directly from chat template
-    inputs = tok.apply_chat_template(messages, return_tensors="pt", add_generation_prompt=True)
-    inputs = inputs.to(m1.device)
+def generate_pairs(m1, tok, messages, curr_depth: int) -> str:
+    inputs = tok.apply_chat_template(messages, return_tensors="pt", add_generation_prompt=True).to(m1.device)
 
-    # Handle multiple EOS tokens (Qwen uses <|im_end|> in addition to eos)
     eos_ids = [tok.eos_token_id] if tok.eos_token_id is not None else []
     try:
         im_end_id = tok.convert_tokens_to_ids("<|im_end|>")
@@ -437,51 +557,73 @@ def generate_pairs(m1: AutoModelForCausalLM, tok: AutoTokenizer, messages: List[
 
     input_len = inputs.shape[-1]
 
-    processors = LogitsProcessorList([TwoLineFormatProcessor(tok)])
+    prefix_fn = make_prefix_allowed_tokens_fn(tok, curr_depth=curr_depth)
+
+    always_allow = set()
+    if tok.eos_token_id is not None:
+        always_allow.add(tok.eos_token_id)
+    try:
+        im_end_id = tok.convert_tokens_to_ids("<|im_end|>")
+        if isinstance(im_end_id, int) and im_end_id != -1:
+            always_allow.add(im_end_id)
+    except Exception:
+        pass
+    ascii_gate = LogitsProcessorList([AsciiOnlyProcessor(tok, allow_controls=False, always_allow=always_allow)])
+
     out_ids = m1.generate(
         input_ids=inputs,
         max_new_tokens=MAX_NEW_TOKENS,
-        do_sample=False,               # greedy → stable formatting
+        do_sample=False,
         num_beams=1,
         no_repeat_ngram_size=3,
         repetition_penalty=1.1,
         pad_token_id=tok.eos_token_id,
         eos_token_id=eos_ids,
-        logits_processor=processors,
+        prefix_allowed_tokens_fn=prefix_fn,
+        logits_processor=ascii_gate,
         use_cache=True,
     )
 
-    # Slice to only new tokens and decode
     gen_ids = out_ids[0, input_len:]
     text = tok.decode(gen_ids, skip_special_tokens=True).strip()
-
     if ADD_DONE_SENTINEL and DONE_SENTINEL in text:
         text = text.split(DONE_SENTINEL, 1)[0].strip()
     return text
 
 
-def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
-    """Parse alternating lines: depth (int), then summary (string). Forgiving about blank lines."""
-    lines = [ln.strip() for ln in text.splitlines()]
-    pairs: List[Tuple[int, str]] = []
-    i = 0
-    while i < len(lines):
-        # non-empty line is the summary
-        while i < len(lines) and lines[i] == "":
-            i += 1
-        if i >= len(lines):
-            break
-        summary = lines[i]
 
-        # seek next integer line
-        while i < len(lines) and not re.fullmatch(r"-?\d+", lines[i]):
+def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
+    dec = json.JSONDecoder()
+    i, n = 0, len(text)
+    out: List[Tuple[int, str]] = []
+
+    def add(obj):
+        ann = obj.get("annotation")
+        dep = obj.get("depth")
+        if isinstance(ann, str) and isinstance(dep, int) and dep >= -1:
+            out.append((dep, ann))
+
+    while i < n:
+        while i < n and text[i].isspace():
             i += 1
-        if i >= len(lines):
+        if i >= n:
             break
-        depth = int(lines[i]); i += 1
-        pairs.append((depth, summary))
-        i += 1
-    return pairs
+        try:
+            obj, end = dec.raw_decode(text, i)
+        except json.JSONDecodeError:
+            j = text.find("\n", i)
+            if j == -1:
+                break
+            i = j + 1
+            continue
+        i = end
+        if isinstance(obj, dict):
+            add(obj)
+        elif isinstance(obj, list):
+            for it in obj:
+                if isinstance(it, dict):
+                    add(it)
+    return out
 
 
 # ------------------------------
@@ -533,7 +675,7 @@ def run_flushes(evs: List[Event]) -> None:
         print(instr[:1000] + ("..." if len(instr) > 1000 else ""))
 
         print("\n- Model output -")
-        raw = generate_pairs(m1, tok, messages)
+        raw = generate_pairs(m1, tok, messages, curr_depth=pkg["currDepth"])
         print(raw)
 
         # Expect summary-first, then depth
