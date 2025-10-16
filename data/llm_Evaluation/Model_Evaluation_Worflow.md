@@ -6,7 +6,7 @@ In order evlaluate the different LLMs for the model 0 outputs, the files of asci
 
 ```
 cd prepare_data # Located in data/prepare_data
-python3 prepare_data.py --inputs ../model_0/inputs --outputs ../model_0/outputs --system_prompt ../system_prompt.txt --out_dir ../model0_data --tokenizer_model <your_hf_llm_model>
+python3 prepare_data.py --inputs ../model_0/inputs --outputs ../model_0/outputs --system_prompt ../../models/model_0/system_prompt.txt --out_dir ../model0_data --tokenizer_model <your_hf_llm_model>
 ```
 
 ## Create a train-test split of the jsonl data
