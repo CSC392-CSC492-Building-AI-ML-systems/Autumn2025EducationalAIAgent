@@ -46,26 +46,19 @@ Your task is to determine what group the last event should have, by considering 
 
 ## How to Respond:
 
-Respond with the following two items:
- * An explanation in English less than or equal to 200 characters in length on why you believe the last event should be considered to be a part of the final HLC, or why it should not.
-   * Do not add code blocks, or other multi-line formatting.
-   * If you determine the last event should be considered a part of the final HLC, state what type of HLC you believe the final HLC to be, and whether you believe adding this event to the HLC would make it complete.
- * An answer, either:
-   * The integer `group` of the final HLC -- If you mean to imply that the last event should be joined to the final HLC
-   * `NEW` -- If you mean to imply that an HLC should be assigned to the next integer after the current final HLC's `group`, and you mean to imply the last event should be in that new `group`
+Respond with the followig answer format, either:
+  * The integer `group` of the final HLC -- If you mean to imply that the last event should be joined to the final HLC
+  * `NEW` -- If you mean to imply that an HLC should be assigned to the next integer after the current final HLC's `group`, and you mean to imply the last event should be in that new `group`
 
 Use the following template to format your response:
-<!-- 200 or fewer characters in English here -->
 Answer: <!-- Integer or `NEW` here -->
 
 ### Example Responses
 ```
-The last Event belongs to the final HLC, because it continues the input of the `ssh` command at the Bash prompt.
 Answer: 1
 ```
 
 ```
-The last Event belongs to a new HLC, because it contains the first characters of the response to the `ssh` command the user entered at the Bash prompt.
 Answer: NEW
 ```
 
