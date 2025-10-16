@@ -3,3 +3,4 @@ torch
 datasets
 transformers
 trl
+lm_eval
