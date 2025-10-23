@@ -1,136 +1,272 @@
 """
-Model-1 preprocessing script for Axolotl
+Model-1 preprocessing script for Axolotl (JSON-output training)
 
 - Loads HF dataset: redaMM/educational-ai-agent-small-annotation-depth (split=train)
-- Uses formatting_func() to build `messages`
+- Uses formatting_func() to build `messages` with the *JSON* output style
 - Writes ./prepared_train.jsonl that Axolotl can ingest with type: chat_template
-- Run:  python model1StreamedAxolotl.py
+- Run:  python model1StreamedAxolotl_json.py
 """
 
 import json
-from typing import Dict
+from typing import Dict, List
 from datasets import load_dataset
 
 # ==============================
-# Parameter
+# Parameters
 # ==============================
 DATASET_ID = "redaMM/educational-ai-agent-small-annotation-depth"
 DATASET_SPLIT = "train"
 OUTPUT_JSONL = "prepared_train.jsonl"
+
+# Prompt knobs (mirrors your runtime annotator)
 INCLUDE_FEWSHOTS_DEFAULT = True
 SUMMARY_WORD_LIMIT = 50
 MAX_NEIGH = 16  # cap neighbor_tail length
-
-DEBUG=True
-
+DEBUG = True
 # ------------------------------
-# Static Vars
+# Statics
 # ------------------------------
-   
-EXAMPLE_NEIGHBORS_TEXT = """- id=20 depth=-1 summary=Enter editing /etc/ntopng/ntopng.conf to tweak capture settings.
-- id=21 depth=0  summary=Scroll within the editor; reviewing options.
-- id=22 depth=-1 summary=Open a shell from editor to list /var/log for recent errors.
-- id=23 depth=1  summary=Return from the shell to the editor context.
-- id=24 depth=0  summary=Save the config and keep editing."""
-
 FEWSHOTS_BLOCK = f"""
-EXAMPLES (FOR FORMAT/LOGIC ONLY — DO NOT OUTPUT THESE IN YOUR ANSWER)
+examples (for format/logic only — do not output these)
 
-Example neighbor_tail (dense):
-{EXAMPLE_NEIGHBORS_TEXT}
+note: event xml often shows keystroke-by-keystroke input with echoed characters, not a full command.
 
-Example A — NEW nested subtask (depth = -1)
-Example currDepth before target: -1
-Example INPUT XML:
-<event><user_input>:!grep -i error /var/log/syslog</user_input><system_output>[shell] matching lines...</system_output></event>
-Example OUTPUT (two lines):
-Spawn shell from editor to grep syslog for errors.
+example a — new nested subtask (depth = -1)
+neighbor_tail:
+- id=10 depth=0  summary=open editor on /etc/ntopng/ntopng.conf
+- id=11 depth=0  summary=navigate within config to log options
+currDepth before target: -1
+input xml:
+<event>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>!</user_input><system_output>!</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>-</user_input><system_output>-</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>y</user_input><system_output>y</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+</event>
+output (two lines):
+spawn shell from editor to grep syslog for errors.
 -1
-EXAMPLE RATIONALE (do not output):
-Action starts a nested tool (shell) inside the editor workflow; that descends one level → depth = -1.
 
-Example B — Same-level continuation (depth = 0)
-Example currDepth before target: -2
-Example INPUT XML:
-<event><user_input>less /var/log/syslog</user_input><system_output>--- syslog ---</system_output></event>
-Example OUTPUT (two lines):
-View syslog content within the spawned shell.
+example b — same-level continuation (depth = 0)
+neighbor_tail:
+- id=20 depth=-1 summary:spawn shell from editor
+- id=21 depth=0  summary:view /var/log/syslog in pager
+currDepth before target: -2
+input xml:
+<event>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <system_output>--- syslog ---</system_output>
+</event>
+output (two lines):
+view syslog content within the spawned shell.
 0
-EXAMPLE RATIONALE (do not output):
-Still operating in the same nested shell context (no new subtask, no exit); remain at current level → depth = 0.
 
-Example C — Exit one level (depth = +1)
-Example currDepth before target: -1
-Example INPUT XML:
-<event><user_input>:wq</user_input><system_output>[wrote config] demo@host:/etc/ntopng$ </system_output></event>
-Example OUTPUT (two lines):
-Save changes and exit the editor back to the shell.
+example c — exit one level (depth = +1)
+neighbor_tail:
+- id=30 depth=-1 summary:open file in editor from shell
+- id=31 depth=0  summary:edit configuration options
+currDepth before target: -1
+input xml:
+<event>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>w</user_input><system_output>w</system_output>
+  <user_input>q</user_input><system_output>q</system_output>
+  <system_output>[wrote config] demo@host:/etc/ntopng$ </system_output>
+</event>
+output (two lines):
+save changes and exit the editor back to the shell.
 1
-EXAMPLE RATIONALE (do not output):
-Exiting the editor returns to the parent shell context, popping one level → depth = +1.
 
-Example D — Same-level command (depth = 0)
-Example currDepth before target: 0
-Example INPUT XML:
-<event>  <system_output timestamp="0.096022">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>  <user_input timestamp="9.163614">s</user_input>  <system_output timestamp="9.164051">s</system_output>  <user_input timestamp="9.365744">s</user_input>  <system_output timestamp="9.366263">s</system_output>  <user_input timestamp="9.589844">h</user_input>  <system_output timestamp="9.59026">h</system_output>  <user_input timestamp="9.708352"> </user_input>  <system_output timestamp="9.708844"> </system_output>  <user_input timestamp="10.1118">1</user_input>  <system_output timestamp="10.112236">1</system_output>  <user_input timestamp="10.270878">0</user_input>  <system_output timestamp="10.271223">0</system_output>  <user_input timestamp="10.471565">.</user_input>  <system_output timestamp="10.471898">.</system_output>  <user_input timestamp="10.594981">0</user_input>  <system_output timestamp="10.595383">0</system_output>  <user_input timestamp="10.757499">.</user_input>  <system_output timestamp="10.757882">.</system_output>  <user_input timestamp="11.140897">7</user_input>  <system_output timestamp="11.14119">7</system_output>  <user_input timestamp="11.603706">.</user_input>  <system_output timestamp="11.604019">.</system_output>  <user_input timestamp="12.330584">1</user_input>  <system_output timestamp="12.331455">1</system_output>  <user_input timestamp="12.632256">3</user_input>  <system_output timestamp="12.633323">3</system_output>  <user_input timestamp="13.446626">8</user_input>  <system_output timestamp="13.447562">8</system_output>  <user_input timestamp="14.510021"></user_input>  <system_output timestamp="14.511984">[?2004l</system_output></event>
-Example OUTPUT (two lines):
-User initiates SSH connection to server 10.0.7.138
+example d — same-level keystroke sequence (depth = 0)
+neighbor_tail:
+- id=40 depth=0  summary:interactive shell at home directory
+- id=41 depth=0  summary:prepare to connect to a remote host
+currDepth before target: 0
+input xml:
+<event>
+  <system_output>demo@boxtop:~$ </system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>7</user_input><system_output>7</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>3</user_input><system_output>3</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+</event>
+output (two lines):
+initiate ssh connection to 10.0.7.138.
 0
-EXAMPLE RATIONALE (do not output):
-Typing an ssh command within the same shell does not enter a nested tool yet; it stays at the current level → depth = 0.
+
+example e — explicit address allowed (depth = 0)
+neighbor_tail:
+- id=50 depth=0  summary:running curl to query service endpoint
+- id=51 depth=0  summary:checking api health for troubleshooting
+currDepth before target: 0
+input xml:
+<event>
+  <system_output>demo@host:~$ </system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>9</user_input><system_output>9</system_output>
+  <user_input>2</user_input><system_output>2</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>1</user_input><system_output>1</system_output>
+  <user_input>6</user_input><system_output>6</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>5</user_input><system_output>5</system_output>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>8</user_input><system_output>8</system_output>
+  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+</event>
+output (two lines):
+fetch service status from http://192.168.0.5:8080/status.
+0
+
+example f — package install with apt (depth = 0)
+neighbor_tail:
+- id=70 depth=0  summary:initiate SSH connection to 10.0.7.138
+- id=71 depth=-1 summary:authenticate and open remote shell
+currDepth before target: -1
+<event depth="-2">
+  <system_output timestamp="0.0">user@host:~$ </system_output>
+  <user_input>s</user_input>
+  <system_output>s</system_output>
+  <user_input>u</user_input>
+  <system_output>u</system_output>
+  <user_input>d</user_input>
+  <system_output>d</system_output>
+  <user_input>o</user_input>
+  <system_output>o</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>a</user_input>
+  <system_output>a</system_output>
+  <user_input>p</user_input>
+  <system_output>p</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>i</user_input>
+  <system_output>i</system_output>
+  <user_input>n</user_input>
+  <system_output>n</system_output>
+  <user_input>s</user_input>
+  <system_output>s</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input>a</user_input>
+  <system_output>a</system_output>
+  <user_input>l</user_input>
+  <system_output>l</system_output>
+  <user_input>l</user_input>
+  <system_output>l</system_output>
+  <user_input> </user_input>
+  <system_output> </system_output>
+  <user_input>h</user_input>
+  <system_output>h</system_output>
+  <user_input>t</user_input>
+  <system_output>t</system_output>
+  <user_input>o</user_input>
+  <system_output>o</system_output>
+  <user_input>p</user_input>
+  <system_output>p</system_output>
+</event>
+output (two lines):
+User installs htop package using sudo apt
+0
 """.strip()
 
 
 # ------------------------------
 # Helpers
 # ------------------------------
-def normalize_pkg(ex: Dict) -> Dict:
-    """
-    Normalize a raw dataset example `ex` into a compact package consumed by the
-    prompt builder (`build_instruction`). This isolates all field-shaping logic
-    in one place so the rest of the pipeline can rely on a consistent schema.
-
-    Expected keys in `ex`:
-      - "currDepth": the current stack depth (integer can be 0 or -1)
-      - "neighbors": list of neighbor items, each with:
-            {
-              "id": <int-like>,
-              "depth": <int-like>   # depth *delta/class* already annotated for that neighbor:
-                                    #   -1 = descend into a nested subtask
-                                    #    0 = continue at same level
-                                    #   >0 = exit up k levels
-            }
-            and "annotation": <str> summary for that neighbor
-      - "target_idx": the integer ID of the target event within the recording
-      - "target_xml": the XML string of the target event
-
-    Returns:
-      {
-        "currDepth": int,
-        "neighbor_tail": [ { "id": int, "depth": int, "summary": str }, ... ],
-        "target_events": [ { "id": int, "xml": str } ],  # list for future multi-targets
-        "target_idxs": [int],     # parallel list of target IDs
-      }
-    """
-    # Coerce to integers in case the dataset stores numeric fields as strings.
+def _normalize_pkg(ex: Dict) -> Dict:
+    """Normalize dataset example to the prompt package."""
     curr_depth = int(ex["currDepth"])
-
-    # Optional light validation (non-fatal): ensure currDepth is not positive.
-    # Comment out or adjust if your data legitimately allows positive currDepth.
     if curr_depth > 0:
+        # Your data shouldn’t have positive currDepth; keep the guard.
         raise ValueError(f"currDepth should be <= 0, got {curr_depth}")
 
     neighbor_tail = []
-
-    for n in ex["neighbors"]:
-        nid = int(n["id"])
-        ndepth = int(n["depth"])  # may be -1, 0, or >0 (e.g., 1, 2, ...)
-        nsummary = n["annotation"]
-        neighbor_tail.append({"id": nid, "depth": ndepth, "summary": nsummary})
+    for n in ex.get("neighbors", []):
+        neighbor_tail.append({
+            "id": int(n["id"]),
+            "depth": int(n["depth"]),
+            "summary": n["annotation"],
+        })
 
     target_id = int(ex["target_idx"])
     target_xml = ex["target_xml"]
-
     return {
         "currDepth": curr_depth,
         "neighbor_tail": neighbor_tail,
@@ -138,112 +274,94 @@ def normalize_pkg(ex: Dict) -> Dict:
         "target_idxs": [target_id],
     }
 
-
-def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
-    # Neighbors summary (real context)
-    neigh_lines = []
+def build_instruction_json(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
+    """Prompt that matches the runtime annotator’s JSON-output spec."""
+    # Neighbors
+    neigh_lines: List[str] = []
     for n in pkg["neighbor_tail"]:
         neigh_lines.append(f"- id={n['id']} depth={n['depth']} summary={n['summary']}")
-    neighbors_text = "\n".join(neigh_lines) if neigh_lines else "(none)"
+    neighbors_text = "\n".join(neigh_lines) if neigh_lines else "    <neighbor>(none)</neighbor>"
 
-    # Targets block
-    targets_block = "\n".join(
-        [f"\n<BEGIN_TARGET id={t['id']}>\n{t['xml']}\n<END_TARGET>\n" for t in pkg["target_events"]]
+    # Targets
+    targets_xml = "\n".join(
+        [f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in pkg["target_events"]]
     )
 
-    # Output constraints
-    extra = (
-        f"\n- Output EXACTLY TWO LINES per target. "
-        f"- Line 1 (summary) MUST be ≤ {SUMMARY_WORD_LIMIT} words. Be concise and factual.\n"
-        "- Line 2 MUST be a single integer depth (−1, 0, or >0). No extra text.\n"
-        "- Do NOT copy XML tags/attributes. No repeated phrases.\n"
+    # Extra instructions (mirror your runtime “v2” style)
+    extra_rules = (
+        "- do not copy xml tags or attributes; no repeated phrases\n"
+        "- do not mention an address that was not explicitly mentioned in the event\n"
+        "- if the target event contains an <annotation> tag or depth value ignore it"
     )
 
-    # Core instructions (without examples)
-    core = f"""
-You are Model-1 (annotator).
+    examples = f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
 
-Given:
-- currDepth (≤ 0): {pkg['currDepth']}
-- neighbor_tail (already annotated, for context; may be empty):
+    prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
+
+<output_format>
+  {{"annotation": "<one sentence (≤ {SUMMARY_WORD_LIMIT} words)>", "depth": <An integer greater than or equal to -1>}}
+</output_format>
+
+<think_first>
+- Use the <think>...</think> section to analyze what is happening in the event and assess whether the event starts a nested subtask (-1), continues at the same level (0), or exits one or more levels up (k).
+- In <think>...</think>, generate a concise summary at a higher level, considering broader context.
+- Use neighbors ONLY for continuity; do not invent context. Keep <think> concise.
+</think_first>
+
+<rules>
+- the user’s keystrokes appear separately; combine them to form the full command before interpreting it
+- depth is an integer (≥ -1); -1 for subevent, 0 for same level, >0 to exit levels
+- maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
+- write action-oriented summaries; avoid “user”, “they”, “typed”, “inputs”, “enters a command
+- depth is relative to the previous events and nothing else”
+{extra_rules}
+</rules>{examples}
+
+<instruction>
+for each target_event, output exactly one json with "annotation" first, then "depth".
+</instruction>
+
+<inputs>
+  <curr_depth_max>0</curr_depth_max>
+  <neighbors>
 {neighbors_text}
-- TARGET_EVENT: A single event's XML.
+  </neighbors>
+  <target_events>
+{targets_xml}
+  </target_events>
+</inputs>"""
+    return prompt
 
-THINK FIRST (hidden):
-- Think inside <think>...</think> about what is happening in the event and whether the event starts a nested subtask (→ -1),
-  continues at the same level (→ 0), or exits up (→ k).
-- Think inside <think>...</think> to understand what is happening at a higher level to generate a summary
-- Use neighbors ONLY for continuity; do not invent. Keep the <think> section compact.
+def build_answer_json(ex: Dict) -> str:
+    """Gold assistant message: single JSON object."""
+    ann = ex["annotation"].strip()
+    dep = int(ex["depth"])
+    return json.dumps({"annotation": ann, "depth": dep}, ensure_ascii=False)
 
-Then OUTPUT (exactly two lines; order matters):
-1) one-sentence annotation of what happened in the target event (≤ {SUMMARY_WORD_LIMIT} words)
-2) a single integer 'depth' (use -1 for subevent, 0 for same level, >0 to exit levels)
-{extra}
-
-Rules:
-- Output ONLY the two lines (and the final sentinel if required). No numbering, no JSON, no prose.
-- Respect the stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth.
-- Never let the running currDepth become > 0.
-- Do not simply say what the user is typing or that they are typing something, we want to know what they are doing and the reason behind it.
-- Write action-oriented summaries. Do NOT mention “user”, “they”, “typed/typing”, “by typing”, “inputs”, or “enters a command”.
-- Start with a verb that describes the action’s intent (e.g., “List…”, “Open…”, “Initiate…”, “Install…”, “Exit…”).
-""".strip()
-
-    # Conditionally include examples
-    examples_part = f"\n\n{FEWSHOTS_BLOCK}\n" if use_fewshots else ""
-
-    instructions = (
-        core + examples_part + "\n\nNow produce the pairs for the targets below:\n" + targets_block
-    )
-    return instructions
-
-def build_answer(ex: Dict) -> str:
-    return ex["annotation"].strip() + "\n" + str(int(ex["depth"])) + "\n"
-
-# Axolotl-style formatter we’ll reuse for pre-materialization
 def formatting_func(ex: Dict):
+    # Trim long neighbor tails to keep tokens under control
     if len(ex.get("neighbors", [])) > MAX_NEIGH:
         ex = dict(ex)
         ex["neighbors"] = ex["neighbors"][-MAX_NEIGH:]
 
-    pkg = normalize_pkg(ex)
+    pkg = _normalize_pkg(ex)
+    user_prompt = build_instruction_json(pkg, use_fewshots=False)  # you can switch to True if you want the fewshots in-train
 
-    user_prompt = build_instruction(pkg, use_fewshots=False)
     return {
         "messages": [
             {"role": "system", "content": "You are Model-1. Follow formatting strictly."},
             {"role": "user", "content": user_prompt},
-            {"role": "assistant", "content": build_answer(ex)},
+            {"role": "assistant", "content": build_answer_json(ex)},
         ]
     }
 
 # ------------------------------
 # Pre-materialization runner
 # ------------------------------
-
 def _write_prepared_jsonl():
-    """
-    Stream the HF dataset to a JSONL file where each line is a single training
-    example shaped like: {"messages": [ ... ]}. This is intended for Axolotl
-    ingestion with type: chat_template.
-
-    Behavior:
-    - Loads `DATASET_ID` / `DATASET_SPLIT` via `datasets.load_dataset`.
-    - For each example `ex`, calls `formatting_func({"data": [ex]})` to produce
-      one or more chat records (usually one).
-    - Writes each record as a compact JSON line to `OUTPUT_JSONL`.
-    - Counts and reports how many rows were written vs. skipped.
-    - Any exception on a row causes that row to be skipped (silently), matching
-      the original behavior.
-    """
-
-    # Announce which dataset/split we are about to load (useful when scripts are re-used).
     print(f"[pre] Loading dataset: {DATASET_ID} (split={DATASET_SPLIT})")
-
-    # Hugging Face streaming is not used here; the full split is loaded in memory.
-    # If memory becomes an issue, this could be replaced with an iterable dataset.
     ds = load_dataset(DATASET_ID, split=DATASET_SPLIT)
-    print(f"rows: {ds.num_rows}")         # number of rows
+    print(f"rows: {ds.num_rows}")
     first = ds[0]
     print(f"headers: {first.keys()}")
     print(f"schema: {ds.features}")
@@ -251,46 +369,21 @@ def _write_prepared_jsonl():
     total, skipped = 0, 0
     print(f"[pre] Writing: {OUTPUT_JSONL}")
 
-    # Open the output JSONL file for writing. Each record is a single line.
-    # Using default newline handling is fine; UTF-8 ensures non-ASCII survives.
     with open(OUTPUT_JSONL, "w", encoding="utf-8") as f:
-        # Iterate over raw dataset examples
         for ex in ds:
             try:
-                # Call the formatter on a single-item batch. It returns a list of
-                # Axolotl-ready dicts, typically with a "messages" field.
-                recs = formatting_func(ex)
-                
-                # If the formatter returned nothing, consider this example skipped.
-
-                if not recs:
+                rec = formatting_func(ex)
+                if not rec or not isinstance(rec.get("messages"), list) or not rec["messages"]:
                     skipped += 1
                     continue
-                    
-                # Some examples may expand to multiple records (keep parity with original logic).
-                msgs = recs.get("messages")
-
-                # Validate the minimal contract: messages must be a non-empty list.
-                if not isinstance(msgs, list) or not msgs:
-                    skipped += 1
-                    continue
-
-                # Serialize each record as a compact JSON line.
-                # `ensure_ascii=False` preserves Unicode; mirrors json.dump defaults otherwise.
-                json.dump(recs, f, ensure_ascii=False)
+                json.dump(rec, f, ensure_ascii=False)
                 f.write("\n")
                 total += 1
-
             except Exception:
-                # Intentionally swallow all per-example errors to keep processing,
-                # incrementing the skipped counter (matches original behavior).
                 skipped += 1
                 continue
 
-    # Final summary for quick visibility in logs/CI.
     print(f"[pre] Done. Wrote {total} records to {OUTPUT_JSONL}. Skipped {skipped} rows.")
 
-# Auto-run when invoked as a script
 if __name__ == "__main__":
-
     _write_prepared_jsonl()
