@@ -3,3 +3,7 @@ torch
 datasets
 transformers
 trl
+pillow
+timm
+qwen-vl-utils
+accelerate

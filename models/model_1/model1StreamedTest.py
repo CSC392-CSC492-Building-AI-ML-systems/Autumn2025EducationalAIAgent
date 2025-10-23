@@ -20,6 +20,8 @@ from typing import Dict, List, Optional, Tuple
 
 from lxml import etree
 import torch
+from transformers.models.qwen3_vl import Qwen3VLForConditionalGeneration
+from transformers import AutoProcessor
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, LogitsProcessor, LogitsProcessorList
 
 from formatConstraints import make_prefix_allowed_tokens_fn
@@ -33,7 +35,7 @@ XML_PATH = "../../data/model_1/inputs/1727009412_parsed.xml"
 GT_PATH = "../../data/model_1/outputs/1727009412_training.txt"  # (unused here, kept for future)
 
 # Model settings
-MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"  # instruction-tuned
+MODEL_ID = "Qwen/Qwen3-VL-8B-Instruct"  # instruction-tuned
 USE_INT4 = True  # set False to prefer BF16/FP16 speed if you have VRAM
 MAX_NEW_TOKENS = 48
 SUMMARY_WORD_LIMIT = 50
@@ -508,14 +510,10 @@ def load_model_and_tokenizer():
                 bnb_4bit_use_double_quant=True,
             )
 
-    m1 = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID,
-        device_map="auto",
-        dtype=torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16,
-        trust_remote_code=True,
-        low_cpu_mem_usage=True,
-        quantization_config=quant_config,
-    )
+    m1 = model = Qwen3VLForConditionalGeneration.from_pretrained(
+    "Qwen/Qwen3-VL-8B-Instruct", 
+    dtype="auto", 
+    device_map="auto")
 
     # Speed settings
     m1.config.use_cache = True
