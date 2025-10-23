@@ -33,7 +33,7 @@ XML_PATH = "../../data/model_1/inputs/1727009412_parsed.xml"
 GT_PATH = "../../data/model_1/outputs/1727009412_training.txt"  # (unused here, kept for future)
 
 # Model settings
-MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"  # instruction-tuned
+MODEL_ID = "/workspace/Autumn2025EducationalAIAgent/models/model_1/qwen3-4b-qlora"  # instruction-tuned
 USE_INT4 = True  # set False to prefer BF16/FP16 speed if you have VRAM
 MAX_NEW_TOKENS = 48
 SUMMARY_WORD_LIMIT = 50
@@ -511,10 +511,13 @@ def load_model_and_tokenizer():
     m1 = AutoModelForCausalLM.from_pretrained(
         MODEL_ID,
         device_map="auto",
-        dtype=torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16,
+        torch_dtype=(
+            torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported())
+            else (torch.float16 if torch.cuda.is_available() else torch.float32)
+        ),
         trust_remote_code=True,
         low_cpu_mem_usage=True,
-        quantization_config=quant_config,
+        quantization_config=quant_config,  # okay to keep even when torch_dtype is set
     )
 
     # Speed settings

@@ -21,9 +21,8 @@ datasets:
 val_set_size: 0
 
 # Sequence/prompt length
-# sequence_len: 32768 # I don't think we can go higher than 32768
-sequence_len: 65536 # I don't think we can go higher than 32768
-pack: true
+sequence_len: 32768 # I don't think we can go higher than 16384
+pack: false
 
 train_on_inputs: false
 
@@ -32,6 +31,8 @@ adapter: lora
 lora_r: 16
 lora_alpha: 32
 lora_dropout: 0.05
+merge_lora: true
+save_safetensors: true
 
 # Use the Axolotl/PEFT key that is actually read:
 lora_target_modules:

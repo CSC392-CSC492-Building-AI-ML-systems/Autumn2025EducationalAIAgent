@@ -7,7 +7,9 @@ Model-1 preprocessing script for Axolotl (JSON-output training)
 - Run:  python model1StreamedAxolotl_json.py
 """
 
+import numpy as np
 import json
+from transformers import AutoTokenizer
 from typing import Dict, List
 from datasets import load_dataset
 
@@ -17,6 +19,9 @@ from datasets import load_dataset
 DATASET_ID = "redaMM/educational-ai-agent-small-annotation-depth"
 DATASET_SPLIT = "train"
 OUTPUT_JSONL = "prepared_train.jsonl"
+tok = AutoTokenizer.from_pretrained(
+    "Qwen/Qwen3-4B-Instruct-2507", trust_remote_code=True, use_fast=True
+)
 
 # Prompt knobs (mirrors your runtime annotator)
 INCLUDE_FEWSHOTS_DEFAULT = True
@@ -250,6 +255,16 @@ User installs htop package using sudo apt
 # ------------------------------
 # Helpers
 # ------------------------------
+
+def count_tokens(messages) -> int:
+    # Get token ids exactly like the model will see them
+    input_ids = tok.apply_chat_template(
+        messages,
+        add_generation_prompt=False,   # training: no assistant turn to generate yet
+        return_tensors="pt"            # get a tensor directly
+    )
+    return int(input_ids.shape[-1])
+
 def _normalize_pkg(ex: Dict) -> Dict:
     """Normalize dataset example to the prompt package."""
     curr_depth = int(ex["currDepth"])
@@ -369,6 +384,7 @@ def _write_prepared_jsonl():
     total, skipped = 0, 0
     print(f"[pre] Writing: {OUTPUT_JSONL}")
 
+    lens = []
     with open(OUTPUT_JSONL, "w", encoding="utf-8") as f:
         for ex in ds:
             try:
@@ -376,12 +392,23 @@ def _write_prepared_jsonl():
                 if not rec or not isinstance(rec.get("messages"), list) or not rec["messages"]:
                     skipped += 1
                     continue
+
+                # token length for this chat
+                L = count_tokens(rec["messages"])
+                lens.append(L)
+
                 json.dump(rec, f, ensure_ascii=False)
                 f.write("\n")
                 total += 1
             except Exception:
                 skipped += 1
                 continue
+
+    if lens:
+        a = np.array(lens)
+        print(f"[lengths] min={a.min()} p50={np.percentile(a,50)} p90={np.percentile(a,90)} "
+              f"p99={np.percentile(a,99)} max={a.max()}")
+
 
     print(f"[pre] Done. Wrote {total} records to {OUTPUT_JSONL}. Skipped {skipped} rows.")
 
