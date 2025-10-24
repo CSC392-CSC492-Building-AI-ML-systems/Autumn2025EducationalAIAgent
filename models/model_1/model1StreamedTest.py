@@ -460,6 +460,33 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 {extra}
 </rules>{examples_xml}
 
+<reason_rules>
+explain your thought process before committing to an answer
+analyze what command/action is being performed
+determine if it enters a subprocess (depth=-1), continues same level (depth=0), or exits (depth=+1)
+consider the context from neighbor events
+be concise but show your logic clearly (1-3 sentences)
+</reason_rules>
+
+<annotation_rules>
+write action-oriented summaries; avoid “user”, “they”, “typed”, “inputs”, “enters a command
+limit to {SUMMARY_WORD_LIMIT} words maximum
+focus on the user's action/intent, not just the raw command
+use simple language, present-tense verbs
+avoid special chars except: periods, commas, hyphens, underscores, forward slashes, colons
+IP addresses, ports, URLs, and paths ARE allowed when diagnostic/contextual
+</annotation_rules>
+
+<depth_rules>
+must be an integer from the allowed set based on currDepth
+-1: entering a new subprocess or nested context
+0: continuing at the same context level
++1: exiting one level (returning to parent context)
+depth must satisfy: currDepth + depth <= 0 (cannot rise above root)
+maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
+depth is relative to the previous events and nothing else
+</depth_rules>
+
 <instruction>
 for each target_event, output exactly one json with "annotation" first, then "depth".
 </instruction>
@@ -510,7 +537,7 @@ def load_model_and_tokenizer():
                 bnb_4bit_use_double_quant=True,
             )
 
-    m1 = model = Qwen3VLForConditionalGeneration.from_pretrained(
+    m1 = Qwen3VLForConditionalGeneration.from_pretrained(
     "Qwen/Qwen3-VL-8B-Instruct", 
     dtype="auto", 
     device_map="auto")
