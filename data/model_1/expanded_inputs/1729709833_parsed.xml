@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1729709833">
-<event depth="-2">
+<event >
   <system_output timestamp="0.00698">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.869675">c</user_input>
   <system_output timestamp="0.870191">c</system_output>
@@ -65,7 +65,7 @@ nullhost-tearoff-15: Runable,</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="633.89317"/>
   <system_output timestamp="633.893833">
 (reverse-i-search)`': </system_output>
@@ -101,7 +101,7 @@ Last login: Wed Oct 16 21:01:37 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="643.333613">c</user_input>
   <system_output timestamp="643.335803">c</system_output>
   <user_input timestamp="643.589161">d</user_input>
@@ -149,7 +149,7 @@ Last login: Wed Oct 16 21:01:37 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="648.341027">g</user_input>
   <system_output timestamp="648.345931">g</system_output>
   <user_input timestamp="648.466085">i</user_input>
@@ -447,7 +447,7 @@ Date:   Sun Jul 28 23:51:54 2024 +0100[m
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="681.690686">q</user_input>
   <system_output timestamp="681.748388">
 [K[?1l&gt;</system_output>
@@ -455,7 +455,7 @@ Date:   Sun Jul 28 23:51:54 2024 +0100[m
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="682.536515">g</user_input>
   <system_output timestamp="682.550827">g</system_output>
   <user_input timestamp="682.675673">i</user_input>
@@ -2128,7 +2128,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="845.209027">[A</user_input>
   <system_output timestamp="845.211192">sudo git diff master~10</system_output>
   <user_input timestamp="848.244182"> </user_input>
@@ -2373,7 +2373,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="879.916661">[A</user_input>
   <system_output timestamp="879.918818">sudo git diff master~30 scripts/GRUBEFI/10-setup</system_output>
   <user_input timestamp="882.164018">[D</user_input>
@@ -2704,7 +2704,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="938.190858">s</user_input>
   <system_output timestamp="938.192952">s</system_output>
   <user_input timestamp="938.333144">u</user_input>
@@ -2829,7 +2829,7 @@ grub-efi-ia32-signed-template - GRand Unified Bootloader, version 2 (EFI-IA32 si
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2152.677785">[A</user_input>
   <system_output timestamp="2152.679802">sudo apt-cache search grub-efi</system_output>
   <user_input timestamp="2153.722692">[A</user_input>
@@ -3016,7 +3016,7 @@ HWPHYS      QEMUCLIENT
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2192.495031">d</user_input>
   <system_output timestamp="2192.496245">d</system_output>
   <user_input timestamp="2192.80486">o</user_input>
@@ -3043,7 +3043,7 @@ logout
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="5934.348747">c</user_input>
   <system_output timestamp="5934.349252">c</system_output>
   <user_input timestamp="5934.495294">a</user_input>
@@ -3092,7 +3092,7 @@ logout
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="5940.88235">[A</user_input>
   <system_output timestamp="5940.882703">cat /run/mdadm/map </system_output>
   <user_input timestamp="5942.529059"/>

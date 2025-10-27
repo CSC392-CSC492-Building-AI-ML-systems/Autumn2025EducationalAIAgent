@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1730987252">
-<event depth="-2">
+<event >
   <system_output timestamp="0.008584">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.603025"/>
   <system_output timestamp="0.603588">
@@ -23,7 +23,7 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5.697578">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="7.138774">c</user_input>
   <system_output timestamp="7.139172">c</system_output>
@@ -86,7 +86,7 @@ nullhost-tearoff-15: Runable,</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="9.110867">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="15.55465"/>
   <system_output timestamp="15.555045">[?2004l
@@ -96,5 +96,5 @@ exit
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </recording>

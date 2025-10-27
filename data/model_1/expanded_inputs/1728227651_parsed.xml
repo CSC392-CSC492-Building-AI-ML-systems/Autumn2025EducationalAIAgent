@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="319" height="92" timestamp="1728227651">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009109">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.760023">l</user_input>
   <system_output timestamp="0.760619">l</system_output>
@@ -61,7 +61,7 @@ demo@stephost:~$ ls -la /disk1/</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="19.231808"></user_input>
   <system_output timestamp="19.232214">[K</system_output>
   <user_input timestamp="19.920285"></user_input>
@@ -99,5 +99,5 @@ demo@stephost:~$ ls -la /disk1/</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </recording>

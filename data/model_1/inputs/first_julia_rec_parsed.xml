@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="319" height="92" timestamp="1727009412">
-<event depth="-2">
+<event >
   <system_output timestamp="0.096022">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
   <user_input timestamp="9.163614">s</user_input>
   <system_output timestamp="9.164051">s</system_output>
@@ -48,7 +48,7 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="17.189268">!</user_input>
   <user_input timestamp="17.357498">
 </user_input>
@@ -120,7 +120,7 @@ Last login: Sun Sep 22 12:24:17 2024
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="55.531082">
 [?2004l
 </system_output>
@@ -469,7 +469,7 @@ Scanning linux images... [======================================================
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="137.383961">
 Running kernel seems to be up-to-date.
 

@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1728763348">
-<event depth="-2">
+<event >
   <system_output timestamp="0.005896">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.904513"/>
   <system_output timestamp="0.904844">
@@ -42,7 +42,7 @@ Last login: Sat Oct 12 18:45:48 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6.307781">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="7.84109">c</user_input>
   <system_output timestamp="7.843233">c</system_output>
@@ -213,7 +213,7 @@ DEMO     FAIBASE  HASUNTRUSTEDDATA  HOSTSTEP    HWAMD64  JADMIN       KERNELDEV 
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="537.772737">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="538.232238">e</user_input>
   <system_output timestamp="538.251244">e</system_output>
@@ -269,7 +269,7 @@ DEMO     FAIBASE  HASUNTRUSTEDDATA  HOSTSTEP    HWAMD64  JADMIN       KERNELDEV 
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="545.914579">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="546.816681">[A</user_input>
   <system_output timestamp="546.83516">emacs -nw GRUBEFI</system_output>
@@ -627,7 +627,7 @@ grub-efi-amd64[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="603.514303">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="604.262998">c</user_input>
   <system_output timestamp="604.283045">c</system_output>
@@ -798,7 +798,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="609.285696">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="616.431469">s</user_input>
   <system_output timestamp="616.433532">s</system_output>
@@ -840,7 +840,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="619.712306">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="628.499593">s</user_input>
   <system_output timestamp="628.501651">s</system_output>
@@ -889,7 +889,7 @@ nothing added to commit but untracked files present (use &quot;git add&quot; to 
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="631.304161">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="632.296408">s</user_input>
   <system_output timestamp="632.303906">s</system_output>
@@ -1090,7 +1090,7 @@ nothing added to commit but untracked files present (use &quot;git add&quot; to 
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="660.268761">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="837.725746">c</user_input>
   <system_output timestamp="837.727906">c</system_output>
@@ -1181,7 +1181,7 @@ nothing added to commit but untracked files present (use &quot;git add&quot; to 
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="847.350476">[?2004h]0;demo@faiserver: /home/fai/config/scripts/GRUBEFIdemo@faiserver:/home/fai/config/scripts/GRUBEFI$ </system_output>
   <user_input timestamp="848.209149">c</user_input>
   <system_output timestamp="848.220636">c</system_output>
@@ -1253,7 +1253,7 @@ exit $error
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="853.078559">[?2004h]0;demo@faiserver: /home/fai/config/scripts/GRUBEFIdemo@faiserver:/home/fai/config/scripts/GRUBEFI$ </system_output>
   <user_input timestamp="854.092105">[A</user_input>
   <system_output timestamp="854.112528">sudo cat 10-setup</system_output>
@@ -1585,7 +1585,7 @@ $[33mROOTCMD[39;49m update-grub2[K[109;34H[7m10[0m[39;49m[27m[11;1H[?12l[?25h[?1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="895.99294">[?2004h]0;demo@faiserver: /home/fai/config/scripts/GRUBEFIdemo@faiserver:/home/fai/config/scripts/GRUBEFI$ </system_output>
   <user_input timestamp="897.860948">g</user_input>
   <system_output timestamp="897.870034">g</system_output>
@@ -1747,7 +1747,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="899.310119">[?2004h]0;demo@faiserver: /home/fai/config/scripts/GRUBEFIdemo@faiserver:/home/fai/config/scripts/GRUBEFI$ </system_output>
   <user_input timestamp="899.983706">s</user_input>
   <system_output timestamp="900.002362">s</system_output>
@@ -1804,7 +1804,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="902.310072">[?2004h]0;demo@faiserver: /home/fai/config/scripts/GRUBEFIdemo@faiserver:/home/fai/config/scripts/GRUBEFI$ </system_output>
   <user_input timestamp="1710.227611">c</user_input>
   <system_output timestamp="1710.229793">c</system_output>
@@ -1838,7 +1838,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1712.86277">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="1713.737607">[A</user_input>
   <system_output timestamp="1713.753574">cd ../../../</system_output>
@@ -1873,7 +1873,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1724.640533">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="1724.824951">umount: /home/fai/nfsroot/proc: not mounted.
@@ -3341,7 +3341,7 @@ Reading package lists...</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </system_output>
   <system_output timestamp="1874.744877">Building dependency tree...</system_output>
   <system_output timestamp="1875.050485">
@@ -15766,7 +15766,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2735.004923">Copying the config space to CD image
 </system_output>
   <system_output timestamp="2735.666917">Copying the mirror to CD image
@@ -15820,7 +15820,7 @@ sys	2m22.996s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2864.390763">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
 <annotation>
 </annotation>

@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1728666941">
-<event depth="-2">
+<event >
   <system_output timestamp="0.005869">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1.009575"/>
   <system_output timestamp="1.010139">
@@ -43,7 +43,7 @@ Last login: Fri Oct 11 15:50:13 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4.892773">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="6.815048">c</user_input>
   <system_output timestamp="6.817134">c</system_output>
@@ -159,7 +159,7 @@ Last login: Fri Oct 11 15:50:13 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="21.48722">
 </system_output>
   <system_output timestamp="23.8071">[?1049h[22;0;0t[?12;25h[?1h=</system_output>
@@ -433,7 +433,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="34.989752">[?25l2,sdz:missing
 				[?12l[?25h[?12;25h</system_output>
   <user_input timestamp="35.573682">OB</user_input>
@@ -444,7 +444,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="36.666175">[?25l3,sdz:missing
 				[?12l[?25h[?12;25h</system_output>
   <user_input timestamp="37.368558"/>
@@ -460,7 +460,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="38.694293">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="39.615988">s</user_input>
   <system_output timestamp="39.630866">s</system_output>
@@ -688,7 +688,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="66.915132">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="67.479209">[master 87f2d66] increment the partition numbers for boot and our VG, now that we have an EFI partition.
@@ -722,7 +722,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="70.44819">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="71.011994"/>
   <system_output timestamp="71.025578">
@@ -745,7 +745,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="72.772624">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="72.926169">umount: /home/fai/nfsroot/proc: not mounted.
@@ -2224,7 +2224,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="219.473792">Get:1 http://127.0.0.1:3142/ftp.de.debian.org/debian bookworm InRelease [151 kB]
 </system_output>
   <system_output timestamp="219.71558">Get:2 http://127.0.0.1:3142/ftp.de.debian.org/debian bookworm/main i386 Packages [8680 kB]
@@ -14634,7 +14634,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="989.945655">Mirror size and location: </system_output>
   <system_output timestamp="989.989713">1.5G	/usr/fai/mirror
 </system_output>
@@ -14693,7 +14693,7 @@ sys	2m22.869s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1228.307006">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="2248.452303">[A</user_input>
   <system_output timestamp="2248.454729">sudo bash -c 'time ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'</system_output>
@@ -14859,7 +14859,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2324.906263">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="2349.048849"/>
   <system_output timestamp="2349.049099">[?2004l

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1728658214">
-<event depth="-2">
+<event >
   <system_output timestamp="0.011347">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1.188367"/>
   <system_output timestamp="1.188743">
@@ -38,7 +38,7 @@ Last login: Fri Oct 11 11:45:03 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5.114993">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="27.81346">c</user_input>
   <system_output timestamp="27.815469">c</system_output>
@@ -120,7 +120,7 @@ Last login: Fri Oct 11 11:45:03 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="118.95159">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="120.529625">e</user_input>
   <system_output timestamp="120.531606">e</system_output>
@@ -769,7 +769,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="859.40563">[O</user_input>
   <user_input timestamp="859.445503">[I[O[I</user_input>
   <user_input timestamp="860.227257">[O[I[O[I</user_input>
@@ -1088,7 +1088,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2000.048413">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="2107.728962">g</user_input>
   <system_output timestamp="2107.73137">g</system_output>
@@ -1179,7 +1179,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2116.04211">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="2127.989359">s</user_input>
   <system_output timestamp="2127.991378">s</system_output>
@@ -1405,7 +1405,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2156.116379">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="2210.109303">c</user_input>
   <system_output timestamp="2210.111467">c</system_output>
@@ -1467,7 +1467,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2213.911464">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="2215.058165">c</user_input>
   <system_output timestamp="2215.074097">c</system_output>
@@ -1508,7 +1508,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2219.035857">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="2232.997887">e</user_input>
   <system_output timestamp="2232.999905">e</system_output>
@@ -1610,7 +1610,7 @@ save_dmesg     # save new b</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2236.641267">]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="2415.507683">l</user_input>
   <system_output timestamp="2415.509907">l</system_output>
@@ -1771,7 +1771,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2423.623211">[A</user_input>
   <system_output timestamp="2423.641435">cat 50-host-classes </system_output>
   <user_input timestamp="2424.826678">[D</user_input>
@@ -2880,7 +2880,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3294.224864">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="3295.185477">g</user_input>
   <system_output timestamp="3295.205565">g</system_output>
@@ -2978,7 +2978,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3300.070523">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="3302.255791">s</user_input>
   <system_output timestamp="3302.25777">s</system_output>
@@ -3262,7 +3262,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3342.31966">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="3344.89471">c</user_input>
   <system_output timestamp="3344.896814">c</system_output>
@@ -3302,7 +3302,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3348.157154">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="3348.767145"/>
   <system_output timestamp="3348.772417">
@@ -3319,7 +3319,7 @@ exit 0
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3350.50481">
 </user_input>
   <system_output timestamp="3350.520344">
@@ -4810,7 +4810,7 @@ Reading package lists...</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </system_output>
   <system_output timestamp="3500.607508">Building dependency tree...</system_output>
   <system_output timestamp="3500.8831">
@@ -17243,7 +17243,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4361.31276">Copying the config space to CD image
 </system_output>
   <system_output timestamp="4362.180607">Copying the mirror to CD image
@@ -17299,7 +17299,7 @@ sys	2m23.256s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4508.919244">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="4521.13907"/>
   <system_output timestamp="4521.141344">[?2004l
@@ -17313,7 +17313,7 @@ sys	2m23.256s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4521.331903">[?2004h</system_output>
   <system_output timestamp="4521.332101">demo@stephost:~$ </system_output>
   <user_input timestamp="4529.471726"/>
@@ -17478,7 +17478,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4603.70942">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="4648.788902"/>
   <system_output timestamp="4648.789346">[?2004l

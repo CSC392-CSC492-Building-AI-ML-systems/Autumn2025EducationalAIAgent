@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1728905558">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009033">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.508441">OA</user_input>
   <system_output timestamp="0.509064">ssh 172.16.0.17</system_output>
@@ -33,7 +33,7 @@ Last login: Sun Oct 13 22:01:13 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4.274755">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="5.299553">c</user_input>
   <system_output timestamp="5.300622">c</system_output>
@@ -128,7 +128,7 @@ FAIBASE  HOSTBOX           HWAMD64     KALLIDEV     OPENWRTDEV  SERVERCREATEVM  
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="13.372608">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="14.929773">m</user_input>
   <system_output timestamp="14.939371">m</system_output>
@@ -212,7 +212,7 @@ FAIBASE  HOSTBOX           HWAMD64     KALLIDEV     OPENWRTDEV  SERVERCREATEVM  
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="27.14957">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="37.4293">s</user_input>
   <system_output timestamp="37.431288">s</system_output>
@@ -435,7 +435,7 @@ FAIBASE  HOSTBOX           HWAMD64     KALLIDEV     OPENWRTDEV  SERVERCREATEVM  
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="79.453795">]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="81.830235">c</user_input>
   <system_output timestamp="81.832094">c</system_output>
@@ -867,7 +867,7 @@ Changes not staged for commit:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="119.850072">]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="121.148408">c</user_input>
   <system_output timestamp="121.164125">c</system_output>
@@ -907,7 +907,7 @@ Changes not staged for commit:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="124.325981">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="125.088535"/>
   <system_output timestamp="125.10426">
@@ -927,7 +927,7 @@ Changes not staged for commit:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="126.533552">
 </user_input>
   <system_output timestamp="126.553169">
@@ -951,7 +951,7 @@ Changes not staged for commit:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="127.636924">I: Retrieving InRelease 
 </system_output>
   <system_output timestamp="128.083517">I: Checking Release signature
@@ -2403,7 +2403,7 @@ Changes not staged for commit:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="265.150298">I: Base system installed successfully.
 </system_output>
   <system_output timestamp="265.588906">Creating base.tar.xz
@@ -2790,7 +2790,7 @@ Reading state information...
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="281.247705">nfs-common fai-nfsroot rpcbind rsync lshw procinfo dump dosfstools hwinfo hdparm smartmontools nvme-cli numactl udns-utils netcat-traditional nmap ca-certificates usbutils pciutils ssh netselect mdadm cryptsetup dracut live-boot- initramfs-tools- dracut-config-generic dracut-network sysvinit-core initscripts curl lftp less ntpsec-ntpdate rdate lvm2 psmisc dialog console-common xz-utils aptitude discover dmidecode dump e2fsprogs iproute2 isc-dhcp-client mdetect bzip2 emacs-nox strace dmraid dmsetup gddrescue bc firmware-linux-free read-edid grub-pc efibootmgr linux-image-686-pae grub-efi-amd64-bin 
 </system_output>
   <system_output timestamp="281.26877">install_packages: reading config files from directory /etc/fai
@@ -14811,7 +14811,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1027.418116">Mirror size and location: </system_output>
   <system_output timestamp="1027.459193">1.5G	/usr/fai/mirror
 </system_output>
@@ -14870,7 +14870,7 @@ sys	2m18.392s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1255.012571">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="3635.51235"/>
   <system_output timestamp="3635.514542">[?2004l
@@ -15034,7 +15034,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3719.5662">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="8459.257234"/>
   <system_output timestamp="8459.257589">[?2004l

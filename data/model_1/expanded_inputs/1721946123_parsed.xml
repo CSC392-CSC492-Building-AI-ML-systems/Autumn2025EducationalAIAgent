@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1721946123">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006768">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.800234"/>
   <system_output timestamp="0.80052">
@@ -223,7 +223,7 @@ demo@faiserver:~$]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="69.243599"/>
   <user_input timestamp="69.666125">1</user_input>
   <system_output timestamp="69.668977">]0;]0;screen[?2004l[H[2J]2;screenNeed to get 219 kB/2,943 kB of archives. After unpacking 13.0 MB will be used.
@@ -397,7 +397,7 @@ demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="70.74193">2</user_input>
   <system_output timestamp="70.744532">]0;]0;screen[?2004l[H[2J]2;screen[32m[    0.916645] [39mio scheduler mq-deadline registered
 [32m[    0.919042] [33mshpchp: [39mStandard Hot Plug PCI Controller Driver version: 0.4
@@ -605,7 +605,7 @@ demo@faiserver:~$]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="77.752926">1</user_input>
   <system_output timestamp="77.755669">]0;]0;screen[?2004l[H[2J]2;screenNeed to get 219 kB/2,943 kB of archives. After unpacking 13.0 MB will be used.
 Writing extended state information...
@@ -784,7 +784,7 @@ demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="80.361124">0</user_input>
   <system_output timestamp="80.361911">]0;[?2004l[H[2J]2;screen[7mFile Edit Options Buffers Tools Help                                                                                                                                                                                                           
 [27mPACKAGES aptitude
@@ -816,7 +816,7 @@ xauth
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="82.528428">OB</user_input>
   <system_output timestamp="82.530017">
 [1@demo@faiserver:/home/fai$ scpdpkg -l | less[K</system_output>
@@ -841,7 +841,7 @@ demo@faiserver:/home/fai$ [K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1870.805828">1</user_input>
   <system_output timestamp="1870.808649">]0;screen[?2004l[H[2J]2;screenNeed to get 219 kB/2,943 kB of archives. After unpacking 13.0 MB will be used.
 Writing extended state information...
@@ -1016,7 +1016,7 @@ demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1871.781498">2</user_input>
   <system_output timestamp="1871.784232">]0;]0;screen[?2004l[H[2J]2;screen[32m[    0.916645] [39mio scheduler mq-deadline registered
 [32m[    0.919042] [33mshpchp: [39mStandard Hot Plug PCI Controller Driver version: 0.4
@@ -1223,7 +1223,7 @@ demo@faiserver:~$]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1873.795558">0</user_input>
   <system_output timestamp="1873.796373">]0;[?2004l[H[2J]2;screen[7mFile Edit Options Buffers Tools Help                                                                                                                                                                                                           
 [27mPACKAGES aptitude
@@ -1256,7 +1256,7 @@ xauth
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1877.039296">g</user_input>
   <system_output timestamp="1877.040508">g</system_output>
   <user_input timestamp="1877.178257">i</user_input>
@@ -1329,7 +1329,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1900.531341">l</user_input>
   <system_output timestamp="1900.532713">l</system_output>
   <user_input timestamp="1900.830729">s</user_input>
@@ -1364,7 +1364,7 @@ dr-xr-xr-x 32 root root 4096 Apr 26  2017 [1m[34mscripts[0m
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1910.091112">c</user_input>
   <system_output timestamp="1910.092336">c</system_output>
   <user_input timestamp="1912.066053"></user_input>
@@ -1513,7 +1513,7 @@ The key's randomart image is:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2264.505635">s</user_input>
   <system_output timestamp="2264.5069">s</system_output>
   <user_input timestamp="2264.656882">u</user_input>

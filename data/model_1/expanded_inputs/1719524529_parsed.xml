@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="212" height="59" timestamp="1719524530">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009324">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.595493">[A</user_input>
   <system_output timestamp="0.596001">asciinema rec `date +%s`.rec --stdin</system_output>
@@ -89,7 +89,7 @@ demo@faiserver:/home/fai/config$ git commit -m </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9.070577">'</user_input>
   <system_output timestamp="9.072963">'</system_output>
   <user_input timestamp="10.720271">l</user_input>
@@ -212,7 +212,7 @@ demo@faiserver:/home/fai/config$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="30.693452">OA</user_input>
   <system_output timestamp="30.715911">sudo git commit -m 'libgnutls30-dev is not in debian 9.'</system_output>
   <user_input timestamp="30.890955">OA</user_input>
@@ -760,7 +760,7 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1325.822228">q</user_input>
   <system_output timestamp="1325.824706">
 [K</system_output>
@@ -768,7 +768,7 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1326.244128">g</user_input>
   <system_output timestamp="1326.261898">g</system_output>
   <user_input timestamp="1326.404758">i</user_input>
@@ -840,7 +840,7 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1337.664634">OA</user_input>
   <system_output timestamp="1337.666923">sudo git add package_config/SERVERNTOP </system_output>
   <user_input timestamp="1337.807897">u</user_input>
@@ -991,7 +991,7 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1359.030432">g</user_input>
   <system_output timestamp="1359.032976">g</system_output>
   <user_input timestamp="1359.28454">i</user_input>

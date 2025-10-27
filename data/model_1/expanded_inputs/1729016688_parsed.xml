@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1729016688">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009683">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="12.23813"/>
   <system_output timestamp="12.238714">
@@ -39,7 +39,7 @@ Last login: Tue Oct 15 18:49:51 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="138.682618">c</user_input>
   <system_output timestamp="138.684726">c</system_output>
   <user_input timestamp="138.901209">d</user_input>
@@ -141,7 +141,7 @@ Last login: Tue Oct 15 18:49:51 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="151.180224">c</user_input>
   <system_output timestamp="151.201967">c</system_output>
   <user_input timestamp="151.29854">a</user_input>
@@ -203,7 +203,7 @@ fi</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="230.787848">g</user_input>
   <system_output timestamp="230.789943">g</system_output>
   <user_input timestamp="230.910658">i</user_input>
@@ -271,7 +271,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="241.133161">s</user_input>
   <system_output timestamp="241.145135">s</system_output>
   <user_input timestamp="241.280573">u</user_input>
@@ -495,7 +495,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="333.725324">c</user_input>
   <system_output timestamp="333.727384">c</system_output>
   <user_input timestamp="333.947424">d</user_input>
@@ -609,7 +609,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="353.029418">c</user_input>
   <system_output timestamp="353.036132">c</system_output>
   <user_input timestamp="353.172291">a</user_input>
@@ -648,7 +648,7 @@ deb http://security.debian.org/ stable/updates main</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="358.108142">g</user_input>
   <system_output timestamp="358.110465">g</system_output>
   <user_input timestamp="358.267362">i</user_input>
@@ -792,7 +792,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="387.730851">c</user_input>
   <system_output timestamp="387.73912">c</system_output>
   <user_input timestamp="387.848327">a</user_input>
@@ -828,7 +828,7 @@ deb http://security.debian.org/ stable/updates main</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="410.741023">OA</user_input>
   <system_output timestamp="410.743168">cat QEMUCLIENT </system_output>
   <user_input timestamp="411.690591">OB</user_input>
@@ -903,7 +903,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="624.69699">g</user_input>
   <system_output timestamp="624.699113">g</system_output>
   <user_input timestamp="624.866268">i</user_input>
@@ -1807,7 +1807,7 @@ deb http://security.debian.org/debian-security stable-security main[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1035.465269">s</user_input>
   <system_output timestamp="1035.468233">s</system_output>
   <user_input timestamp="1035.645817">u</user_input>
@@ -1875,7 +1875,7 @@ deb http://security.debian.org/debian-security stable-security main[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1046.778367">s</user_input>
   <system_output timestamp="1046.780377">s</system_output>
   <user_input timestamp="1046.861496">u</user_input>
@@ -2075,7 +2075,7 @@ Reading state information... Done
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1145.890314">s</user_input>
   <system_output timestamp="1145.89308">s</system_output>
   <user_input timestamp="1146.031814">u</user_input>
@@ -2212,7 +2212,7 @@ Reading state information... Done
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1237.538488">s</user_input>
   <system_output timestamp="1237.540706">s</system_output>
   <user_input timestamp="1237.676362">u</user_input>
@@ -2612,7 +2612,7 @@ deb http://security.debian.org/debian-security stable-security main[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1592.237432">s</user_input>
   <system_output timestamp="1592.258081">s</system_output>
   <user_input timestamp="1593.039905"></user_input>
@@ -2918,7 +2918,7 @@ Reading state information... Done
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1668.651603">s</user_input>
   <system_output timestamp="1668.65365">s</system_output>
   <user_input timestamp="1668.839982">u</user_input>
@@ -2983,7 +2983,7 @@ Reading state information... Done
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1674.71825">s</user_input>
   <system_output timestamp="1674.720421">s</system_output>
   <user_input timestamp="1674.860371">u</user_input>
@@ -3311,7 +3311,7 @@ Reading state information... Done
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1948.649426">c</user_input>
   <system_output timestamp="1948.651461">c</system_output>
   <user_input timestamp="1948.854424">d</user_input>
@@ -17318,7 +17318,7 @@ sys	2m21.677s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3796.001924"/>
   <system_output timestamp="3796.004318">[?2004l
 
@@ -17331,7 +17331,7 @@ logout
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3798.103792"/>
   <system_output timestamp="3798.104528">
 (reverse-i-search)`': </system_output>
@@ -17487,7 +17487,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="4148.27386">l</user_input>
   <system_output timestamp="4148.274226">l</system_output>
   <user_input timestamp="4148.688714">s</user_input>
@@ -17579,7 +17579,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="4166.95222">r</user_input>
   <system_output timestamp="4166.952927">r</system_output>
   <user_input timestamp="4167.239856">m</user_input>
@@ -17892,7 +17892,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="4250.165372">[A</user_input>
   <system_output timestamp="4250.165883">rm /disk1/isos/fai_dvd-20240725-2.iso </system_output>
   <user_input timestamp="4250.382508">[A</user_input>
@@ -18049,7 +18049,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6019.801361"/>
   <system_output timestamp="6019.80183">[?2004l
 

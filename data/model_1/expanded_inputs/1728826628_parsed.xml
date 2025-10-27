@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1728826628">
-<event depth="-2">
+<event >
   <system_output timestamp="0.008512">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.990233"/>
   <system_output timestamp="0.990657">
@@ -39,7 +39,7 @@ Last login: Sat Oct 12 21:02:25 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="13.735874">c</user_input>
   <system_output timestamp="13.738154">c</system_output>
   <user_input timestamp="13.956592">d</user_input>
@@ -95,7 +95,7 @@ Last login: Sat Oct 12 21:02:25 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="23.791253">c</user_input>
   <system_output timestamp="23.793372">c</system_output>
   <user_input timestamp="23.990253">d</user_input>
@@ -163,7 +163,7 @@ GRUBEFI~:grub-efi-amd64
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="34.303704">e</user_input>
   <system_output timestamp="34.305757">e</system_output>
   <user_input timestamp="34.482955">m</user_input>
@@ -1315,7 +1315,7 @@ grub-pc[98;6H[7m**--F1  [0m[39;49m[27m[7m[1mGRUB        [0m[39;49m[27m[7m   All 
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1292.981831">g</user_input>
   <system_output timestamp="1293.003641">g</system_output>
   <user_input timestamp="1293.060477">i</user_input>
@@ -1591,7 +1591,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1303.957324">s</user_input>
   <system_output timestamp="1303.967551">s</system_output>
   <user_input timestamp="1304.056451">u</user_input>
@@ -1996,7 +1996,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1367.583924">g</user_input>
   <system_output timestamp="1367.600986">g</system_output>
   <user_input timestamp="1367.685809">i</user_input>
@@ -2054,7 +2054,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1372.491498">s</user_input>
   <system_output timestamp="1372.492766">s</system_output>
   <user_input timestamp="1372.610546">u</user_input>
@@ -2262,7 +2262,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1401.821779">c</user_input>
   <system_output timestamp="1401.842167">c</system_output>
   <user_input timestamp="1401.98362">d</user_input>
@@ -16279,7 +16279,7 @@ sys	2m21.991s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2587.142664"/>
   <system_output timestamp="2587.144192">[?2004l
 
@@ -16294,7 +16294,7 @@ sys	2m21.991s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2588.395951"/>
   <system_output timestamp="2588.396341">
 (reverse-i-search)`': </system_output>
@@ -16452,7 +16452,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2677.072629"/>
   <system_output timestamp="2677.073041">[?2004l
 

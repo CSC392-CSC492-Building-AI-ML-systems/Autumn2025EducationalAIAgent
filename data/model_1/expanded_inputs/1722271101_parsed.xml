@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1722271102">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006284">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.502842"/>
   <system_output timestamp="0.503152">
@@ -194,7 +194,7 @@ demo@faiserver:/home/fai$[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="22.786599">d</user_input>
   <system_output timestamp="22.788123">d</system_output>
   <user_input timestamp="22.925551">e</user_input>
@@ -653,7 +653,7 @@ demo@faiserver:/home/fai$[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="25.882441">
 [?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="26.620776"> </user_input>
@@ -733,7 +733,7 @@ demo@faiserver:/home/fai$ debsums[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="91.082263">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="812.088464">d</user_input>
   <system_output timestamp="812.089728">d</system_output>
@@ -796,7 +796,7 @@ demo@faiserver:/home/fai$ debsums[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="821.101197">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="823.512588">c</user_input>
   <system_output timestamp="823.526646">c</system_output>
@@ -933,7 +933,7 @@ demo@faiserver:/home/fai$ sudo cp /usr/sbin/fai-c</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2753.510545">
 </user_input>
   <system_output timestamp="2753.531754">
@@ -1180,7 +1180,7 @@ for faster access to a package repository.
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2785.462997">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="3958.225295">d</user_input>
   <system_output timestamp="3958.226715">d</system_output>
@@ -1286,7 +1286,7 @@ for faster access to a package repository.
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3975.442188">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="4944.131468">OA</user_input>
   <system_output timestamp="4944.132794">diff /usr/sbin/fai-cd /usr/sbin/fai-cd.modified </system_output>
@@ -1354,7 +1354,7 @@ demo@faiserver:/home/fai$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="5534.429777">s</user_input>
   <system_output timestamp="5534.43114">s</system_output>
   <user_input timestamp="5534.554972">u</user_input>
@@ -1413,7 +1413,7 @@ demo@faiserver:/home/fai$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </system_output>
   <system_output timestamp="5542.260054">[sudo] password for demo: </system_output>
   <user_input timestamp="5544.015428">f</user_input>
@@ -4850,7 +4850,7 @@ die $[33me[39m[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="8623.382125">s</user_input>
   <system_output timestamp="8623.387694">s</system_output>
   <user_input timestamp="8623.467436">u</user_input>
@@ -4908,7 +4908,7 @@ die $[33me[39m[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="8639.541877">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="8640.983885"/>
   <system_output timestamp="8640.989823">
@@ -5024,7 +5024,7 @@ for faster access to a package repository.
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="8648.469172">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="8649.23023"/>
   <system_output timestamp="8649.231599">
@@ -5079,7 +5079,7 @@ demo@faiserver:/home/fai$ diff
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="8652.868611">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="8662.302568">OA</user_input>
   <system_output timestamp="8662.303877">diff -u /usr/sbin/fai-cd /usr/sbin/fai-cd.modified </system_output>

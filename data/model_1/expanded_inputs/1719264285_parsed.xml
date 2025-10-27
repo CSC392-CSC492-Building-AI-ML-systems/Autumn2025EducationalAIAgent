@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="212" height="59" timestamp="1719264286">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009616">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="2.369902"/>
   <system_output timestamp="2.370383">
@@ -86,7 +86,7 @@ ii  libkrb5support0:i386[13C1.15-1+deb9u1[21Ci386[9CMIT Kerberos runtime librari
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="8.45968">0</user_input>
   <system_output timestamp="8.460239">[7mThis IS window 0 (bash).[27m  </system_output>
   <user_input timestamp="9.371535"/>
@@ -534,14 +534,14 @@ ii  libkrb5support0:i386[13C1.15-1+deb9u1[21Ci386[9CMIT Kerberos runtime librari
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="39.014894">q</user_input>
   <system_output timestamp="39.017612">[K</system_output>
   <system_output timestamp="39.018432">demo@faiserver:~$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="39.950857">s</user_input>
   <system_output timestamp="39.96534">s</system_output>
   <user_input timestamp="40.055208">u</user_input>
@@ -793,7 +793,7 @@ Do you want to continue? [Y/n] </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="60.285293">s</user_input>
   <system_output timestamp="60.291346">s</system_output>
   <user_input timestamp="60.420983">u</user_input>
@@ -832,7 +832,7 @@ Do you want to continue? [Y/n] </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="64.43915">OA</user_input>
   <system_output timestamp="64.452115">sudo deborphan</system_output>
   <user_input timestamp="64.656207">OA</user_input>
@@ -1783,7 +1783,7 @@ ii  libpopt0:i386[20C1.16-10+b2[24Ci386[9Clib for parsing cmdline parameters
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="78.698613">0</user_input>
   <system_output timestamp="78.702289">]0;[H[2J]2;screenii  libldap-2.4-2:i386[15C2.4.44+dfsg-5+deb9u4[14Ci386[9COpenLDAP libraries
 ii  libldap-common[19C2.4.44+dfsg-5+deb9u4[14Call[10COpenLDAP common files for libraries
@@ -1850,14 +1850,14 @@ ii  libpangoft2-1.0-0:i386[11C1.40.5-1[26Ci386[9CLayout and rendering of interna
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="99.621215">q</user_input>
   <system_output timestamp="99.623945">[K</system_output>
   <system_output timestamp="99.624764">demo@faiserver:~$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="100.472349">s</user_input>
   <system_output timestamp="100.492117">s</system_output>
   <user_input timestamp="100.641403">u</user_input>
@@ -1994,7 +1994,7 @@ Do you want to continue? [Y/n] </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="266.973476">OA</user_input>
   <system_output timestamp="266.976028">sudo apt remove liblink-grammar4 liblink-grammar4-dev</system_output>
   <user_input timestamp="267.732898">OA</user_input>

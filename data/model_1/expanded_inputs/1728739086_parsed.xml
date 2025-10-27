@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1728739086">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009237">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.998729"/>
   <system_output timestamp="0.999336">
@@ -38,7 +38,7 @@ Last login: Fri Oct 11 20:35:35 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5.888121">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="9.315835">c</user_input>
   <system_output timestamp="9.317902">c</system_output>
@@ -110,7 +110,7 @@ Last login: Fri Oct 11 20:35:35 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="17.866755">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="18.371069">g</user_input>
   <system_output timestamp="18.39085">g</system_output>
@@ -169,7 +169,7 @@ Last login: Fri Oct 11 20:35:35 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="27.093525">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="31.356979">e</user_input>
   <system_output timestamp="31.359294">e</system_output>
@@ -581,7 +581,7 @@ h
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="61.511655">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="151.378218">s</user_input>
   <system_output timestamp="151.380233">s</system_output>
@@ -637,7 +637,7 @@ h
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="153.681264">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="154.573385">g</user_input>
   <system_output timestamp="154.593712">g</system_output>
@@ -839,7 +839,7 @@ h
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="182.473111">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
   <user_input timestamp="405.505819">c</user_input>
   <system_output timestamp="405.507983">c</system_output>
@@ -1008,7 +1008,7 @@ fi
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="431.252198">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
   <user_input timestamp="500.586799">[A</user_input>
   <system_output timestamp="500.58898">cat 40-misc.sh </system_output>
@@ -1769,7 +1769,7 @@ $[33mROOTCMD[39;49m chmod 1777 /tmp[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="556.280463">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
   <user_input timestamp="596.531749">s</user_input>
   <system_output timestamp="596.533668">s</system_output>
@@ -1941,7 +1941,7 @@ $[33mROOTCMD[39;49m chmod 1777 /tmp[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="617.810546">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
   <user_input timestamp="628.277956">c</user_input>
   <system_output timestamp="628.279905">c</system_output>
@@ -2005,7 +2005,7 @@ $[33mROOTCMD[39;49m chmod 1777 /tmp[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="635.83766">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDHCPdemo@faiserver:/home/fai/config/scripts/SERVERDHCP$ </system_output>
   <user_input timestamp="636.729566">c</user_input>
   <system_output timestamp="636.745693">c</system_output>
@@ -2030,7 +2030,7 @@ fcopy -Bv /etc/dhcp/dhcpd.conf
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="638.001261">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDHCPdemo@faiserver:/home/fai/config/scripts/SERVERDHCP$ </system_output>
   <user_input timestamp="640.747567">l</user_input>
   <system_output timestamp="640.74961">l</system_output>
@@ -2095,7 +2095,7 @@ fcopy -Bv /etc/dhcp/dhcpd.conf
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="650.967109">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDHCPdemo@faiserver:/home/fai/config/scripts/SERVERDHCP$ </system_output>
   <user_input timestamp="690.113689">c</user_input>
   <system_output timestamp="690.11657">c</system_output>
@@ -2316,7 +2316,7 @@ host mechelle {
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="701.014362">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDHCPdemo@faiserver:/home/fai/config/scripts/SERVERDHCP$ </system_output>
   <user_input timestamp="723.159319">[A</user_input>
   <system_output timestamp="723.161753">cat ../../files/etc/dhcp/dhcpd.conf/QEMUSRVR </system_output>
@@ -2459,7 +2459,7 @@ host mechelle {
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="902.077825">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDHCPdemo@faiserver:/home/fai/config/scripts/SERVERDHCP$ </system_output>
   <user_input timestamp="902.338233">[A</user_input>
   <system_output timestamp="902.356383">cat ../../files/etc/dhcp/dhcpd.conf/QEMUSRVR  | less</system_output>
@@ -2631,7 +2631,7 @@ host mechelle {
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="914.842822">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDHCPdemo@faiserver:/home/fai/config/scripts/SERVERDHCP$ </system_output>
   <user_input timestamp="926.751918">l</user_input>
   <system_output timestamp="926.75396">l</system_output>
@@ -2687,7 +2687,7 @@ host mechelle {
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="940.468145">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDHCPdemo@faiserver:/home/fai/config/scripts/SERVERDHCP$ </system_output>
   <user_input timestamp="941.555008">c</user_input>
   <system_output timestamp="941.560944">c</system_output>
@@ -2826,7 +2826,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="965.101385">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
   <user_input timestamp="967.538214">s</user_input>
   <system_output timestamp="967.539384">s</system_output>
@@ -3024,7 +3024,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="988.513154">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
   <user_input timestamp="1002.558475">c</user_input>
   <system_output timestamp="1002.560611">c</system_output>
@@ -3084,7 +3084,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1009.236053">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDNSdemo@faiserver:/home/fai/config/scripts/SERVERDNS$ </system_output>
   <user_input timestamp="1010.814219">c</user_input>
   <system_output timestamp="1010.827233">c</system_output>
@@ -3126,7 +3126,7 @@ fcopy /var/cache/bind/named.ca
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1012.251048">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDNSdemo@faiserver:/home/fai/config/scripts/SERVERDNS$ </system_output>
   <user_input timestamp="1128.28028">g</user_input>
   <system_output timestamp="1128.28238">g</system_output>
@@ -3287,7 +3287,7 @@ SERVERMAILSHL/00-create_exim_passwd_file.sh:function die () { echo &quot;$@&quot
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1139.408381">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
   <user_input timestamp="1151.792377">h</user_input>
   <system_output timestamp="1151.794381">h</system_output>
@@ -3341,7 +3341,7 @@ SERVERMAILSHL/00-create_exim_passwd_file.sh:function die () { echo &quot;$@&quot
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1157.786799">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
   <user_input timestamp="1262.404503">l</user_input>
   <system_output timestamp="1262.40652">l</system_output>
@@ -3435,7 +3435,7 @@ SERVERMAILSHL/00-create_exim_passwd_file.sh:function die () { echo &quot;$@&quot
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1277.254889">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDNSdemo@faiserver:/home/fai/config/scripts/SERVERDNS$ </system_output>
   <user_input timestamp="1279.396601">s</user_input>
   <system_output timestamp="1279.413704">s</system_output>
@@ -3722,7 +3722,7 @@ fcopy /var/cache/bind/named.ca[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1306.757501">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDNSdemo@faiserver:/home/fai/config/scripts/SERVERDNS$ </system_output>
   <user_input timestamp="1309.108334">g</user_input>
   <system_output timestamp="1309.11036">g</system_output>
@@ -3784,7 +3784,7 @@ fcopy /var/cache/bind/named.ca[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1312.663646">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDNSdemo@faiserver:/home/fai/config/scripts/SERVERDNS$ </system_output>
   <user_input timestamp="1313.439377">s</user_input>
   <system_output timestamp="1313.45523">s</system_output>
@@ -3988,7 +3988,7 @@ fcopy /var/cache/bind/named.ca[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1336.541207">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERDNSdemo@faiserver:/home/fai/config/scripts/SERVERDNS$ </system_output>
   <user_input timestamp="1816.431938">c</user_input>
   <system_output timestamp="1816.434002">c</system_output>
@@ -4056,7 +4056,7 @@ fcopy /var/cache/bind/named.ca[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1823.328194">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERWWWMRTGdemo@faiserver:/home/fai/config/scripts/SERVERWWWMRTG$ </system_output>
   <user_input timestamp="1824.68582">l</user_input>
   <system_output timestamp="1824.687851">l</system_output>
@@ -4106,7 +4106,7 @@ $ROOTCMD bash -c &quot;su nfrg -c \&quot;mkdir -p /etc/mrtg/hosts-enabled/\&quot
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1838.805836">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERWWWMRTGdemo@faiserver:/home/fai/config/scripts/SERVERWWWMRTG$ </system_output>
   <user_input timestamp="1838.964385">q</user_input>
   <system_output timestamp="1838.966607">q</system_output>
@@ -4436,7 +4436,7 @@ $[33mROOTCMD[39;49m bash -c [32m&quot;su nfrg -c \&quot;mkdir -p /etc/mrtg/hosts
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1895.532978">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERWWWMRTGdemo@faiserver:/home/fai/config/scripts/SERVERWWWMRTG$ </system_output>
   <user_input timestamp="1896.060471">g</user_input>
   <system_output timestamp="1896.076266">g</system_output>
@@ -4599,7 +4599,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1898.862638">s</user_input>
   <system_output timestamp="1898.878728">s</system_output>
   <user_input timestamp="1898.979089">u</user_input>
@@ -4654,7 +4654,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1900.906767">]0;demo@faiserver: /home/fai/config/scripts/SERVERWWWMRTGdemo@faiserver:/home/fai/config/scripts/SERVERWWWMRTG$ </system_output>
   <user_input timestamp="1901.971168">s</user_input>
   <system_output timestamp="1901.973306">s</system_output>
@@ -4983,7 +4983,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1971.50549">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERWWWMRTGdemo@faiserver:/home/fai/config/scripts/SERVERWWWMRTG$ </system_output>
   <user_input timestamp="1978.27793">e</user_input>
   <system_output timestamp="1978.279932">e</system_output>
@@ -5257,7 +5257,7 @@ $[33mROOTCMD[39;49m a2dismod authz_groupfile[K[109;38H[7m4[0m[39;49m[27m[5;1H[?1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2001.565963">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERWWWMRTGdemo@faiserver:/home/fai/config/scripts/SERVERWWWMRTG$ </system_output>
   <user_input timestamp="2002.303847">g</user_input>
   <system_output timestamp="2002.309395">g</system_output>
@@ -5467,7 +5467,7 @@ $[33mROOTCMD[39;49m a2dismod authz_groupfile[K[109;38H[7m4[0m[39;49m[27m[5;1H[?1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2312.076954">[?2004h]0;demo@faiserver: /home/fai/config/scripts/SERVERWWWMRTGdemo@faiserver:/home/fai/config/scripts/SERVERWWWMRTG$ </system_output>
   <user_input timestamp="2318.798187">c</user_input>
   <system_output timestamp="2318.800156">c</system_output>
@@ -5501,7 +5501,7 @@ $[33mROOTCMD[39;49m a2dismod authz_groupfile[K[109;38H[7m4[0m[39;49m[27m[5;1H[?1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2321.210164">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="2392.849313"/>
   <system_output timestamp="2392.851355">
@@ -5517,7 +5517,7 @@ $[33mROOTCMD[39;49m a2dismod authz_groupfile[K[109;38H[7m4[0m[39;49m[27m[5;1H[?1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2395.78543">
 </user_input>
   <system_output timestamp="2395.792429">
@@ -7010,7 +7010,7 @@ Reading package lists...</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </system_output>
   <system_output timestamp="2545.585424">Building dependency tree...</system_output>
   <system_output timestamp="2545.86056">
@@ -19520,7 +19520,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3416.08494">Copying the config space to CD image
 </system_output>
   <system_output timestamp="3416.894639">Copying the mirror to CD image
@@ -19578,7 +19578,7 @@ sys	2m24.828s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3560.660696">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="4103.424875">[A</user_input>
   <system_output timestamp="4103.42692">sudo bash -c 'time ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'</system_output>
@@ -19597,7 +19597,7 @@ sys	2m24.828s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4130.529211">[?2004h</system_output>
   <system_output timestamp="4130.529427">demo@stephost:~$ </system_output>
   <user_input timestamp="4133.130816"/>
@@ -19707,7 +19707,7 @@ demo@stephost:~$ rm /disk1/isos/fai_dvd-2024</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4167.193807">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="4172.443394"/>
   <system_output timestamp="4172.44401">
@@ -19852,7 +19852,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4250.247978">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="4253.590483"/>
   <system_output timestamp="4253.590716">[?2004l

@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1728755144">
-<event depth="-2">
+<event >
   <system_output timestamp="0.008228">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="3.529753">[A</user_input>
   <system_output timestamp="3.530297">asciinema rec `date +%s`.rec --stdin</system_output>
@@ -46,7 +46,7 @@ Last login: Sat Oct 12 14:18:03 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="13.338929">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="13.951283">[A</user_input>
   <system_output timestamp="13.953752">sudo bash -c 'time ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'</system_output>
@@ -199,7 +199,7 @@ Last login: Sat Oct 12 14:18:03 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="73.332899">[?1049h[22;0;0t[?12;25h[?1h=</system_output>
   <system_output timestamp="73.665998">[H[2J[110d[K[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 [?1049h[22;0;0t[?12;25h[?1h=</system_output>
@@ -540,7 +540,7 @@ Last login: Sat Oct 12 14:18:03 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="90.133855">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="90.664058">g</user_input>
   <system_output timestamp="90.66697">g</system_output>
@@ -702,7 +702,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="92.12424">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="94.56272">s</user_input>
   <system_output timestamp="94.564821">s</system_output>
@@ -758,7 +758,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="97.110316">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="97.795275">s</user_input>
   <system_output timestamp="97.816334">s</system_output>
@@ -856,7 +856,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="111.602501">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="130.589345">c</user_input>
   <system_output timestamp="130.591368">c</system_output>
@@ -878,7 +878,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="132.943216">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="133.532787"/>
   <system_output timestamp="133.546101">
@@ -901,7 +901,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="135.853689">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="135.884714">umount: /home/fai/nfsroot/proc: not mounted.
@@ -2386,7 +2386,7 @@ Reading package lists...</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 Building dependency tree...
 The following additional packages will be installed:
   debconf-utils dracut-core fai-client fai-setup-storage file iputils-arping
@@ -14861,7 +14861,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1158.26676">Copying the config space to CD image
 </system_output>
   <system_output timestamp="1158.796477">Copying the mirror to CD image
@@ -14918,7 +14918,7 @@ sys	2m23.678s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1308.073428">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="1408.836573"/>
   <system_output timestamp="1408.838658">[?2004l
@@ -14932,7 +14932,7 @@ sys	2m23.678s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1409.048053">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1409.395925">[A</user_input>
   <system_output timestamp="1409.396216">ssh 172.16.0.17</system_output>
@@ -15098,7 +15098,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1487.944874">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="2069.550787"/>
   <system_output timestamp="2069.551224">[?2004l

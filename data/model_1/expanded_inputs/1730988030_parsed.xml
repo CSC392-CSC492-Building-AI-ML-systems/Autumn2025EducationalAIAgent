@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1730988030">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009462">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="3.724039"/>
   <system_output timestamp="3.724742">
@@ -41,7 +41,7 @@ Last login: Thu Nov  7 14:00:26 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6.901771">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="8.047723">c</user_input>
   <system_output timestamp="8.049776">c</system_output>
@@ -137,7 +137,7 @@ Last login: Thu Nov  7 14:00:26 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="17.035551">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="18.499021">g</user_input>
   <system_output timestamp="18.501626">g</system_output>
@@ -228,7 +228,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="113.34229">[?2004h</system_output>
   <system_output timestamp="113.342657">]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="126.205919">s</user_input>
@@ -269,7 +269,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="132.604877">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="134.422381">s</user_input>
   <system_output timestamp="134.441336">s</system_output>
@@ -974,7 +974,7 @@ Warning (comp): debian-el.el:90:26: Warning: reference to free variable ‘dired
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="414.819185">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="442.923989">[A</user_input>
   <system_output timestamp="442.926095">sudo emacs GRUB</system_output>
@@ -1024,7 +1024,7 @@ Warning (comp): debian-el.el:90:26: Warning: reference to free variable ‘dired
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="451.397843">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="452.172664"/>
   <system_output timestamp="452.179036">
@@ -1047,7 +1047,7 @@ Warning (comp): debian-el.el:90:26: Warning: reference to free variable ‘dired
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="454.718302">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="454.975568">umount: /home/fai/nfsroot/proc: not mounted.
@@ -2521,7 +2521,7 @@ Reading package lists...</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="604.715892">Reading package lists...
 Building dependency tree...
 The following additional packages will be installed:
@@ -14823,7 +14823,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1418.678409">Mirror size and location: </system_output>
   <system_output timestamp="1418.78257">1.5G	/usr/fai/mirror
 </system_output>
@@ -14887,7 +14887,7 @@ sys	2m14.099s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1692.842897">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="1708.771325"/>
   <system_output timestamp="1708.773484">
@@ -15083,7 +15083,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1812.333876">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="6681.286428">[A</user_input>
   <system_output timestamp="6681.28684">scp 172.16.0.17:/home/fai/fai_cd.iso /disk1/isos/fai_dvd-`date +%Y%m%d`.iso</system_output>
@@ -15115,7 +15115,7 @@ Last login: Thu Nov  7 14:00:36 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6687.682377">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="6687.847521">c</user_input>
   <system_output timestamp="6687.849468">c</system_output>
@@ -15300,7 +15300,7 @@ Untracked files:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7632.994804">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="7633.717693">s</user_input>
   <system_output timestamp="7633.724925">s</system_output>
@@ -15651,7 +15651,7 @@ disk_config/GRUB:2:# disk size from 6144MB up, with the option to
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7682.124997">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="7695.305903">s</user_input>
   <system_output timestamp="7695.307929">s</system_output>
@@ -15963,7 +15963,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7714.998538">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="7720.35425">s</user_input>
   <system_output timestamp="7720.356336">s</system_output>
@@ -16059,7 +16059,7 @@ Untracked files:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7727.235286">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="7738.339844">[A</user_input>
   <system_output timestamp="7738.342095">sudo git status</system_output>
@@ -16352,7 +16352,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7749.806098">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="7750.114783">[A</user_input>
   <system_output timestamp="7750.116245">sudo git add disk_config/GRUB</system_output>
@@ -16381,7 +16381,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7751.948331">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="30756.062857">m</user_input>
   <system_output timestamp="30756.064855">m</system_output>

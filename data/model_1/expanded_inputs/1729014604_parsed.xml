@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1729014605">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006077">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.713631"/>
   <system_output timestamp="0.7142">
@@ -38,7 +38,7 @@ Last login: Mon Oct 14 12:32:28 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5.283608">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="66.699379">c</user_input>
   <system_output timestamp="66.701351">c</system_output>
@@ -401,7 +401,7 @@ deb http://security.debian.org/ stable/updates main</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1692.566131">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1695.09585">c</user_input>
   <system_output timestamp="1695.096236">c</system_output>

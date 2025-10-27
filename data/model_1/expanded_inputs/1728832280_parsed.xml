@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1728832281">
-<event depth="-2">
+<event >
   <system_output timestamp="3.352436">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="5.881598"/>
   <system_output timestamp="5.882167">
@@ -42,7 +42,7 @@ Last login: Sun Oct 13 14:37:10 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="10.961595">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="11.984841">c</user_input>
   <system_output timestamp="11.986908">c</system_output>
@@ -115,7 +115,7 @@ FAIBASE  [00;90mGRUBEFI~[0m  HOSTXFCE          JADMIN       LATEXDEV   SERVERCAC
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="18.594012">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="18.953463">l</user_input>
   <system_output timestamp="18.958367">l</system_output>
@@ -161,7 +161,7 @@ grub-efi-amd64-bin
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="24.109009">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="24.953376">[A</user_input>
   <system_output timestamp="24.955667">less GRUBEFI</system_output>
@@ -508,7 +508,7 @@ grub-efi-amd64-bin[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="49.689141">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="50.684753">s</user_input>
   <system_output timestamp="50.703886">s</system_output>
@@ -582,7 +582,7 @@ grub-efi-amd64-bin[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="55.353729">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="56.177515">s</user_input>
   <system_output timestamp="56.190217">s</system_output>
@@ -876,7 +876,7 @@ grub-efi-amd64[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="66.868066">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="68.186805">s</user_input>
   <system_output timestamp="68.202592">s</system_output>
@@ -1024,7 +1024,7 @@ grub-efi-amd64[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="89.7975">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
   <user_input timestamp="91.764978">c</user_input>
   <system_output timestamp="91.782749">c</system_output>
@@ -1052,7 +1052,7 @@ grub-efi-amd64[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="93.282995">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="93.858366"/>
   <system_output timestamp="93.865334">
@@ -1076,7 +1076,7 @@ grub-efi-amd64[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="95.21528">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="95.278984">umount: /home/fai/nfsroot/proc: not mounted.
@@ -2558,7 +2558,7 @@ Reading package lists...</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 Building dependency tree...
 The following additional packages will be installed:
   debconf-utils dracut-core fai-client fai-setup-storage file iputils-arping
@@ -15021,7 +15021,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1108.080275">Copying the config space to CD image
 </system_output>
   <system_output timestamp="1108.8407">Copying the mirror to CD image
@@ -15078,7 +15078,7 @@ sys	2m23.600s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1215.847262">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="1669.408182"/>
   <system_output timestamp="1669.410172">[?2004l
@@ -15092,7 +15092,7 @@ sys	2m23.600s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1669.519805">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1670.158382"/>
   <system_output timestamp="1670.15882">
@@ -15245,7 +15245,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1740.800737">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1741.873986"/>
   <system_output timestamp="1741.874196">[?2004l

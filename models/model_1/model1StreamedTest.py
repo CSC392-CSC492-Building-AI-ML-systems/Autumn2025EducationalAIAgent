@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Model-1 streamed annotator — cleaned, robust, and stateful (v2)
 
-Fixes in this version:
-- No more chat echo: we build chat messages, let the tokenizer create input_ids,
-  then slice generated tokens to only the assistant continuation.
-- Multiple EOS tokens (Qwen's <|im_end|> + eos) so gen stops at the right place.
-- Keeps all the previous improvements (minified XML, repetition controls,
-  DONE sentinel cropping, neighbor reuse, depth clamping, etc.).
-- Adds a compact I/O table printed after each flush for quick visibility.
+Model-1 streamed annotator
+
 """
 
 from __future__ import annotations
@@ -20,49 +14,54 @@ from typing import Dict, List, Optional, Tuple
 
 from lxml import etree
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, LogitsProcessor, LogitsProcessorList
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
-from formatConstraints import make_prefix_allowed_tokens_fn
 import json
 
-from logitProcessors import AsciiOnlyProcessor
 # ------------------------------
 # Config
 # ------------------------------
 XML_PATH = "../../data/model_1/inputs/1727009412_parsed.xml"
-GT_PATH = "../../data/model_1/outputs/1727009412_training.txt"  # (unused here, kept for future)
+GT_PATH = "../../data/model_1/outputs/1727009412_training.txt"
 
 # Model settings
-MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"  # instruction-tuned
-USE_INT4 = True  # set False to prefer BF16/FP16 speed if you have VRAM
-MAX_NEW_TOKENS = 48
+MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"  # ONE reasoning model for everything
+USE_INT4 = True
+MAX_NEW_TOKENS = 8000  # Let it think as much as needed
 SUMMARY_WORD_LIMIT = 50
 
 # Prompt packaging
-ADD_DONE_SENTINEL = True
-DONE_SENTINEL = "DONE"
+ADD_DONE_SENTINEL = False  # Not needed with thinking models
 
 # Flush parameters
-K_TARGET = 1  # targets per flush
-N_NEIGH = 20  # preceding neighbors to include
+K_TARGET = 1
+N_NEIGH = 20
 
 INCLUDE_FEWSHOTS_DEFAULT = True
-
 COLLAPSE_ECHO_INPUTS = False
 
 # ------------------------------
 # Statics
 # ------------------------------
-FEWSHOTS_BLOCK = f"""
-examples (for format/logic only — do not output these)
+FEWSHOTS_BLOCK = """
+EXAMPLES (for format/logic only — do not output these)
 
-note: event xml often shows keystroke-by-keystroke input with echoed characters, not a full command.
+NOTE: Event XML often shows keystroke-by-keystroke input with echoed characters, not full commands.
 
-example a — new nested subtask (depth = -1)
+DEPTH SEMANTICS:
+- depth = -1: STARTING a new subtask (entering deeper level)
+- depth = 0:  CONTINUING at same level (ongoing work)
+- depth = +1: FINISHING a subtask (returning to parent level)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE A — Starting a new subtask (depth = -1)
+Context: User is editing a config file and decides to spawn a shell to check logs
 neighbor_tail:
-- id=10 depth=0  summary=open editor on /etc/ntopng/ntopng.conf
-- id=11 depth=0  summary=navigate within config to log options
-currDepth before target: -1
+  - id=10 depth=0  summary="Edit network monitoring config in vim"
+  - id=11 depth=0  summary="Navigate to logging section of config"
+currDepth before target: 0
+
 input xml:
 <event>
   <user_input>:</user_input><system_output>:</system_output>
@@ -96,16 +95,23 @@ input xml:
   <user_input>l</user_input><system_output>l</system_output>
   <user_input>o</user_input><system_output>o</system_output>
   <user_input>g</user_input><system_output>g</system_output>
+  <system_output>[shell spawned from vim]</system_output>
 </event>
-output (two lines):
-spawn shell from editor to grep syslog for errors.
--1
 
-example b — same-level continuation (depth = 0)
+Expected output:
+{"annotation": "Spawn shell from vim editor to grep syslog for errors.", "depth": -1}
+
+Why depth = -1? User is STARTING a new subtask (shell within editor) - entering deeper level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE B — Continuing at same level (depth = 0)
+Context: User is working within the spawned shell, continuing their investigation
 neighbor_tail:
-- id=20 depth=-1 summary:spawn shell from editor
-- id=21 depth=0  summary:view /var/log/syslog in pager
-currDepth before target: -2
+  - id=20 depth=-1 summary="Spawn shell from vim to investigate logs"
+  - id=21 depth=0  summary="Search syslog for error patterns"
+currDepth before target: -1
+
 input xml:
 <event>
   <user_input>l</user_input><system_output>l</system_output>
@@ -121,33 +127,48 @@ input xml:
   <user_input>l</user_input><system_output>l</system_output>
   <user_input>o</user_input><system_output>o</system_output>
   <user_input>g</user_input><system_output>g</system_output>
-  <system_output>--- syslog ---</system_output>
+  <system_output>-rw-r----- 1 syslog  adm  2.4M Oct 26 15:32 syslog</system_output>
 </event>
-output (two lines):
-view syslog content within the spawned shell.
-0
 
-example c — exit one level (depth = +1)
+Expected output:
+{"annotation": "List log directory to verify syslog file exists.", "depth": 0}
+
+Why depth = 0? User is CONTINUING work at the same level (still in spawned shell) - ongoing task.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE C — Finishing a subtask (depth = +1)
+Context: User completes their work in the spawned shell and exits back to vim
 neighbor_tail:
-- id=30 depth=-1 summary:open file in editor from shell
-- id=31 depth=0  summary:edit configuration options
+  - id=30 depth=-1 summary="Spawn shell from vim to check logs"
+  - id=31 depth=0  summary="Examine syslog entries for errors"
+  - id=32 depth=0  summary="Identify network timeout pattern in logs"
 currDepth before target: -1
+
 input xml:
 <event>
-  <user_input>:</user_input><system_output>:</system_output>
-  <user_input>w</user_input><system_output>w</system_output>
-  <user_input>q</user_input><system_output>q</system_output>
-  <system_output>[wrote config] demo@host:/etc/ntopng$ </system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>x</user_input><system_output>x</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <system_output>[returning to vim]</system_output>
+  <system_output>demo@host:/etc/config.conf (modified)</system_output>
 </event>
-output (two lines):
-save changes and exit the editor back to the shell.
-1
 
-example d — same-level keystroke sequence (depth = 0)
+Expected output:
+{"annotation": "Exit shell and return to vim editor.", "depth": 1}
+
+Why depth = +1? User is FINISHING the shell subtask and returning to parent (vim) - exiting level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE D — Continuing at top level (depth = 0)
+Context: User is working in their main shell, typing a command
 neighbor_tail:
-- id=40 depth=0  summary:interactive shell at home directory
-- id=41 depth=0  summary:prepare to connect to a remote host
+  - id=40 depth=0  summary="Interactive bash shell at home directory"
+  - id=41 depth=0  summary="List files in current directory"
 currDepth before target: 0
+
 input xml:
 <event>
   <system_output>demo@boxtop:~$ </system_output>
@@ -166,267 +187,233 @@ input xml:
   <user_input>3</user_input><system_output>3</system_output>
   <user_input>8</user_input><system_output>8</system_output>
 </event>
-output (two lines):
-initiate ssh connection to 10.0.7.138.
-0
 
-example e — explicit address allowed (depth = 0)
+Expected output:
+{"annotation": "Initiate SSH connection to 10.0.7.138.", "depth": 0}
+
+Why depth = 0? User is CONTINUING work at the main shell level - not entering or exiting.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE E — Starting SSH session subtask (depth = -1)
+Context: After typing SSH command, user now authenticates and enters remote session
 neighbor_tail:
-- id=50 depth=0  summary:running curl to query service endpoint
-- id=51 depth=0  summary:checking api health for troubleshooting
+  - id=50 depth=0  summary="Initiate SSH connection to 10.0.7.138"
 currDepth before target: 0
+
 input xml:
 <event>
-  <system_output>demo@host:~$ </system_output>
-  <user_input>c</user_input><system_output>c</system_output>
-  <user_input>u</user_input><system_output>u</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input>l</user_input><system_output>l</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>h</user_input><system_output>h</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>p</user_input><system_output>p</system_output>
-  <user_input>:</user_input><system_output>:</system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>1</user_input><system_output>1</system_output>
-  <user_input>9</user_input><system_output>9</system_output>
-  <user_input>2</user_input><system_output>2</system_output>
-  <user_input>.</user_input><system_output>.</system_output>
-  <user_input>1</user_input><system_output>1</system_output>
-  <user_input>6</user_input><system_output>6</system_output>
-  <user_input>8</user_input><system_output>8</system_output>
-  <user_input>.</user_input><system_output>.</system_output>
-  <user_input>0</user_input><system_output>0</system_output>
-  <user_input>.</user_input><system_output>.</system_output>
-  <user_input>5</user_input><system_output>5</system_output>
-  <user_input>:</user_input><system_output>:</system_output>
-  <user_input>8</user_input><system_output>8</system_output>
-  <user_input>0</user_input><system_output>0</system_output>
-  <user_input>8</user_input><system_output>8</system_output>
-  <user_input>0</user_input><system_output>0</system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>u</user_input><system_output>u</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
+  <system_output>demo@10.0.7.138's password: </system_output>
+  <user_input>[password entered]</user_input>
+  <system_output>Welcome to Ubuntu 22.04.3 LTS</system_output>
+  <system_output>Last login: Fri Oct 25 14:23:11 2025</system_output>
+  <system_output>demo@remote-server:~$ </system_output>
 </event>
-output (two lines):
-fetch service status from http://192.168.0.5:8080/status.
-0
 
-example f — package install with apt (depth = 0)
+Expected output:
+{"annotation": "Authenticate and log into remote server via SSH.", "depth": -1}
+
+Why depth = -1? User is STARTING a new subtask (remote SSH session) - entering deeper level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE F — Finishing SSH session (depth = +1)
+Context: User completes work on remote server and exits SSH session
 neighbor_tail:
-- id=70 depth=0  summary:initiate SSH connection to 10.0.7.138
-- id=71 depth=-1 summary:authenticate and open remote shell
+  - id=60 depth=-1 summary="Log into remote server via SSH"
+  - id=61 depth=0  summary="Install monitoring package on remote server"
+  - id=62 depth=0  summary="Verify package installation completed"
 currDepth before target: -1
-<event depth="-2">
-  <system_output timestamp="0.0">user@host:~$ </system_output>
-  <user_input>s</user_input>
-  <system_output>s</system_output>
-  <user_input>u</user_input>
-  <system_output>u</system_output>
-  <user_input>d</user_input>
-  <system_output>d</system_output>
-  <user_input>o</user_input>
-  <system_output>o</system_output>
-  <user_input> </user_input>
-  <system_output> </system_output>
-  <user_input>a</user_input>
-  <system_output>a</system_output>
-  <user_input>p</user_input>
-  <system_output>p</system_output>
-  <user_input>t</user_input>
-  <system_output>t</system_output>
-  <user_input> </user_input>
-  <system_output> </system_output>
-  <user_input>i</user_input>
-  <system_output>i</system_output>
-  <user_input>n</user_input>
-  <system_output>n</system_output>
-  <user_input>s</user_input>
-  <system_output>s</system_output>
-  <user_input>t</user_input>
-  <system_output>t</system_output>
-  <user_input>a</user_input>
-  <system_output>a</system_output>
-  <user_input>l</user_input>
-  <system_output>l</system_output>
-  <user_input>l</user_input>
-  <system_output>l</system_output>
-  <user_input> </user_input>
-  <system_output> </system_output>
-  <user_input>h</user_input>
-  <system_output>h</system_output>
-  <user_input>t</user_input>
-  <system_output>t</system_output>
-  <user_input>o</user_input>
-  <system_output>o</system_output>
-  <user_input>p</user_input>
-  <system_output>p</system_output>
+
+input xml:
+<event>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>x</user_input><system_output>x</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <system_output>logout</system_output>
+  <system_output>Connection to 10.0.7.138 closed.</system_output>
+  <system_output>demo@boxtop:~$ </system_output>
 </event>
-output (two lines):
-User installs htop package using sudo apt
-0
+
+Expected output:
+{"annotation": "Log out and close SSH connection to remote server.", "depth": 1}
+
+Why depth = +1? User is FINISHING the SSH session subtask and returning to local shell - exiting level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+KEY PRINCIPLES:
+1. Use depth = -1 when ENTERING a new tool/context (vim, SSH, subshell, pager, etc.)
+2. Use depth = 0 when CONTINUING work in the current context
+3. Use depth = +1 when EXITING/CLOSING a tool/context back to parent
+4. Think of depth as task nesting: -1 = push onto stack, 0 = work at current level, +1 = pop from stack
+""".strip()
+
+SYSTEM_ROLE = """You are an expert terminal session annotator. Your goal is to generate concise summaries of user actions.
+Rules:
+- summaries must not exceed {SUMMARY_WORD_LIMIT} words
+- depth changes: -1=enter subtask, 0=continue same, +1=exit one level
+- output must be valid JSON
 """.strip()
 
 
-
 # ------------------------------
-# Data types
+# Event model
 # ------------------------------
 @dataclass
 class Event:
     idx: int
     xml: str
-    depth_xml: Optional[int]
-    summary_xml: Optional[str]
+    depth_xml: Optional[int] = None
+    summary_xml: Optional[str] = None
 
-# Predicted state (index -> {depth, summary})
-pred: Dict[int, Dict[str, object]] = {}
 
-# Global events (populated in __main__)
+# ------------------------------
+# Global state
+# ------------------------------
 events: List[Event] = []
+pred: Dict[int, Dict] = {}
+
 
 # ------------------------------
-# XML loading & minify
+# XML parsing
 # ------------------------------
-REC_BLOCK_RE = re.compile(r"<recording\b[^>]*>.*?</recording>", re.DOTALL)
-_MINIFY_TS_RE = re.compile(r"\s+timestamp=\"[^\"]*\"")
-_MINIFY_WS_RE = re.compile(r"\s+")
+def collapse_echo(xml_str: str) -> str:
+    if not COLLAPSE_ECHO_INPUTS:
+        return xml_str
 
+    root = etree.fromstring(xml_str)
+    children = list(root)
+    collapsed: List[etree.Element] = []
+    i = 0
 
-def _extract_recording_block(text: str) -> str:
-    m = REC_BLOCK_RE.search(text)
-    if not m:
-        raise ValueError("Could not find a <recording>...</recording> block in the XML file.")
-    return m.group(0)
+    while i < len(children):
+        if i + 1 < len(children):
+            c1, c2 = children[i], children[i + 1]
+            if (
+                c1.tag == "user_input"
+                and c2.tag == "system_output"
+                and (c1.text or "") == (c2.text or "")
+            ):
+                merged = etree.Element("echo")
+                merged.text = c1.text
+                collapsed.append(merged)
+                i += 2
+                continue
+        collapsed.append(children[i])
+        i += 1
 
-# --- terminal noise scrubber ---
-_DEC_PRIV = re.compile(r"\[\?\d{1,3}[hl]")           # e.g., [?2004h or [?25l
-_CSI_SEQ  = re.compile(r"\x1B\[[0-9;?]*[ -/]*[@-~]") # CSI like \x1b[31m or \x1b[?2004l
-_OSC_SEQ  = re.compile(r"\x1B\][^\a]*\a")            # OSC ... BEL
-_CTRL     = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")  # control chars except \t \n \r
-
-
-def sanitize_term_noise(s: str) -> str:
-    # remove DEC private mode markers that sometimes appear without ESC
-    s = _DEC_PRIV.sub("", s)
-    # remove full escape sequences (CSI/OSC)
-    s = _CSI_SEQ.sub("", s)
-    s = _OSC_SEQ.sub("", s)
-    # drop residual control bytes
-    s = _CTRL.sub("", s)
-    return s
-
-
-def minify_xml(xml: str) -> str:
-    """Remove timestamps/extra whitespace to reduce tokens."""
-    x = _MINIFY_TS_RE.sub("", xml)
-    x = sanitize_term_noise(x)
-    x = _MINIFY_WS_RE.sub(" ", x).strip()
-    return x
+    new_root = etree.Element(root.tag, attrib=root.attrib)
+    new_root.extend(collapsed)
+    return etree.tostring(new_root, encoding="unicode")
 
 
 def load_events(xml_path: str) -> List[Event]:
-    with open(xml_path, "r", encoding="utf-8", errors="ignore") as f:
-        raw = f.read()
-    recording_xml = _extract_recording_block(raw)
+    tree = etree.parse(xml_path)
+    root = tree.getroot()
+    out: List[Event] = []
 
-    if COLLAPSE_ECHO_INPUTS:
-        recording_xml = collapse_recording_xml(recording_xml)
+    for i, ev_el in enumerate(root.xpath("//event")):
+        depth = ev_el.get("depth")
+        summary = ev_el.get("summary")
 
-    root = etree.fromstring(recording_xml.encode("utf-8"))
+        if depth is not None:
+            depth = int(depth)
+        if summary is not None:
+            summary = summary.strip()
 
-    evs: List[Event] = []
-    for i, ev in enumerate(root.findall(".//event")):
-        xml_str = etree.tostring(ev, encoding="unicode")
-        evs.append(Event(idx=i, xml=minify_xml(xml_str), depth_xml=None, summary_xml=None))
-    return evs
+        xml_str = etree.tostring(ev_el, encoding="unicode")
+        xml_str = collapse_echo(xml_str)
+
+        out.append(
+            Event(
+                idx=i,
+                xml=xml_str,
+                depth_xml=depth,
+                summary_xml=summary,
+            )
+        )
+    return out
 
 
 # ------------------------------
-# Depth tracking
+# Depth computation
 # ------------------------------
-class DepthState:
-    def __init__(self) -> None:
-        self.curr = 0  # must remain ≤ 0
+def compute_curr_depth_upto(idx: int) -> int:
+    curr = 0
+    for i in range(idx):
+        dep = events[i].depth_xml
+        if dep is None:
+            continue
+        if dep == -1:
+            curr -= 1
+        elif dep > 0:
+            curr += dep
+    return curr
 
-    def apply_depth(self, d: int) -> None:
-        # Policy: -1 => descend; >0 => ascend by that many; 0 => stay
-        if d == -1:
-            self.curr -= 1
-        elif d > 0:
-            self.curr += d
-        if self.curr > 0:
-            self.curr = 0  # clamp
 
+# ------------------------------
+# Packaging for prompts
+# ------------------------------
+def make_flush_package(upto_idx: int, K: int = 1, N: int = 20) -> Dict:
+    target_idxs = list(range(max(0, upto_idx - K + 1), upto_idx + 1))
+    start_neigh = max(0, target_idxs[0] - N)
+    neighbor_idxs = list(range(start_neigh, target_idxs[0]))
 
-def compute_curr_depth_upto(idx_exclusive: int) -> int:
-    ds = DepthState()
-    for i in range(idx_exclusive):
-        # Prefer event-backed depth if present; otherwise predicted cache
-        d: Optional[int] = None
-        if 0 <= i < len(events) and events[i].depth_xml is not None:
+    def get_sum(i: int) -> str:
+        if 0 <= i < len(events):
+            s = events[i].summary_xml
+            return s if s else "???"
+        return "???"
+
+    def get_dep(i: int) -> int:
+        if 0 <= i < len(events):
             d = events[i].depth_xml
-        elif i in pred and isinstance(pred[i].get("depth"), int):
-            d = pred[i]["depth"]  # type: ignore[index]
-        if isinstance(d, int):
-            ds.apply_depth(d)
-    return ds.curr
+            return d if d is not None else 999
+        return 999
 
-
-# ------------------------------
-# Flush package & prompt building (chat template)
-# ------------------------------
-
-def make_flush_package(upto_idx: int, K: int = K_TARGET, N: int = N_NEIGH) -> Dict:
-    start_tgt = max(0, upto_idx - (K - 1))
-    target_idxs = list(range(start_tgt, upto_idx + 1))
-
-    neigh_end = start_tgt - 1
-    neigh_start = max(0, neigh_end - (N - 1))
-    neighbor_idxs = list(range(neigh_start, neigh_end + 1)) if neigh_end >= 0 else []
-
-    curr_depth = compute_curr_depth_upto(start_tgt)
-
-    neighbor_tail = []
+    neighbor_info = []
     for i in neighbor_idxs:
-        # Source neighbor depth/summary from the Event object **first**
-        if 0 <= i < len(events) and (events[i].depth_xml is not None or events[i].summary_xml is not None):
-            neighbor_tail.append({
-                "id": i,
-                "depth": events[i].depth_xml,
-                "summary": events[i].summary_xml,
-            })
-        elif i in pred:
-            neighbor_tail.append({
-                "id": i,
-                "depth": pred[i].get("depth"),
-                "summary": pred[i].get("summary"),
-            })
+        neighbor_info.append(f"- id={i} depth={get_dep(i)}  summary={get_sum(i)}")
 
-    target_events = [{"id": i, "xml": events[i].xml} for i in target_idxs]
+    target_events = []
+    for i in target_idxs:
+        if 0 <= i < len(events):
+            target_events.append(events[i].xml)
+
+    currDepth = compute_curr_depth_upto(target_idxs[0])
+
     return {
-        "currDepth": curr_depth,
-        "neighbor_tail": neighbor_tail,
-        "parent_xml": None,
-        "target_events": target_events,
         "target_idxs": target_idxs,
+        "neighbor_info": neighbor_info,
+        "target_events": target_events,
+        "currDepth": currDepth,
     }
 
 
 def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
+    # Build neighbor XML
+    neighbor_items = []
+    if pkg.get("neighbor_info"):
+        for line in pkg["neighbor_info"]:
+            match = re.match(r"- id=(\d+) depth=(-?\d+)\s+summary=(.+)", line)
+            if match:
+                nid, ndepth, nsummary = match.groups()
+                neighbor_items.append({"id": nid, "depth": ndepth, "summary": nsummary})
+    
     neighbors_xml = "\n".join(
         [f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
-         for n in pkg.get("neighbor_tail", [])]
+         for n in neighbor_items]
     ) or "    <neighbor>(none)</neighbor>"
 
+    # Build target events XML
+    target_items = []
+    for idx, xml_str in zip(pkg["target_idxs"], pkg["target_events"]):
+        target_items.append({"id": idx, "xml": xml_str})
+    
     targets_xml = "\n".join(
-        [f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in pkg["target_events"]]
+        [f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in target_items]
     )
 
     examples_xml = f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
@@ -434,7 +421,8 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
     extra = (
         "- do not copy xml tags or attributes; no repeated phrases\n"
         "- do not mention an address that was not explicitly mentioned in the event\n"
-        "- if the target event contains an <annotation> tag or depth value ignore it"
+        "- if the target event contains an <annotation> tag or depth value ignore it\n"
+        "- if there are no neighbors then the depth should be 0"
     )
 
     prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
@@ -446,15 +434,16 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 <think_first>
 - Use the <think>...</think> section to analyze what is happening in the event and assess whether the event starts a nested subtask (-1), continues at the same level (0), or exits one or more levels up (k).
 - In <think>...</think>, generate a concise summary at a higher level, considering broader context.
-- Use neighbors ONLY for continuity; do not invent context. Keep <think> concise.
+- Use neighbors ONLY for continuity; do not invent context.
+- Think carefully about BOTH the annotation AND the depth together.
 </think_first>
 
 <rules>
-- the user’s keystrokes appear separately; combine them to form the full command before interpreting it
-- depth is an integer (≥ -1); -1 for subevent, 0 for same level, >0 to exit levels
+- the user's keystrokes appear separately; combine them to form the full command before interpreting it
+- depth is an integer (≥ -1); -1 for subevent (new task started), 0 for same level (still doing the same task), >0 to exit levels (ended one or multiple tasks)
 - maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
-- write action-oriented summaries; avoid “user”, “they”, “typed”, “inputs”, “enters a command
-- depth is relative to the previous events and nothing else”
+- write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command
+- depth is relative to the previous events and nothing else"
 {extra}
 </rules>{examples_xml}
 
@@ -474,79 +463,65 @@ for each target_event, output exactly one json with "annotation" first, then "de
     return prompt
 
 
-
-
-def build_messages(user_content: str) -> List[Dict[str, str]]:
-    """Build chat messages for the Qwen3 instruct template."""
+def build_messages(instruction: str) -> List[Dict[str, str]]:
     return [
-        {"role": "system", "content": "You are Model-1. Follow formatting strictly."},
-        {"role": "user", "content": user_content},
+        {"role": "system", "content": SYSTEM_ROLE},
+        {"role": "user", "content": instruction},
     ]
+
 
 # ------------------------------
 # Model loading
 # ------------------------------
-
 def load_model_and_tokenizer():
-    tok = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True, use_fast=True)
+    print(f"Loading model: {MODEL_ID}")
+    tok = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
 
-    # Optional 4-bit quantization if available
-    quant_config = None
-    has_bnb = False
-    if USE_INT4 and torch.cuda.is_available():
-        try:
-            import bitsandbytes as bnb  # noqa: F401
-            has_bnb = True
-        except Exception:
-            has_bnb = False
-        if has_bnb:
-            compute_dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
-            quant_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_compute_dtype=compute_dtype,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_use_double_quant=True,
-            )
+    if tok.pad_token_id is None:
+        tok.pad_token = tok.eos_token
 
-    m1 = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID,
-        device_map="auto",
-        dtype=torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16,
-        trust_remote_code=True,
-        low_cpu_mem_usage=True,
-        quantization_config=quant_config,
+    if USE_INT4:
+        bnb_cfg = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+        m = AutoModelForCausalLM.from_pretrained(
+            MODEL_ID,
+            quantization_config=bnb_cfg,
+            device_map="auto",
+            trust_remote_code=True,
+        )
+    else:
+        m = AutoModelForCausalLM.from_pretrained(
+            MODEL_ID,
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            trust_remote_code=True,
+        )
+
+    m.eval()
+    return m, tok
+
+
+# ------------------------------
+# Generation
+# ------------------------------
+def generate_with_thinking(model, tok, messages: List[Dict[str, str]]) -> Tuple[str, str]:
+    """
+    Generate with thinking model - NO format constraints.
+    Returns: (full_output_with_thinking, extracted_json)
+    """
+    text = tok.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
     )
+    inputs = tok(text, return_tensors="pt", add_special_tokens=False).to(model.device)
 
-    # Speed settings
-    m1.config.use_cache = True
-    if getattr(m1, "generation_config", None):
-        m1.generation_config.use_cache = True
-    m1.config.attn_implementation = "sdpa"
-
-    # Prefer Flash + MemEfficient on Ada
-    try:
-        from torch.nn.attention import sdpa_kernel as _sdpa_kernel  # type: ignore
-        with _sdpa_kernel(enable_flash=True, enable_mem_efficient=True, enable_math=False):
-            pass
-    except Exception:
-        try:
-            torch.backends.cuda.sdp_kernel(
-                enable_flash=True, enable_math=False, enable_mem_efficient=True
-            )
-        except Exception:
-            pass
-
-    return m1, tok
-
-
-# ------------------------------
-# Generation & parsing
-# ------------------------------
-@torch.inference_mode()
-def generate_pairs(m1, tok, messages, curr_depth: int) -> str:
-    inputs = tok.apply_chat_template(messages, return_tensors="pt", add_generation_prompt=True).to(m1.device)
-
-    eos_ids = [tok.eos_token_id] if tok.eos_token_id is not None else []
+    # Get EOS tokens
+    eos_ids = [tok.eos_token_id]
     try:
         im_end_id = tok.convert_tokens_to_ids("<|im_end|>")
         if isinstance(im_end_id, int) and im_end_id != -1:
@@ -555,41 +530,33 @@ def generate_pairs(m1, tok, messages, curr_depth: int) -> str:
         pass
     eos_ids = list({i for i in eos_ids if i is not None}) or None
 
-    input_len = inputs.shape[-1]
+    input_len = inputs.input_ids.shape[-1]
 
-    prefix_fn = make_prefix_allowed_tokens_fn(tok, curr_depth=curr_depth)
-
-    always_allow = set()
-    if tok.eos_token_id is not None:
-        always_allow.add(tok.eos_token_id)
-    try:
-        im_end_id = tok.convert_tokens_to_ids("<|im_end|>")
-        if isinstance(im_end_id, int) and im_end_id != -1:
-            always_allow.add(im_end_id)
-    except Exception:
-        pass
-    ascii_gate = LogitsProcessorList([AsciiOnlyProcessor(tok, allow_controls=False, always_allow=always_allow)])
-
-    out_ids = m1.generate(
-        input_ids=inputs,
+    # NO constraints - let it think freely
+    out_ids = model.generate(
+        input_ids=inputs.input_ids,
         max_new_tokens=MAX_NEW_TOKENS,
         do_sample=False,
         num_beams=1,
-        no_repeat_ngram_size=3,
-        repetition_penalty=1.1,
         pad_token_id=tok.eos_token_id,
         eos_token_id=eos_ids,
-        prefix_allowed_tokens_fn=prefix_fn,
-        logits_processor=ascii_gate,
         use_cache=True,
+        temperature=0.4,        # was 0.7
+        top_p=0.7,             # was 0.85
+        repetition_penalty=1.2, # was 1.15
+        early_stopping=True,    
     )
 
     gen_ids = out_ids[0, input_len:]
-    text = tok.decode(gen_ids, skip_special_tokens=True).strip()
-    if ADD_DONE_SENTINEL and DONE_SENTINEL in text:
-        text = text.split(DONE_SENTINEL, 1)[0].strip()
-    return text
-
+    full_output = tok.decode(gen_ids, skip_special_tokens=True).strip()
+    
+    # Extract JSON from output (after </think> if present)
+    if "</think>" in full_output:
+        json_part = full_output.split("</think>", 1)[1].strip()
+    else:
+        json_part = full_output
+    
+    return full_output, json_part
 
 
 def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
@@ -631,7 +598,6 @@ def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
 # ------------------------------
 
 def print_io_table(target_idxs: List[int]) -> None:
-    # Build a compact table of idx, depth, summary for quick visibility
     header = f"{'idx':>5} | {'depth':>5} | summary"
     print("\n" + header)
     print("-" * len(header))
@@ -649,54 +615,52 @@ def print_io_table(target_idxs: List[int]) -> None:
 
 def run_flushes(evs: List[Event]) -> None:
     global events
-    events = evs  # expose to helpers
+    events = evs
 
     total = len(events)
     start_idx = 0
 
-    m1, tok = load_model_and_tokenizer()
+    model, tok = load_model_and_tokenizer()
+    
     print("cuda_available:", torch.cuda.is_available())
     print("torch.version.cuda:", getattr(torch.version, "cuda", None))
     print("MODEL:", MODEL_ID)
+    print("NO FORMAT CONSTRAINTS - letting model think freely")
 
-    # --- accumulate per-flush logs here ---
-    all_flush_logs = []  # list of dicts: {"upto": int, "targets": [int], "raw": str, "pairs": [(summary, depth)]}
+    all_flush_logs = []
 
     for upto in range(start_idx, total):
         pkg = make_flush_package(upto_idx=upto, K=K_TARGET, N=N_NEIGH)
-        instr = build_instruction(pkg)
+        instr = build_instruction(pkg, use_fewshots=INCLUDE_FEWSHOTS_DEFAULT)
         messages = build_messages(instr)
 
         print("=" * 80)
         print(
             f"FLUSH upto event idx={upto} | currDepth(before)={pkg['currDepth']} | targets={pkg['target_idxs']}"
         )
-        print("- Prompt (truncated) -")
-        print(instr[:1000] + ("..." if len(instr) > 1000 else ""))
 
-        print("\n- Model output -")
-        raw = generate_pairs(m1, tok, messages, curr_depth=pkg["currDepth"])
-        print(raw)
+        # Generate with thinking
+        print("\n--- Model output (with thinking) ---")
+        full_output, json_part = generate_with_thinking(model, tok, messages)
+        print(full_output)
 
-        # Expect summary-first, then depth
-        pairs = parse_depth_summary_pairs(raw)
+        # Parse JSON
+        pairs = parse_depth_summary_pairs(json_part)
         if len(pairs) != len(pkg["target_idxs"]):
             print("\n(!) Output pairs != #targets; keeping whatever parsed.")
 
-        # Save this flush's info
         all_flush_logs.append({
             "upto": upto,
             "targets": pkg["target_idxs"],
-            "raw": raw,
+            "full_output": full_output,
+            "json_part": json_part,
             "pairs": pairs,
         })
 
-        # Apply predictions in order
+        # Apply predictions
         for (depth, summary), idx in zip(pairs, pkg["target_idxs"]):
-            # Clamp invalid depths (< -1 → -1)
             if depth < -1:
                 depth = -1
-            # Enforce stack invariant locally
             live_curr = compute_curr_depth_upto(idx)
             temp_curr = live_curr
             if depth == -1:
@@ -706,7 +670,6 @@ def run_flushes(evs: List[Event]) -> None:
             if temp_curr > 0:
                 depth = 0
 
-            # Write to both caches: pred[] and events[] (for neighbor reuse)
             pred[idx] = {"depth": depth, "summary": summary}
             if 0 <= idx < len(events):
                 events[idx].depth_xml = depth
@@ -717,25 +680,22 @@ def run_flushes(evs: List[Event]) -> None:
             v = pred.get(idx, {})
             print(f"  idx={idx}  depth={v.get('depth')}  summary={v.get('summary')}")
 
-        # Pretty table view (current step)
         print_io_table(pkg["target_idxs"])
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
-    # =========================
-    # After-loop consolidated print
-    # =========================
+    # After-loop print
     print("\n" + "=" * 80)
-    print("ALL MODEL OUTPUTS (raw per flush)")
+    print("ALL MODEL OUTPUTS")
     print("=" * 80)
     for log in all_flush_logs:
         print(f"\n[FLUSH upto={log['upto']} targets={log['targets']}]")
-        print(log["raw"])
+        print(log["full_output"])
 
-    # Final consolidated table for all processed targets
+    # Final table
     print("\n" + "=" * 80)
-    print("FINAL CONSOLIDATED TABLE (all processed targets)")
+    print("FINAL CONSOLIDATED TABLE")
     print("=" * 80)
     header = f"{'idx':>5} | {'depth':>5} | summary"
     print(header)
@@ -747,7 +707,6 @@ def run_flushes(evs: List[Event]) -> None:
             d_str = "" if d is None else str(d)
             s_str = "" if s is None else s
             print(f"{idx:>5} | {d_str:>5} | {s_str}")
-
 
 
 # ------------------------------

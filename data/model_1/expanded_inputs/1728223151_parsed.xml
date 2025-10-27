@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="319" height="92" timestamp="1728223152">
-<event depth="-2">
+<event >
   <system_output timestamp="0.005501">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="4.64497">c</user_input>
   <system_output timestamp="4.645677">c</system_output>
@@ -139,7 +139,7 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3273.681623">c</user_input>
   <system_output timestamp="3273.682201">c</system_output>
   <user_input timestamp="3273.973535">m</user_input>
@@ -160,7 +160,7 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3276.180473">c</user_input>
   <system_output timestamp="3276.180903">c</system_output>
   <user_input timestamp="3276.400904">m</user_input>
@@ -318,7 +318,7 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3302.485345">[A</user_input>
   <system_output timestamp="3302.485867">cm setnote faiserver-tearoff-12 "Primary FAI server."</system_output>
   <user_input timestamp="3303.08907"/>
@@ -349,7 +349,7 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3312.315169"/>
   <system_output timestamp="3312.315853">[?2004l
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1721655755">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006021">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.628786">OA</user_input>
   <system_output timestamp="0.629074">asciinema rec `date +%s`.rec --stdin</system_output>
@@ -193,14 +193,14 @@ demo@faiserver:/home/fai$[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3.596496"/>
   <system_output timestamp="3.599207">
 (reverse-i-search)`': [K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3.929681">s</user_input>
   <system_output timestamp="3.939207">s': sudo bash -c 'time ./make-fai-cd.[7ms[27mh 2&gt;&amp;1 | tee make-fai-cd.out'</system_output>
   <user_input timestamp="4.161898">c</user_input>
@@ -356,7 +356,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="332.14622"/>
   <user_input timestamp="332.581016">1</user_input>
   <system_output timestamp="332.596719">]0;screen[?2004l[H[2J[22;2t]2;screenTasks:[1m 379 [0mtotal,[1m   1 [0mrunning,[1m 374 [0msleeping,[1m   0 [0mstopped,[1m   4 [0mzombie
@@ -614,7 +614,7 @@ stephost:/disk1/isos#]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="334.530692">OA</user_input>
   <system_output timestamp="334.531353">top</system_output>
   <user_input timestamp="334.881664">OA</user_input>
@@ -629,7 +629,7 @@ stephost:/disk1/isos#]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="338.524844"/>
   <system_output timestamp="338.525596">
 (reverse-i-search)`': </system_output>
@@ -655,7 +655,7 @@ stephost:/disk1/isos#]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="342.705528">OA</user_input>
   <system_output timestamp="342.705953">cm kill faiserver-tearoff-9</system_output>
   <user_input timestamp="343.022768">OA</user_input>
@@ -759,7 +759,7 @@ demo@stephost:/disk1/isos$]0;]0;screen[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="360.522341">OA</user_input>
   <system_output timestamp="360.522904">sudo screen -r 95</system_output>
   <user_input timestamp="362.020611">OA</user_input>
@@ -846,7 +846,7 @@ stephost:/disk1/isos#[?2004h
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="372.898984">c</user_input>
   <system_output timestamp="373.019517">c</system_output>
   <user_input timestamp="373.170528">d</user_input>
@@ -1504,7 +1504,7 @@ kalliserver -- Kallithea, a git hosting service. For software distribution   [22
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="468.165104">#</user_input>
   <system_output timestamp="468.174737">#</system_output>
   <user_input timestamp="468.555694">e</user_input>

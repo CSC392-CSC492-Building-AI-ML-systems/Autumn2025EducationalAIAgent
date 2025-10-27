@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1721231136">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006139">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.51115">OA</user_input>
   <system_output timestamp="0.511692">asciinema rec `date +%s`.rec --stdin</system_output>
@@ -186,7 +186,7 @@ demo@faiserver:/home/fai$[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7221.569251">[remote detached from 120968.pts-29.stephost]
 </system_output>
   <system_output timestamp="7221.570485">[?2004hdemo@stephost:~$ </system_output>

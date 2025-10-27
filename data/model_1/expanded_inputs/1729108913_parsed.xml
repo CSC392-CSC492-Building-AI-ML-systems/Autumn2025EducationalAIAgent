@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1729108914">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009373">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.750785"/>
   <system_output timestamp="0.751092">
@@ -36,7 +36,7 @@ Last login: Tue Oct 15 19:24:58 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="35.201662">c</user_input>
   <system_output timestamp="35.203325">c</system_output>
   <user_input timestamp="35.391576">d</user_input>
@@ -184,7 +184,7 @@ Last login: Tue Oct 15 19:24:58 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="159.58241">c</user_input>
   <system_output timestamp="159.584431">c</system_output>
   <user_input timestamp="159.722959">a</user_input>
@@ -223,7 +223,7 @@ exit $error
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="162.150203">e</user_input>
   <system_output timestamp="162.160712">e</system_output>
   <user_input timestamp="162.267843">m</user_input>
@@ -953,7 +953,7 @@ $[33mROOTCMD[39;49m update-grub2[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1102.27616">c</user_input>
   <system_output timestamp="1102.278376">c</system_output>
   <user_input timestamp="1102.539352">d</user_input>
@@ -985,7 +985,7 @@ $[33mROOTCMD[39;49m update-grub2[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1104.78732">g</user_input>
   <system_output timestamp="1104.808569">g</system_output>
   <user_input timestamp="1105.15143">r</user_input>
@@ -1033,7 +1033,7 @@ $[33mROOTCMD[39;49m update-grub2[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1122.591389">c</user_input>
   <system_output timestamp="1122.593629">c</system_output>
   <user_input timestamp="1122.909251">d</user_input>
@@ -1135,7 +1135,7 @@ exit $error
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1263.06921">c</user_input>
   <system_output timestamp="1263.071355">c</system_output>
   <user_input timestamp="1263.314216">d</user_input>
@@ -1245,7 +1245,7 @@ exit $error
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1342.34384">g</user_input>
   <system_output timestamp="1342.345876">g</system_output>
   <user_input timestamp="1342.485295">i</user_input>
@@ -1342,7 +1342,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1363.56342">s</user_input>
   <system_output timestamp="1363.565405">s</system_output>
   <user_input timestamp="1363.661412">u</user_input>
@@ -1529,7 +1529,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1415.525008">e</user_input>
   <system_output timestamp="1415.527072">e</system_output>
   <user_input timestamp="1415.692165">m</user_input>
@@ -3087,7 +3087,7 @@ qemu-kvm[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1562.758129">c</user_input>
   <system_output timestamp="1562.779793">c</system_output>
   <user_input timestamp="1562.950634">d</user_input>
@@ -3203,7 +3203,7 @@ qemu-kvm[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2885.545009">c</user_input>
   <system_output timestamp="2885.547051">c</system_output>
   <user_input timestamp="2885.799883">d</user_input>
@@ -3297,7 +3297,7 @@ qemu-kvm[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2906.129048">s</user_input>
   <system_output timestamp="2906.130946">s</system_output>
   <user_input timestamp="2906.248413">u</user_input>
@@ -5121,7 +5121,7 @@ qemu-kvm[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3736.514837">g</user_input>
   <system_output timestamp="3736.522599">g</system_output>
   <user_input timestamp="3736.63074">i</user_input>
@@ -5197,7 +5197,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3748.439976">s</user_input>
   <system_output timestamp="3748.442332">s</system_output>
   <user_input timestamp="3748.58124">u</user_input>
@@ -5654,7 +5654,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3821.159461">s</user_input>
   <system_output timestamp="3821.161937">s</system_output>
   <user_input timestamp="3821.78869">u</user_input>
@@ -5711,7 +5711,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3825.473725">s</user_input>
   <system_output timestamp="3825.481493">s</system_output>
   <user_input timestamp="3825.594173">u</user_input>
@@ -5881,7 +5881,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3848.329209">c</user_input>
   <system_output timestamp="3848.350082">c</system_output>
   <user_input timestamp="3848.559218">d</user_input>
@@ -19737,7 +19737,7 @@ sys	2m17.993s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="5035.485063"/>
   <system_output timestamp="5035.487272">[?2004l
 
@@ -19751,7 +19751,7 @@ sys	2m17.993s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="5037.049257"/>
   <system_output timestamp="5037.049718">
 (reverse-i-search)`': </system_output>
@@ -19893,7 +19893,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="174286.208504">l</user_input>
   <system_output timestamp="174286.208918">l</system_output>
   <user_input timestamp="174286.72805">s</user_input>

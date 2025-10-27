@@ -1,10 +1,10 @@
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1722118534">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006251">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.801466"/>
   <system_output timestamp="0.801806">
@@ -75,7 +75,7 @@ demo@faiserver:/home/fai/config$[?2004h </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="36.846178">g</user_input>
   <system_output timestamp="36.847508">g</system_output>
   <user_input timestamp="36.966177">i</user_input>
@@ -1211,7 +1211,7 @@ demo@faiserver:/home/fai/config$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="4998.790212">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5431.642826">l</user_input>
   <system_output timestamp="5431.644233">l</system_output>
@@ -1464,7 +1464,7 @@ dr-xr-xr-x 8 root root 4096 Jul 28 00:38 [1m[34m..[0m
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5541.198533">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5551.695436">OA</user_input>
   <system_output timestamp="5551.696739">ls -la .git/hooks/</system_output>
@@ -1732,7 +1732,7 @@ demo@faiserver:/home/fai/config$ sudo git add files/etc/modprobe.d/blacklist-vmw
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5593.739647">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5594.665557">OA</user_input>
   <system_output timestamp="5594.680821">sudo git commit -m 'disable vmware graphics adapter loading.'</system_output>
@@ -2211,7 +2211,7 @@ demo@faiserver:/home/fai/config$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5677.274378">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5678.344095">g</user_input>
   <system_output timestamp="5678.362198">g</system_output>
@@ -2649,12 +2649,12 @@ demo@faiserver:/home/fai/config$ sudo git status[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5787.235886">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="5893.660533">c</user_input>
   <system_output timestamp="5893.661851">c</system_output>
   <user_input timestamp="5893.795891">a</user_input>
@@ -2962,7 +2962,7 @@ demo@faiserver:/home/fai/config$ </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="5942.837035">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5944.35512">g</user_input>
   <system_output timestamp="5944.35654">g</system_output>
@@ -3635,7 +3635,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6667.27416">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6694.51729">g</user_input>
   <system_output timestamp="6694.518732">g</system_output>
@@ -4784,7 +4784,7 @@ Other diff options
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6797.611656">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6798.237933">OA</user_input>
   <system_output timestamp="6798.251752">sudo git commit -m 'use modern ip= syntax without specifying interface name, and add UEFI firmware settings menu entry.'</system_output>
@@ -6335,7 +6335,7 @@ demo@faiserver:/home/fai/config$ sudo git diff[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6932.585835">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6933.467443">OA</user_input>
   <system_output timestamp="6933.482225">sudo git commit -m 'print error: before errors.'</system_output>
@@ -6969,7 +6969,7 @@ demo@faiserver:/home/fai/config$ sudo git diff[K</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6966.567566">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6966.884705">OA</user_input>
   <system_output timestamp="6966.89947">sudo git commit -m 'make it where the demo user can log in.'</system_output>

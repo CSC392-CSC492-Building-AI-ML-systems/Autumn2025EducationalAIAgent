@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1722165852">
-<event depth="-2">
+<event >
   <system_output timestamp="0.00681">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.513417">OA</user_input>
   <system_output timestamp="0.513718">screen -dr</system_output>
@@ -291,7 +291,7 @@ index d61f377..1e0f2a4 100644
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="14.623639">s</user_input>
   <system_output timestamp="14.625022">s</system_output>
   <user_input timestamp="14.749257">u</user_input>
@@ -572,7 +572,7 @@ xauth[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="24.773848">OB</user_input>
   <system_output timestamp="24.783124">[194B[K[33C[A[?12l[?25h[?25l[7m2[27m[H
 
@@ -602,7 +602,7 @@ xauth[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="28.000938">OA</user_input>
   <system_output timestamp="28.00697">sudo emacs package_config/FAIBASE </system_output>
   <user_input timestamp="28.232495">OA</user_input>
@@ -1231,7 +1231,7 @@ xauth[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="33.658672">q</user_input>
   <system_output timestamp="33.673478">
 [K</system_output>
@@ -1239,7 +1239,7 @@ xauth[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="35.290792">s</user_input>
   <system_output timestamp="35.292113">s</system_output>
   <user_input timestamp="35.436743">u</user_input>
@@ -1318,7 +1318,7 @@ xauth[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="47.225664">s</user_input>
   <system_output timestamp="47.2398">s</system_output>
   <user_input timestamp="47.327056">u</user_input>
@@ -1457,7 +1457,7 @@ xauth[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="63.595226">OA</user_input>
   <system_output timestamp="63.598983">sudo git commit -m 'python 2.7 no longer exists in debian 12.'</system_output>
   <user_input timestamp="63.838116">OA</user_input>
@@ -1889,7 +1889,7 @@ demo@faiserver:/home/fai/config$ sudo git [18Padd package_config/SERVERSLEEPERMU
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="69.555972">s</user_input>
   <system_output timestamp="69.557208">s</system_output>
   <user_input timestamp="69.678632">u</user_input>
@@ -2189,7 +2189,7 @@ demo@faiserver:/home/fai/config$ sudo git [18Padd package_config/SERVERSLEEPERMU
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="117.528187">OA</user_input>
   <system_output timestamp="117.54312">sudo git commit -m 'the qemu system emulator is no longer in the qemu package, and we do not use it anyways.'</system_output>
   <user_input timestamp="117.998456">OA</user_input>
@@ -2267,7 +2267,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="141.651372">OD</user_input>
   <system_output timestamp="141.652865"/>
   <user_input timestamp="142.312963">OD</user_input>
@@ -2407,7 +2407,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="154.161427">s</user_input>
   <system_output timestamp="154.165903">s</system_output>
   <user_input timestamp="154.287431">u</user_input>
@@ -2483,7 +2483,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="22428.483899">OA</user_input>
   <system_output timestamp="22428.485237">sudo git rm package_config/LINUXPMIDEV</system_output>
   <user_input timestamp="22434.387738"> </user_input>
@@ -2519,7 +2519,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="22440.740069">g</user_input>
   <system_output timestamp="22440.74143">g</system_output>
   <user_input timestamp="22440.888011">i</user_input>
@@ -2767,7 +2767,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="35432.305525">OA</user_input>
   <system_output timestamp="35432.306808">sudo git commit -m 'remove LINUXPMIDEV class; lsof was last package in it, and it is not in debian 12?'</system_output>
   <user_input timestamp="35432.599031">OA</user_input>
@@ -3118,7 +3118,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVERQEMU[K</syste
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40268.540381">s</user_input>
   <system_output timestamp="40268.546396">s</system_output>
   <user_input timestamp="40268.662092">u</user_input>
@@ -3175,7 +3175,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVERQEMU[K</syste
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40276.811557">s</user_input>
   <system_output timestamp="40276.832151">s</system_output>
   <user_input timestamp="40276.872509">u</user_input>
@@ -3414,7 +3414,7 @@ python3-gnuplotlib - Gnuplot-based plotter for numpy
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40328.123728">OA</user_input>
   <system_output timestamp="40328.125143">apt-cache search gnuplot</system_output>
   <user_input timestamp="40330.865443">OA</user_input>
@@ -4045,7 +4045,7 @@ abcde
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40368.678704">OA</user_input>
   <system_output timestamp="40368.680036">sudo emacs package_config/JUSER </system_output>
   <user_input timestamp="40369.024565">OA</user_input>
@@ -4062,7 +4062,7 @@ abcde
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40374.266156">s</user_input>
   <system_output timestamp="40374.267629">s</system_output>
   <user_input timestamp="40374.391897">u</user_input>
@@ -4211,7 +4211,7 @@ abcde
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40393.310685">s</user_input>
   <system_output timestamp="40393.311894">s</system_output>
   <user_input timestamp="40393.417295">u</user_input>
@@ -4536,7 +4536,7 @@ abcde
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40434.50166">s</user_input>
   <system_output timestamp="40434.503068">s</system_output>
   <user_input timestamp="40434.717819">u</user_input>
@@ -4598,7 +4598,7 @@ demo@faiserver:/home/fai/config$ sudo git [30Padd package_config/JUSER</system_o
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40445.552937">s</user_input>
   <system_output timestamp="40445.571358">s</system_output>
   <user_input timestamp="40445.688549">u</user_input>
@@ -4959,7 +4959,7 @@ demo@faiserver:/home/fai/config$ sudo git [30Padd package_config/JUSER</system_o
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40496.778611">OA</user_input>
   <system_output timestamp="40496.795473">sudo git commit -m 'remove clamav, update cruft to cruft-ng, install iotop only on physical machines, install telnet, and remove lsof.'</system_output>
   <user_input timestamp="40497.004889">OA</user_input>
@@ -5233,7 +5233,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/JADMIN[K</system_ou
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40502.461761">s</user_input>
   <system_output timestamp="40502.480533">s</system_output>
   <user_input timestamp="40502.576664">u</user_input>
@@ -5290,7 +5290,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/JADMIN[K</system_ou
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40511.640891">s</user_input>
   <system_output timestamp="40511.643928">s</system_output>
   <user_input timestamp="40511.743246">u</user_input>
@@ -5727,7 +5727,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40547.645816">OD</user_input>
   <system_output timestamp="40547.666189">[184B[K[184A</system_output>
   <user_input timestamp="40548.273276"/>
@@ -5761,7 +5761,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40553.783691">s</user_input>
   <system_output timestamp="40553.802579">s</system_output>
   <user_input timestamp="40553.918945">u</user_input>
@@ -5915,7 +5915,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40568.569945">s</user_input>
   <system_output timestamp="40568.571705">s</system_output>
   <user_input timestamp="40568.704706">u</user_input>
@@ -6182,7 +6182,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40574.351695">s</user_input>
   <system_output timestamp="40574.368877">s</system_output>
   <user_input timestamp="40574.475084">u</user_input>
@@ -6294,7 +6294,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40656.165303">s</user_input>
   <system_output timestamp="40656.171109">s</system_output>
   <user_input timestamp="40656.382628">u</user_input>
@@ -6446,7 +6446,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="40674.253897">OA</user_input>
   <system_output timestamp="40674.26346">sudo git commit -m 'remove midori since it is not in debian 12.'</system_output>
   <user_input timestamp="40674.46471">OA</user_input>
@@ -6667,7 +6667,7 @@ demo@faiserver:/home/fai/config$ sudo git [26Padd package_config/HOSTOFFICE</sys
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41116.695277">g</user_input>
   <system_output timestamp="41116.696785">g</system_output>
   <user_input timestamp="41116.821851">i</user_input>
@@ -6712,7 +6712,7 @@ demo@faiserver:/home/fai/config$ sudo git [26Padd package_config/HOSTOFFICE</sys
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="41124.016003">s</system_output>
   <user_input timestamp="41124.10488">u</user_input>
   <system_output timestamp="41124.113277">u</system_output>
@@ -6864,7 +6864,7 @@ demo@faiserver:/home/fai/config$ sudo git [26Padd package_config/HOSTOFFICE</sys
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41143.051929">OA</user_input>
   <system_output timestamp="41143.054712">sudo git commit -m 'move packages for physical hosts out of FAIBASE.'</system_output>
   <user_input timestamp="41143.245391">OA</user_input>
@@ -7043,7 +7043,7 @@ demo@faiserver:/home/fai/config$ sudo git [34Padd package_config/FAIBASE</system
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41161.487131">s</user_input>
   <system_output timestamp="41161.488402">s</system_output>
   <user_input timestamp="41161.651512">u</user_input>
@@ -7082,7 +7082,7 @@ demo@faiserver:/home/fai/config$ sudo git [34Padd package_config/FAIBASE</system
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41165.302297">s</user_input>
   <system_output timestamp="41165.311261">s</system_output>
   <user_input timestamp="41165.427129">u</user_input>
@@ -7351,7 +7351,7 @@ demo@faiserver:/home/fai/config$ sudo git [34Padd package_config/FAIBASE</system
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41200.723958">OA</user_input>
   <system_output timestamp="41200.739887">sudo git commit -m 'update name of cruft, remove lsof (ss -tunlp is better), and install iotop only on physical machines.'</system_output>
   <user_input timestamp="41200.917505">OA</user_input>
@@ -7509,7 +7509,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/EADMIN[K</system_ou
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41235.726758">c</user_input>
   <system_output timestamp="41235.727958">c</system_output>
   <user_input timestamp="41235.914336">a</user_input>
@@ -7540,7 +7540,7 @@ updatebase.DEFAULT   updatebase.DEFAULT~
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41241.220639"></user_input>
   <system_output timestamp="41241.221922">[K</system_output>
   <user_input timestamp="41241.869961"></user_input>
@@ -7645,7 +7645,7 @@ updatebase.DEFAULT   updatebase.DEFAULT~
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41254.017346">s</user_input>
   <system_output timestamp="41254.036177">s</system_output>
   <user_input timestamp="41254.139287">u</user_input>
@@ -7706,7 +7706,7 @@ updatebase.DEFAULT   updatebase.DEFAULT~
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41261.22087">s</user_input>
   <system_output timestamp="41261.224806">s</system_output>
   <user_input timestamp="41261.345194">u</user_input>
@@ -7875,7 +7875,7 @@ updatebase.DEFAULT   updatebase.DEFAULT~
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41284.611281">OA</user_input>
   <system_output timestamp="41284.620342">sudo git commit -m 'rename updatebase.DEFAULT.source to updatebase.DEFAULT'</system_output>
   <user_input timestamp="41284.833092">OA</user_input>
@@ -8018,7 +8018,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41753.5052">s</user_input>
   <system_output timestamp="41753.506756">s</system_output>
   <user_input timestamp="41753.655376">u</user_input>
@@ -8066,7 +8066,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41774.113199">s</user_input>
   <system_output timestamp="41774.133311">s</system_output>
   <user_input timestamp="41774.209486">u</user_input>
@@ -8199,7 +8199,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41801.767584">c</user_input>
   <system_output timestamp="41801.769261">c</system_output>
   <user_input timestamp="41801.959112">d</user_input>
@@ -8219,7 +8219,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="41803.138707"/>
   <system_output timestamp="41803.158083">
 (reverse-i-search)`': [K</system_output>

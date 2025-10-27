@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1728643500">
-<event depth="-2">
+<event >
   <system_output timestamp="0.005766">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1.362745"/>
   <system_output timestamp="1.363283">
@@ -38,7 +38,7 @@ Last login: Wed Oct  9 20:55:51 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="8.785062">]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="54.323021">[A</user_input>
   <system_output timestamp="54.325088">sudo git commit -am 'add -f to a2dismod invocation disabling the autoindex module.'</system_output>
@@ -92,7 +92,7 @@ Last login: Wed Oct  9 20:55:51 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="61.754209">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="62.219931">c</user_input>
   <system_output timestamp="62.22209">c</system_output>
@@ -129,7 +129,7 @@ Last login: Wed Oct  9 20:55:51 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="64.857938">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="65.28338">c</user_input>
   <system_output timestamp="65.294378">c</system_output>
@@ -163,7 +163,7 @@ Last login: Wed Oct  9 20:55:51 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="67.800701">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="68.128637">e</user_input>
   <system_output timestamp="68.135799">e</system_output>
@@ -378,7 +378,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="84.80716">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="85.31682">[A</user_input>
   <system_output timestamp="85.320426">emacs HWPHYS </system_output>
@@ -412,7 +412,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="88.949033">[?1049h[22;0;0t[?12;25h[?1h=</system_output>
   <system_output timestamp="88.976724">[H[2J[110d[K[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 [?1049h[22;0;0t[?12;25h[?1h=</system_output>
@@ -616,7 +616,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="95.763881">OB</user_input>
   <system_output timestamp="95.778405">[109;35H[?25l[7m3[0m[39;49m[27m[14;1H[?12l[?25h[?12;25h</system_output>
   <user_input timestamp="95.984618">OB</user_input>
@@ -765,7 +765,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="113.637121"/>
   <system_output timestamp="113.642162">[110;1H[?25lSaving file /home/fai/config/disk_config/HWPHYS...[16;36H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="113.852431">[110;1H[?25lWrote /home/fai/config/disk_config/HWPHYS[K[16;36H[?12l[?25h[?12;25h</system_output>
@@ -785,7 +785,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="121.981912">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="124.888796">g</user_input>
   <system_output timestamp="124.891143">g</system_output>
@@ -858,7 +858,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="128.750067">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="131.207211">g</user_input>
   <system_output timestamp="131.209302">g</system_output>
@@ -927,7 +927,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="143.074737">
 [?2004l
 </system_output>
@@ -1305,7 +1305,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="162.854628">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="165.041083">[A[A</user_input>
   <system_output timestamp="165.043219">sudo emacs HWPHYS [5Pgit diff</system_output>
@@ -1711,7 +1711,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="214.442546">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
   <user_input timestamp="219.579925">c</user_input>
   <system_output timestamp="219.581307">c</system_output>
@@ -1739,7 +1739,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="221.338958">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="226.521103"/>
   <system_output timestamp="226.523443">
@@ -1758,7 +1758,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="227.407838">[1@e': sudo bash -c '[7mtime[27m</system_output>
   <user_input timestamp="231.990765">
 </user_input>
@@ -3255,7 +3255,7 @@ Reading package lists...</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="379.336525">Reading package lists...</system_output>
   <system_output timestamp="379.367329">
 </system_output>
@@ -15674,7 +15674,7 @@ Number of packages in the mirror: </system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1241.008737">Copying the config space to CD image
 </system_output>
   <system_output timestamp="1241.833224">Copying the mirror to CD image
@@ -15728,7 +15728,7 @@ sys	2m23.578s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1382.905586">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="1429.478939"/>
   <system_output timestamp="1429.480949">[?2004l
@@ -15742,7 +15742,7 @@ sys	2m23.578s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1429.639651">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1430.812558"/>
   <system_output timestamp="1430.81292">
@@ -16083,7 +16083,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1509.085198">[?2004hdemo@stephost:~$ it </system_output>
   <user_input timestamp="1906.776845"></user_input>
   <system_output timestamp="1906.777468">[K</system_output>

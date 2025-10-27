@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1728840355">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006605">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1.411606"/>
   <system_output timestamp="1.411998">
@@ -39,7 +39,7 @@ Last login: Sun Oct 13 17:09:03 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9.78448">c</user_input>
   <system_output timestamp="9.786594">c</system_output>
   <user_input timestamp="9.972267">d</user_input>
@@ -202,7 +202,7 @@ Last login: Sun Oct 13 17:09:03 2024 from 172.16.0.1
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="900.179463">r</user_input>
   <system_output timestamp="900.181711">r</system_output>
   <user_input timestamp="900.434962">m</user_input>
@@ -291,7 +291,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="914.037739">c</user_input>
   <system_output timestamp="914.039803">c</system_output>
   <user_input timestamp="914.25965">d</user_input>
@@ -377,7 +377,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1537.2794">g</user_input>
   <system_output timestamp="1537.280995">g</system_output>
   <user_input timestamp="1537.832775">r</user_input>
@@ -433,7 +433,7 @@ To add an exception for this directory, call:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1547.898389">e</user_input>
   <system_output timestamp="1547.900291">e</system_output>
   <user_input timestamp="1548.023098">m</user_input>
@@ -914,7 +914,7 @@ fcopy /etc/ssh/ssh_config[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1585.416626">l</user_input>
   <system_output timestamp="1585.418548">l</system_output>
   <user_input timestamp="1585.717459">s</user_input>
@@ -984,7 +984,7 @@ fcopy /etc/ssh/ssh_config[K
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1773.747613">s</user_input>
   <system_output timestamp="1773.749533">s</system_output>
   <user_input timestamp="1773.889311">u</user_input>
@@ -1037,7 +1037,7 @@ Changes not staged for commit:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1777.148784">s</user_input>
   <system_output timestamp="1777.16434">s</system_output>
   <user_input timestamp="1777.250394">u</user_input>
@@ -1258,7 +1258,7 @@ Changes not staged for commit:
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6572.678593">c</user_input>
   <system_output timestamp="6572.680668">c</system_output>
   <user_input timestamp="6572.889562">d</user_input>
@@ -2296,7 +2296,7 @@ sys	0m9.555s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6645.11637">c</user_input>
   <system_output timestamp="6645.126718">c</system_output>
   <user_input timestamp="6645.280994">d</user_input>
@@ -2345,7 +2345,7 @@ FAIBASE  [00;90mGRUBEFI~[0m  HOSTXFCE          JADMIN       LATEXDEV   SERVERCAC
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6679.14247">e</user_input>
   <system_output timestamp="6679.144537">e</system_output>
   <user_input timestamp="6679.323621">m</user_input>
@@ -3295,7 +3295,7 @@ admesh</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="8193.901618">s</user_input>
   <system_output timestamp="8193.903565">s</system_output>
   <user_input timestamp="8194.007013">u</user_input>
@@ -3555,7 +3555,7 @@ admesh</system_output>
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="8237.499215">c</user_input>
   <system_output timestamp="8237.501281">c</system_output>
   <user_input timestamp="8237.753479">d</user_input>
@@ -17666,7 +17666,7 @@ sys	2m21.126s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9599.100307"/>
   <system_output timestamp="9599.10245">[?2004l
 
@@ -17680,7 +17680,7 @@ sys	2m21.126s
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9600.270094"/>
   <system_output timestamp="9600.270771">
 (reverse-i-search)`': </system_output>
@@ -17847,7 +17847,7 @@ fai_cd.iso                                                                      
 <annotation>
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="12915.538199"/>
   <system_output timestamp="12915.538648">[?2004l
 
