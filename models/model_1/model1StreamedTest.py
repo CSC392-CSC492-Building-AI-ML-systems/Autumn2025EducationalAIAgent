@@ -567,8 +567,18 @@ def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
     def add(obj):
         ann = obj.get("annotation")
         dep = obj.get("depth")
-        if isinstance(ann, str) and isinstance(dep, int) and dep >= -1:
-            out.append((dep, ann))
+        
+        if isinstance(ann, str):
+            # Convert string depth to int if needed
+            if isinstance(dep, str):
+                try:
+                    dep = int(dep)
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not convert depth '{dep}' to int")
+                    return
+            
+            if isinstance(dep, int) and dep >= -1:
+                out.append((dep, ann))
 
     while i < n:
         while i < n and text[i].isspace():
