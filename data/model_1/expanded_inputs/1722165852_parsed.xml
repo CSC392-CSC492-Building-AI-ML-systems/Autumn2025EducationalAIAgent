@@ -288,8 +288,7 @@ index d61f377..1e0f2a4 100644
 +++ b/package_config/HOSTOFFICE
 [0m[36m@@ -3,7 +3,6 @@
 [39mdemo@faiserver:/home/fai/config$[?2004h </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="14.623639">s</user_input>
@@ -569,8 +568,7 @@ xauth[K
 [K
 [7m-UU-:----F1  [27m[7m[1mFAIBASE     [27m[0m[7m   All L1    [27m[7mGit:master[27m[7m  (Fundamental) -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[27m
 [A[2;1H[?12l[?25h[?12;25h</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="24.773848">OB</user_input>
@@ -599,8 +597,7 @@ xauth[K
   <system_output timestamp="27.654023">
 [192B[K[?2004l[?12l[?25h</system_output>
   <system_output timestamp="27.659394">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="28.000938">OA</user_input>
@@ -1228,16 +1225,14 @@ xauth[K
  # FIXME: libmysqlclient-dev is not in Debian 9
  #libmysqlclient-dev
 [7m(END)[27m[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="33.658672">q</user_input>
   <system_output timestamp="33.673478">
 [K</system_output>
   <system_output timestamp="33.675711">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="35.290792">s</user_input>
@@ -1315,8 +1310,7 @@ xauth[K
   <system_output timestamp="46.156882">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="46.166347">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="47.225664">s</user_input>
@@ -1454,8 +1448,7 @@ xauth[K
   <system_output timestamp="63.094694"> 1 file changed, 3 insertions(+), 1 deletion(-)
 </system_output>
   <system_output timestamp="63.096157">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="63.595226">OA</user_input>
@@ -1886,8 +1879,7 @@ demo@faiserver:/home/fai/config$ sudo git [18Padd package_config/SERVERSLEEPERMU
   <system_output timestamp="67.926945">
 [K</system_output>
   <system_output timestamp="67.929093">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="69.555972">s</user_input>
@@ -2186,8 +2178,7 @@ demo@faiserver:/home/fai/config$ sudo git [18Padd package_config/SERVERSLEEPERMU
   <system_output timestamp="116.743859"> 1 file changed, 1 deletion(-)
 </system_output>
   <system_output timestamp="116.745659">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="117.528187">OA</user_input>
@@ -2264,8 +2255,7 @@ SERVERDNS                SERVERIMPLICIT           SERVERMYSQL              SERVE
 SERVERDRUPAL             SERVERIRCD               SERVERNAGIOS             SERVERQEMUDEV            SERVERSQUID              SERVERWORDPRESS          SERVERWWWMRT</system_output>
   <system_output timestamp="139.191366">G            SERVERZONEMINDER         
 demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="141.651372">OD</user_input>
@@ -2404,8 +2394,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
   <system_output timestamp="153.522626">fatal: pathspec 'package_config/SERVERLINUXPMIDEV' did not match any files
 </system_output>
   <system_output timestamp="153.524152">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="154.161427">s</user_input>
@@ -2480,8 +2469,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
 (use --cached to keep the file, or -f to force removal)
 </system_output>
   <system_output timestamp="22422.832734">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="22428.483899">OA</user_input>
@@ -2516,8 +2504,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
   <system_output timestamp="22437.485235">rm 'package_config/LINUXPMIDEV'
 </system_output>
   <system_output timestamp="22437.488724">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="22440.740069">g</user_input>
@@ -2764,8 +2751,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVER</system_outp
  delete mode 100644 package_config/LINUXPMIDEV
 </system_output>
   <system_output timestamp="22472.451908">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="35432.305525">OA</user_input>
@@ -3115,8 +3101,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVERQEMU[K</syste
   <system_output timestamp="40267.007842">
 [K</system_output>
   <system_output timestamp="40267.010463">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40268.540381">s</user_input>
@@ -3172,8 +3157,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/SERVERQEMU[K</syste
   <system_output timestamp="40276.203614">
 </system_output>
   <system_output timestamp="40276.211674">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40276.811557">s</user_input>
@@ -3411,8 +3395,7 @@ python3-gnuplotlib - Gnuplot-based plotter for numpy
   <system_output timestamp="40306.103083">texlive-science - TeX Live: Mathematics, natural sciences, computer science packages
 </system_output>
   <system_output timestamp="40306.190972">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40328.123728">OA</user_input>
@@ -4042,8 +4025,7 @@ abcde
 [158B[7m-UU-:----F1  [1mJUSER       [27m[0m[7m   All L7    Git:master  (Fundamental) -----------------------------------------------------------------------------------------------------------------------------</system_output>
   <system_output timestamp="40361.069677">--------------------------------------------------
 [27mdemo@faiserver:/home/fai/config$[?2004h </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40368.678704">OA</user_input>
@@ -4059,8 +4041,7 @@ abcde
   <system_output timestamp="40371.852522">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="40371.862283">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40374.266156">s</user_input>
@@ -4208,8 +4189,7 @@ abcde
   <system_output timestamp="40391.031838"> 1 file changed, 5 insertions(+), 3 deletions(-)
 </system_output>
   <system_output timestamp="40391.034027">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40393.310685">s</user_input>
@@ -4533,8 +4513,7 @@ abcde
   <system_output timestamp="40398.524257">
 [K</system_output>
   <system_output timestamp="40398.526513">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40434.50166">s</user_input>
@@ -4595,8 +4574,7 @@ demo@faiserver:/home/fai/config$ sudo git [30Padd package_config/JUSER</system_o
   <system_output timestamp="40444.862999">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="40444.871616">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40445.552937">s</user_input>
@@ -4956,8 +4934,7 @@ demo@faiserver:/home/fai/config$ sudo git [30Padd package_config/JUSER</system_o
   <system_output timestamp="40496.13179"> 1 file changed, 3 insertions(+), 4 deletions(-)
 </system_output>
   <system_output timestamp="40496.134351">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40496.778611">OA</user_input>
@@ -5230,8 +5207,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/JADMIN[K</system_ou
   <system_output timestamp="40501.110173">
 [K</system_output>
   <system_output timestamp="40501.112274">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40502.461761">s</user_input>
@@ -5287,8 +5263,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/JADMIN[K</system_ou
   <system_output timestamp="40511.0374">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="40511.046362">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40511.640891">s</user_input>
@@ -5724,8 +5699,7 @@ n</system_output>
 
 
 nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40547.645816">OD</user_input>
@@ -5758,8 +5732,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="40552.590757">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="40552.599023">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40553.783691">s</user_input>
@@ -5912,8 +5885,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
  1 file changed, 6 insertions(+)
 </system_output>
   <system_output timestamp="40567.561838">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40568.569945">s</user_input>
@@ -6179,8 +6151,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="40573.716803">
 [K</system_output>
   <system_output timestamp="40573.718987">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40574.351695">s</user_input>
@@ -6291,8 +6262,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="40654.565109">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="40654.574433">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40656.165303">s</user_input>
@@ -6443,8 +6413,7 @@ nf[195;63H[7m) --------[27m[12;2H[?12l[?25h[?12;25h</system_output>
  1 file changed, 3 insertions(+), 2 deletions(-)
 </system_output>
   <system_output timestamp="40673.789874">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="40674.253897">OA</user_input>
@@ -6664,8 +6633,7 @@ demo@faiserver:/home/fai/config$ sudo git [26Padd package_config/HOSTOFFICE</sys
 </system_output>
   <system_output timestamp="40675.858066">[K</system_output>
   <system_output timestamp="40675.860045">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41116.695277">g</user_input>
@@ -6709,8 +6677,7 @@ demo@faiserver:/home/fai/config$ sudo git [26Padd package_config/HOSTOFFICE</sys
 </system_output>
   <system_output timestamp="41122.692858">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="41123.999131">s</user_input>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="41124.016003">s</system_output>
@@ -6861,8 +6828,7 @@ demo@faiserver:/home/fai/config$ sudo git [26Padd package_config/HOSTOFFICE</sys
   <system_output timestamp="41142.394457"> 1 file changed, 4 insertions(+), 9 deletions(-)
 </system_output>
   <system_output timestamp="41142.396168">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41143.051929">OA</user_input>
@@ -7040,8 +7006,7 @@ demo@faiserver:/home/fai/config$ sudo git [34Padd package_config/FAIBASE</system
 </system_output>
   <system_output timestamp="41144.483611">[K</system_output>
   <system_output timestamp="41144.485896">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41161.487131">s</user_input>
@@ -7079,8 +7044,7 @@ demo@faiserver:/home/fai/config$ sudo git [34Padd package_config/FAIBASE</system
   <system_output timestamp="41164.663571">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="41164.672663">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41165.302297">s</user_input>
@@ -7348,8 +7312,7 @@ demo@faiserver:/home/fai/config$ sudo git [34Padd package_config/FAIBASE</system
   <system_output timestamp="41200.26604"> 1 file changed, 4 insertions(+), 3 deletions(-)
 </system_output>
   <system_output timestamp="41200.268224">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41200.723958">OA</user_input>
@@ -7506,8 +7469,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/EADMIN[K</system_ou
 </system_output>
   <system_output timestamp="41202.55419">[K</system_output>
   <system_output timestamp="41202.555599">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41235.726758">c</user_input>
@@ -7537,8 +7499,7 @@ demo@faiserver:/home/fai/config$ sudo git add package_config/EADMIN[K</system_ou
 updatebase.DEFAULT   updatebase.DEFAULT~  
 </system_output>
   <system_output timestamp="41239.471692">demo@faiserver:/home/fai/config$ cat hooks/updatebase.DEFAULT</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41241.220639"></user_input>
@@ -7642,8 +7603,7 @@ updatebase.DEFAULT   updatebase.DEFAULT~
   <system_output timestamp="41253.356861">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="41253.365449">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41254.017346">s</user_input>
@@ -7703,8 +7663,7 @@ updatebase.DEFAULT   updatebase.DEFAULT~
   <system_output timestamp="41260.651055">rm 'hooks/updatebase.DEFAULT.source'
 </system_output>
   <system_output timestamp="41260.654078">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41261.22087">s</user_input>
@@ -7872,8 +7831,7 @@ updatebase.DEFAULT   updatebase.DEFAULT~
  rename hooks/{updatebase.DEFAULT.source =&gt; updatebase.DEFAULT} (85%)
 </system_output>
   <system_output timestamp="41284.018475">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41284.611281">OA</user_input>
@@ -8015,8 +7973,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
 </system_output>
   <system_output timestamp="41286.388688">[K</system_output>
   <system_output timestamp="41286.390575">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41753.5052">s</user_input>
@@ -8063,8 +8020,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
   <system_output timestamp="41773.456878">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="41773.467597">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41774.113199">s</user_input>
@@ -8196,8 +8152,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
   <system_output timestamp="41799.195137"> 3 files changed, 12 insertions(+), 17 deletions(-)
 </system_output>
   <system_output timestamp="41799.197145">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41801.767584">c</user_input>
@@ -8216,8 +8171,7 @@ demo@faiserver:/home/fai/config$ sudo git [32Prm hooks/updatebase.DEFAULT.source
 [?2004l</system_output>
   <system_output timestamp="41802.512947">[?2004h</system_output>
   <system_output timestamp="41802.513127">demo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41803.138707"/>
@@ -22282,7 +22236,6 @@ user[4C13m51.894s
 sys[5C2m22.532s
 </system_output>
   <system_output timestamp="42969.937376">[?2004hdemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

@@ -35,8 +35,7 @@ Plan your installation, and FAI installs your plan.
 Last login: Fri Oct 11 11:45:03 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="5.114993">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
@@ -117,8 +116,7 @@ Last login: Fri Oct 11 11:45:03 2024 from 172.16.0.1
 </system_output>
   <system_output timestamp="118.950227">HWPHYS  QEMUCLIENT
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="118.95159">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
@@ -766,8 +764,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
   <user_input timestamp="696.442702">[O</user_input>
   <system_output timestamp="696.446688">[110;1H[K[10;45H</system_output>
   <user_input timestamp="696.482745">[I[O[I</user_input>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="859.40563">[O</user_input>
@@ -1085,8 +1082,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
   <user_input timestamp="1999.807573"/>
   <system_output timestamp="1999.815206">[110d[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="2000.048413">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
@@ -1176,8 +1172,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 </system_output>
   <system_output timestamp="2116.038768">
 [K[?1l&gt;</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="2116.04211">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
@@ -1402,8 +1397,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 </system_output>
   <system_output timestamp="2156.112624"> 1 file changed, 4 insertions(+), 3 deletions(-)
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="2156.116379">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
@@ -1464,8 +1458,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 </system_output>
   <system_output timestamp="2213.910861">[0m[01;32m10-base-classes[0m  [01;32m20-hwdetect.sh[0m  [01;32m50-host-classes[0m  [01;32m60-HACK-FIX_INSTALL_PACKAGES[0m  DEMO.var  efwrserver.var  FAIBASE.var  GERMAN.var  qemupostnwadm.var  qemupostserver.var  SERVERNAGIOS.var  SERVERWIKI.var
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="2213.911464">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
@@ -1505,8 +1498,7 @@ uname -s | tr '[:lower:]' '[:upper:]'
 [ -f /etc/RUNNING_FROM_FAICD ] &amp;&amp; echo &quot;FAICD&quot;
 exit 0
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="2219.035857">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
@@ -1607,8 +1599,7 @@ save_dmesg     # save new b</system_output>
 
 </system_output>
   <system_output timestamp="2236.640784">[?2004h</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="2236.641267">]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
@@ -1768,8 +1759,7 @@ exit 0
 #        proxyserver)
 #        	echo -n &quot;SERVERSNMP SERVERCACHE&quot; ;;
 [?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="2423.623211">[A</user_input>
@@ -2877,8 +2867,7 @@ exit 0
   <user_input timestamp="3294.135656"/>
   <system_output timestamp="3294.156421">[110;1H[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="3294.224864">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
@@ -2975,8 +2964,7 @@ exit 0
 </system_output>
   <system_output timestamp="3300.067899">
 [K[?1l&gt;</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="3300.070523">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
@@ -3259,8 +3247,7 @@ exit 0
 </system_output>
   <system_output timestamp="3342.316536"> 1 file changed, 8 insertions(+), 1 deletion(-)
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="3342.31966">[?2004h]0;demo@faiserver: /home/fai/config/classdemo@faiserver:/home/fai/config/class$ </system_output>
@@ -3299,8 +3286,7 @@ exit 0
   <system_output timestamp="3348.15634">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="3348.157154">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -3316,8 +3302,7 @@ exit 0
   <system_output timestamp="3349.484895">
 [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[29Pm': sudo bash -c '[7mtim[27me ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'
 [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="3350.50481">
@@ -4807,8 +4792,7 @@ Reading package lists...</system_output>
 </system_output>
   <system_output timestamp="3500.568295">Reading package lists...</system_output>
   <system_output timestamp="3500.601554">
-<annotation>
-</annotation>
+
 </event>
 <event >
 </system_output>
@@ -17240,8 +17224,7 @@ Number of packages in the mirror: </system_output>
 </system_output>
   <system_output timestamp="4318.60075">Copying the nfsroot to CD image
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="4361.31276">Copying the config space to CD image
@@ -17296,8 +17279,7 @@ real	19m18.312s
 user	13m15.563s
 sys	2m23.256s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="4508.919244">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -17310,8 +17292,7 @@ sys	2m23.256s
   <system_output timestamp="4521.328029">Connection to 172.16.0.17 closed.
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="4521.331903">[?2004h</system_output>
@@ -17475,8 +17456,7 @@ fai_cd.iso                                                                      
   <system_output timestamp="4603.701706">
 fai_cd.iso                                                                                                                                                                                                                                                                                                                                                                                              100% 1901MB  27.6MB/s   01:08    
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="4603.70942">[?2004hdemo@stephost:~$ </system_output>
@@ -17485,7 +17465,6 @@ fai_cd.iso                                                                      
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

@@ -190,8 +190,7 @@ real[4C32m26.849s
 user[4C14m17.323s
 sys[5C2m38.379s
 demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="42003.85206">[?2004l[?1l&gt;]0;]2;screen[23;2t[196;1H
@@ -199,7 +198,6 @@ demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
   <system_output timestamp="42003.870979">[remote detached from 120968.pts-29.stephost]
 </system_output>
   <system_output timestamp="42003.871904">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

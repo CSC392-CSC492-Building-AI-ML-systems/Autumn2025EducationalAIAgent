@@ -1,5 +1,4 @@
-<annotation>
-</annotation>
+
 </event>
 <event >
 <?xml version="1.0" ?>
@@ -43,8 +42,7 @@ Plan your installation, and FAI installs your plan.
 Last login: Sat Oct 12 14:18:03 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="13.338929">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
@@ -196,8 +194,7 @@ Last login: Sat Oct 12 14:18:03 2024 from 172.16.0.1
 </user_input>
   <system_output timestamp="71.291439">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="73.332899">[?1049h[22;0;0t[?12;25h[?1h=</system_output>
@@ -537,8 +534,7 @@ Last login: Sat Oct 12 14:18:03 2024 from 172.16.0.1
   <system_output timestamp="90.133047">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="90.133855">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -699,8 +695,7 @@ Other diff options
     --output &lt;file&gt;       output to a specific file
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="92.12424">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -755,8 +750,7 @@ Other diff options
 </system_output>
   <system_output timestamp="97.106669">
 [K[?1l&gt;</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="97.110316">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -853,8 +847,7 @@ Other diff options
 </system_output>
   <system_output timestamp="111.599294"> 1 file changed, 1 insertion(+), 1 deletion(-)
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="111.602501">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -875,8 +868,7 @@ Other diff options
   <system_output timestamp="132.942547">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="132.943216">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -898,8 +890,7 @@ Other diff options
 ]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ sudo bash -c 'time
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="135.853689">sudo: unable to resolve host faiserver: Name or service not known
@@ -2383,8 +2374,7 @@ Reading package lists...</system_output>
 </system_output>
   <system_output timestamp="287.113699">Reading package lists...</system_output>
   <system_output timestamp="289.024306">
-<annotation>
-</annotation>
+
 </event>
 <event >
 Building dependency tree...
@@ -14858,8 +14848,7 @@ Number of packages in the mirror: </system_output>
 </system_output>
   <system_output timestamp="1113.536082">Copying the nfsroot to CD image
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1158.26676">Copying the config space to CD image
@@ -14915,8 +14904,7 @@ real	19m32.102s
 user	13m11.925s
 sys	2m23.678s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1308.073428">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -14929,8 +14917,7 @@ sys	2m23.678s
   <system_output timestamp="1409.044259">Connection to 172.16.0.17 closed.
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1409.048053">[?2004hdemo@stephost:~$ </system_output>
@@ -15095,8 +15082,7 @@ fai_cd.iso                                                                      
   <system_output timestamp="1487.912594">
 fai_cd.iso                                                                                                                                                                                                                                                                                                                                                                                              100% 1902MB  27.5MB/s   01:09    
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1487.944874">[?2004hdemo@stephost:~$ </system_output>
@@ -15105,7 +15091,6 @@ fai_cd.iso                                                                      
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

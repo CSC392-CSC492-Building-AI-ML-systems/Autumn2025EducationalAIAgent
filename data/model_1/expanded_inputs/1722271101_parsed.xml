@@ -1,5 +1,4 @@
-<annotation>
-</annotation>
+
 </event>
 <event >
 <?xml version="1.0" ?>
@@ -191,8 +190,7 @@ real[4C19m23.591s
 user[4C13m51.894s
 sys[5C2m22.532s
 demo@faiserver:/home/fai$[?2004h </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="22.786599">d</user_input>
@@ -650,8 +648,7 @@ demo@faiserver:/home/fai$[?2004h </system_output>
   <system_output timestamp="25.88044">/usr/lib/dpkg/methods/apt/update                                              OK
 </system_output>
   <system_output timestamp="25.880873">^C</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="25.882441">
@@ -730,8 +727,7 @@ demo@faiserver:/home/fai$ debsums[K</system_output>
 [?2004l</system_output>
   <system_output timestamp="53.642846">/usr/sbin/fai-cd                                                          FAILED
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="91.082263">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -793,8 +789,7 @@ demo@faiserver:/home/fai$ debsums[K</system_output>
 [?2004l</system_output>
   <system_output timestamp="821.100143">fai-server: /usr/sbin/fai-cd
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="821.101197">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -930,8 +925,7 @@ demo@faiserver:/home/fai$ sudo cp /usr/sbin/fai-c</system_output>
   <user_input timestamp="2753.118347">f</user_input>
   <user_input timestamp="2753.263085">a</user_input>
   <user_input timestamp="2753.344425">i</user_input>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="2753.510545">
@@ -1177,8 +1171,7 @@ for faster access to a package repository.
 </system_output>
   <system_output timestamp="2785.451132">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="2785.462997">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -1283,8 +1276,7 @@ for faster access to a package repository.
 ---
 &gt; [6C    --install-modules=&quot;linux normal iso9660 biosdisk memdisk search ls echo test chain msdospart part_msdos part_gpt minicmd ext2 keystatus all_video font sleep gfxterm regexp serial&quot; \
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="3975.442188">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -1351,8 +1343,7 @@ demo@faiserver:/home/fai$ </system_output>
  [7C    &quot;boot/grub/grub.cfg=/tmp/grub.cfg&quot;
  [7Ccat $NFSROOT/usr/lib/grub/i386-pc/cdboot.img $NFSROOT/tmp/core.img &gt; $scratch/bios.img
 [?2004hdemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="5534.429777">s</user_input>
@@ -1410,8 +1401,7 @@ demo@faiserver:/home/fai$ </system_output>
   <system_output timestamp="5542.250086">
 [?2004l</system_output>
   <system_output timestamp="5542.257511">sudo: unable to resolve host faiserver: Name or service not known
-<annotation>
-</annotation>
+
 </event>
 <event >
 </system_output>
@@ -4847,8 +4837,7 @@ die $[33me[39m[K
   <user_input timestamp="8621.870275"/>
   <system_output timestamp="8621.89228">[196;1H[K[?2004l[?12l[?25h</system_output>
   <system_output timestamp="8621.900369">[?2004hdemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="8623.382125">s</user_input>
@@ -4905,8 +4894,7 @@ die $[33me[39m[K
 </user_input>
   <system_output timestamp="8639.535761">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="8639.541877">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -5021,8 +5009,7 @@ for faster access to a package repository.
 </system_output>
   <system_output timestamp="8648.456056">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="8648.469172">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -5076,8 +5063,7 @@ demo@faiserver:/home/fai$ diff
          J)  _OPTJ=1; sqopt=&quot;-comp xz&quot; ; arguments+=&quot; -J&quot;;;
          M)  nomirror=1 ;;
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="8652.868611">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -5779,7 +5765,6 @@ wodim -v -eject $[33misoname[39m[K
   <system_output timestamp="8683.872481">[196;1H[?12l[?25h[?25lSaving file /usr/sbin/fai-cd.modified...[107;10H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="8683.932846">[196;1H[?12l[?25h[?25lWrote /usr/sbin/fai-cd.modified[K[107;10H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="8683.935286">[195;6H[?12l[?25h[?25l[7m--[27m[107;10H[?12l[?25h[?12;25h</system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

@@ -35,8 +35,7 @@
   <system_output timestamp="14.511984">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="15.137032">
@@ -62,8 +61,7 @@ Plan your installation, and FAI installs your plan.
 Last login: Sun Sep 22 12:24:17 2024
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="17.695544">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
@@ -479,8 +477,7 @@ No user sessions are running outdated binaries.
 
 No VM guests are running outdated hypervisor (qemu) binaries on this host.
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="138.520613">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
@@ -493,8 +490,7 @@ logout
 
 </system_output>
   <system_output timestamp="140.561212">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="142.075182"/>
@@ -502,7 +498,6 @@ logout
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

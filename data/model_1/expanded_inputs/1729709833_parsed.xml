@@ -62,8 +62,7 @@ nullhost-tearoff-15: Runable,</system_output>
 </system_output>
   <system_output timestamp="3.338087">[?2004h</system_output>
   <system_output timestamp="3.338183">demo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="633.89317"/>
@@ -98,8 +97,7 @@ Last login: Wed Oct 16 21:01:37 2024 from 172.16.0.1
 
 </system_output>
   <system_output timestamp="637.643648">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="643.333613">c</user_input>
@@ -146,8 +144,7 @@ Last login: Wed Oct 16 21:01:37 2024 from 172.16.0.1
 [?2004l
 </system_output>
   <system_output timestamp="647.669686">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="648.341027">g</user_input>
@@ -444,16 +441,14 @@ Date:   Mon Jul 29 00:00:29 2024 +0100[m
 Author: Julia Longtin &lt;julia.longtin@gmail.com&gt;[m
 Date:   Sun Jul 28 23:51:54 2024 +0100[m
 :[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="681.690686">q</user_input>
   <system_output timestamp="681.748388">
 [K[?1l&gt;</system_output>
   <system_output timestamp="681.752392">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="682.536515">g</user_input>
@@ -2125,8 +2120,7 @@ Other diff options
   <system_output timestamp="843.763413">
 [K[?1l&gt;</system_output>
   <system_output timestamp="843.767486">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="845.209027">[A</user_input>
@@ -2370,8 +2364,7 @@ Other diff options
   <system_output timestamp="869.919752">
 [K[?1l&gt;</system_output>
   <system_output timestamp="869.923745">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="879.916661">[A</user_input>
@@ -2701,8 +2694,7 @@ Other diff options
   <system_output timestamp="917.665512">
 [K[?1l&gt;</system_output>
   <system_output timestamp="917.669782">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="938.190858">s</user_input>
@@ -2826,8 +2818,7 @@ grub-efi-ia32-bin - GRand Unified Bootloader, version 2 (EFI-IA32 modules)
 grub-efi-ia32-signed-template - GRand Unified Bootloader, version 2 (EFI-IA32 signing template)
 </system_output>
   <system_output timestamp="950.574185">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="2152.677785">[A</user_input>
@@ -3013,8 +3004,7 @@ HWPHYS      QEMUCLIENT
   <system_output timestamp="2168.980789">
 [K[?1l&gt;</system_output>
   <system_output timestamp="2168.984349">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="2192.495031">d</user_input>
@@ -3040,8 +3030,7 @@ logout
 
 </system_output>
   <system_output timestamp="5932.65418">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="5934.348747">c</user_input>
@@ -3089,8 +3078,7 @@ logout
   <system_output timestamp="5939.825542">: Permission denied
 </system_output>
   <system_output timestamp="5939.82634">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="5940.88235">[A</user_input>
@@ -3105,7 +3093,6 @@ logout
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

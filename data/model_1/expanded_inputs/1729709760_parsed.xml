@@ -19,8 +19,7 @@
 
 </system_output>
   <system_output timestamp="5.18472">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="10.853794">c</user_input>
@@ -142,8 +141,7 @@ nullhost-tearoff-15: Runable,</system_output>
   <system_output timestamp="16.035493">nullhost-tearoff-15                172.16.0.16
 </system_output>
   <system_output timestamp="16.035788">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="37.74898"/>
@@ -151,7 +149,6 @@ nullhost-tearoff-15: Runable,</system_output>
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

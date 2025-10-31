@@ -45,8 +45,7 @@
   <user_input timestamp="16.599216">5</user_input>
   <user_input timestamp="16.683584">6</user_input>
   <user_input timestamp="17.022337">7</user_input>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="17.189268">!</user_input>
@@ -117,8 +116,7 @@ Last login: Sun Sep 22 12:24:17 2024
   <system_output timestamp="55.194304">a</system_output>
   <user_input timestamp="55.521296">
 </user_input>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="55.531082">
@@ -466,8 +464,7 @@ Scanning linux images... [======================================================
 </system_output>
   <system_output timestamp="137.382422">Scanning linux images...  
 </system_output>                                                                                                                                                                                                                                                                                                     
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="137.383961">
@@ -498,7 +495,6 @@ logout
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

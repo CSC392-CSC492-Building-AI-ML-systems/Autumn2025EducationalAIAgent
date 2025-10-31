@@ -101,8 +101,7 @@ cd ..
   <system_output timestamp="68.041688">[?2004l
 </system_output>
   <system_output timestamp="68.041969">[?2004h]0;renee_k@Renee: ~/MCSS[01;32mrenee_k@Renee[00m:[01;34m~/MCSS[00m$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="68.583536">c</user_input>
@@ -255,8 +254,7 @@ cd ..
 [?2004l
 </system_output>
   <system_output timestamp="166.264989">[?2004h]0;renee_k@Renee: ~/MCSS[01;32mrenee_k@Renee[00m:[01;34m~/MCSS[00m$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="166.814336">g</user_input>
@@ -831,8 +829,7 @@ Resolving deltas:  83% (57/68)
   <system_output timestamp="224.171251">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="224.171468">[?2004h]0;renee_k@Renee: ~/MCSS[01;32mrenee_k@Renee[00m:[01;34m~/MCSS[00m$ </system_output>
@@ -1141,7 +1138,6 @@ KeyError: 'PREFIX'
 [?2004l
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

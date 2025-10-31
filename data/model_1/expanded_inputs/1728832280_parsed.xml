@@ -1,5 +1,4 @@
-<annotation>
-</annotation>
+
 </event>
 <event >
 <?xml version="1.0" ?>
@@ -39,8 +38,7 @@ Plan your installation, and FAI installs your plan.
 Last login: Sun Oct 13 14:37:10 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="10.961595">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
@@ -112,8 +110,7 @@ DEMO     GRUB      HOSTBOX           HWAMD64      KALLIDEV   OPENWRTDEV   SERVER
 EADMIN   GRUBEFI   HOSTSTEP          ISCSICLIENT  LAPTOP     SELINUX      SERVERDRUPAL    SERVERIRCD      SERVERNAGIOS        SERVERQEMUDEV  SERVERSQUID       SERVERWORDPRESS          SERVERWWWMRTG      SERVERZONEMINDER
 FAIBASE  [00;90mGRUBEFI~[0m  HOSTXFCE          JADMIN       LATEXDEV   SERVERCACHE  SERVERFAI       SERVERISCSI     SERVERNTOP          SERVERREPRAP   SERVERWIFIDOG     SERVERWWW                SERVERWWWOEMR      XORG
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="18.594012">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -158,8 +155,7 @@ grub-efi-amd64-bin
   <user_input timestamp="24.066318">q</user_input>
   <system_output timestamp="24.108192">
 [K[?1l&gt;[?1049l[23;0;0t</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="24.109009">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -505,8 +501,7 @@ grub-efi-amd64-bin[K
   <system_output timestamp="49.421665">[196;4H[?25l C-c[4;15H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="49.424447">[196;1H[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="49.689141">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -579,8 +574,7 @@ grub-efi-amd64-bin[K
 </system_output>
   <system_output timestamp="55.348946">
 [K[?1l&gt;</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="55.353729">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -873,8 +867,7 @@ grub-efi-amd64[K
   <user_input timestamp="66.839973"/>
   <system_output timestamp="66.857897">[196d[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="66.868066">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -1021,8 +1014,7 @@ grub-efi-amd64[K
 </system_output>
   <system_output timestamp="89.795317"> 1 file changed, 3 insertions(+), 2 deletions(-)
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="89.7975">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -1049,8 +1041,7 @@ grub-efi-amd64[K
   <system_output timestamp="93.282569">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="93.282995">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -1073,8 +1064,7 @@ grub-efi-amd64[K
 ]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ sudo bash -c 'time
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="95.21528">sudo: unable to resolve host faiserver: Name or service not known
@@ -2555,8 +2545,7 @@ Reading package lists...</system_output>
 </system_output>
   <system_output timestamp="248.097918">Reading package lists...</system_output>
   <system_output timestamp="250.098088">
-<annotation>
-</annotation>
+
 </event>
 <event >
 Building dependency tree...
@@ -15018,8 +15007,7 @@ Number of packages in the mirror: </system_output>
 </system_output>
   <system_output timestamp="1069.40632">Copying the nfsroot to CD image
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1108.080275">Copying the config space to CD image
@@ -15075,8 +15063,7 @@ real	18m40.422s
 user	13m16.966s
 sys	2m23.600s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1215.847262">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -15089,8 +15076,7 @@ sys	2m23.600s
   <system_output timestamp="1669.51803">Connection to 172.16.0.17 closed.
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1669.519805">[?2004hdemo@stephost:~$ </system_output>
@@ -15242,8 +15228,7 @@ fai_cd.iso                                                                      
   <system_output timestamp="1740.794492">
 fai_cd.iso                                                                                                                                                                                                   100% 1901MB  29.5MB/s   01:04    
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1740.800737">[?2004hdemo@stephost:~$ </system_output>
@@ -15252,7 +15237,6 @@ fai_cd.iso                                                                      
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

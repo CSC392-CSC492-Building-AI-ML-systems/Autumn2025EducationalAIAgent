@@ -72,8 +72,7 @@ Last login: Sun Oct  6 16:51:26 2024 from 172.16.0.1
 
 </system_output>
   <system_output timestamp="13.640211">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="21.987222">c</user_input>
@@ -120,8 +119,7 @@ Last login: Sun Oct  6 16:51:26 2024 from 172.16.0.1
 [?2004l
 </system_output>
   <system_output timestamp="26.935093">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="37.178971">g</user_input>
@@ -281,8 +279,7 @@ Other diff options
 
 </system_output>
   <system_output timestamp="39.493239">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="41.941309">l</user_input>
@@ -297,8 +294,7 @@ Other diff options
   <system_output timestamp="42.46479">[0m[01;34mclass[0m  [01;34mdebconf[0m  [01;34mdisk_config[0m  [01;34mfiles[0m  [01;34mhooks[0m  [01;34mpackage_config[0m  [01;34mscripts[0m
 </system_output>
   <system_output timestamp="42.465592">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="44.147483">g</user_input>
@@ -332,8 +328,7 @@ To add an exception for this directory, call:
 	git config --global --add safe.directory /home/fai/config
 </system_output>
   <system_output timestamp="46.226694">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="50.572229">s</user_input>
@@ -719,16 +714,14 @@ To add an exception for this directory, call:
 [K [KESCESC[K[[[K55[K~~
 [K
 [K:[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="62.45089">q</user_input>
   <system_output timestamp="62.513208">
 [K[?1l&gt;</system_output>
   <system_output timestamp="62.517843">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="63.400662">g</user_input>
@@ -807,8 +800,7 @@ To add an exception for this directory, call:
   <system_output timestamp="74.71015">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="74.816969">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="75.807825">g</user_input>
@@ -1021,8 +1013,7 @@ To add an exception for this directory, call:
   <system_output timestamp="111.809551"> 1 file changed, 33 insertions(+)
 </system_output>
   <system_output timestamp="111.8131">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="119.895292"/>
@@ -1035,8 +1026,7 @@ To add an exception for this directory, call:
 
 </system_output>
   <system_output timestamp="119.906135">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="120.953681"/>
@@ -1044,7 +1034,6 @@ To add an exception for this directory, call:
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

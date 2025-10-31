@@ -1,5 +1,4 @@
-<annotation>
-</annotation>
+
 </event>
 <event >
 <?xml version="1.0" ?>
@@ -20,8 +19,7 @@
   <system_output timestamp="6.004864">apt install gcc libc6-dev libsodium-dev make autoconf</system_output>
   <user_input timestamp="6.952575">[B</user_input>
   <system_output timestamp="6.953">
-<annotation>
-</annotation>
+
 </event>
 <event >
 [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K</system_output>
@@ -34,8 +32,7 @@
 [?2004l
 </system_output>
   <system_output timestamp="14.163313">[?2004hstephost:/home/demo# </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="15.497635">c</user_input>
@@ -66,8 +63,7 @@
   <system_output timestamp="16.892085">new implicitcad site
 </system_output>
   <system_output timestamp="16.893434">[?2004hstephost:/home/demo# </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="1157.616321"/>
@@ -76,7 +72,6 @@
 </system_output>
   <system_output timestamp="1157.617081">exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

@@ -1,5 +1,4 @@
-<annotation>
-</annotation>
+
 </event>
 <event >
 <?xml version="1.0" ?>
@@ -30,8 +29,7 @@ Plan your installation, and FAI installs your plan.
 Last login: Sun Oct 13 22:01:13 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="4.274755">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
@@ -125,8 +123,7 @@ DEVHOST  GRUBEFI           HOSTXFCE    JADMIN       LATEXDEV    SELINUX         
   <system_output timestamp="13.371072">EADMIN   HASUNTRUSTEDDATA  HW686       JUSER        OEMRDEV     SERVERCACHE     SERVERFAI     SERVERISCSI     SERVERNTOP          SERVERREPRAP   SERVERWIFIDOG     SERVERWWW                SERVERWWWOEMR      XORG
 FAIBASE  HOSTBOX           HWAMD64     KALLIDEV     OPENWRTDEV  SERVERCREATEVM  SERVERFTP     SERVERMAIL      SERVEROPENVPN       SERVERRORAILS  SERVERWIKI        SERVERWWWCREATEVM        SERVERWWWOPENCART
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="13.372608">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -209,8 +206,7 @@ FAIBASE  HOSTBOX           HWAMD64     KALLIDEV     OPENWRTDEV  SERVERCREATEVM  
 </user_input>
   <system_output timestamp="27.119785">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="27.14957">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -432,8 +428,7 @@ FAIBASE  HOSTBOX           HWAMD64     KALLIDEV     OPENWRTDEV  SERVERCREATEVM  
   <system_output timestamp="79.2015">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="79.452997">[?2004h</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="79.453795">]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -864,8 +859,7 @@ Changes not staged for commit:
  delete mode 100644 package_config/OPENWRTDEV
 </system_output>
   <system_output timestamp="119.849634">[?2004h</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="119.850072">]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
@@ -904,8 +898,7 @@ Changes not staged for commit:
   <system_output timestamp="124.325236">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="124.325981">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -924,8 +917,7 @@ Changes not staged for commit:
 [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C</system_output>
   <user_input timestamp="125.872987">e</user_input>
   <system_output timestamp="125.893348">[1@e': sudo bash -c '[7mtime[27m</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="126.533552">
@@ -948,8 +940,7 @@ Changes not staged for commit:
 </system_output>
   <system_output timestamp="127.495009">Calling debootstrap --exclude=tasksel,nano --include=aptitude bookworm /srv/fai/nfsroot http://127.0.0.1:3142/ftp.us.debian.org/debian
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="127.636924">I: Retrieving InRelease 
@@ -2400,8 +2391,7 @@ Changes not staged for commit:
 </system_output>
   <system_output timestamp="265.052771">I: Configuring libc-bin...
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="265.150298">I: Base system installed successfully.
@@ -2787,8 +2777,7 @@ Reading state information...
 </system_output>
   <system_output timestamp="281.245255">Adding additional packages to /srv/fai/nfsroot:
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="281.247705">nfs-common fai-nfsroot rpcbind rsync lshw procinfo dump dosfstools hwinfo hdparm smartmontools nvme-cli numactl udns-utils netcat-traditional nmap ca-certificates usbutils pciutils ssh netselect mdadm cryptsetup dracut live-boot- initramfs-tools- dracut-config-generic dracut-network sysvinit-core initscripts curl lftp less ntpsec-ntpdate rdate lvm2 psmisc dialog console-common xz-utils aptitude discover dmidecode dump e2fsprogs iproute2 isc-dhcp-client mdetect bzip2 emacs-nox strace dmraid dmsetup gddrescue bc firmware-linux-free read-edid grub-pc efibootmgr linux-image-686-pae grub-efi-amd64-bin 
@@ -14808,8 +14797,7 @@ Writing extended state information...
 Number of packages in the mirror: </system_output>
   <system_output timestamp="1027.417643">2204
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1027.418116">Mirror size and location: </system_output>
@@ -14867,8 +14855,7 @@ real	18m48.197s
 user	13m4.830s
 sys	2m18.392s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1255.012571">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -15031,8 +15018,7 @@ fai_cd.iso                                                                      
   <system_output timestamp="3719.557719">
 fai_cd.iso                                                                                                                                                                                                   100% 1899MB  26.9MB/s   01:10    
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="3719.5662">[?2004hdemo@stephost:~$ </system_output>
@@ -15041,7 +15027,6 @@ fai_cd.iso                                                                      
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

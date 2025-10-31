@@ -136,8 +136,7 @@
   <system_output timestamp="16.037613">faiserver-tearoff-12               172.16.0.17
 </system_output>
   <system_output timestamp="16.049583">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="3273.681623">c</user_input>
@@ -157,8 +156,7 @@
           &lt;reconfig&gt;
 </system_output>
   <system_output timestamp="3275.484604">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="3276.180473">c</user_input>
@@ -315,8 +313,7 @@
   <system_output timestamp="3301.34457">/usr/bin/cm: 111: cannot create /var/local/createvm/VMs/faiserver-tearoff-12/note.txt: Permission denied
 </system_output>
   <system_output timestamp="3301.345232">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="3302.485345">[A</user_input>
@@ -346,8 +343,7 @@
   <system_output timestamp="3308.692814">sudo: a password is required
 </system_output>
   <system_output timestamp="3308.696279">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="3312.315169"/>
@@ -355,7 +351,6 @@
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

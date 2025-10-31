@@ -86,8 +86,7 @@ debhelper
 sudo: unable to resolve host faiserver
 [sudo] password for demo:
 demo@faiserver:/home/fai/config$ git commit -m </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="9.070577">'</user_input>
@@ -209,8 +208,7 @@ demo@faiserver:/home/fai/config$ </system_output>
   <system_output timestamp="29.181531"> 1 file changed, 5 insertions(+), 1 deletion(-)
 </system_output>
   <system_output timestamp="29.183796">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="30.693452">OA</user_input>
@@ -757,16 +755,14 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
   <user_input timestamp="38.184004"> </user_input>
   <system_output timestamp="38.290491">
 [K[?5h[?5l[K[7m(END)[27m[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="1325.822228">q</user_input>
   <system_output timestamp="1325.824706">
 [K</system_output>
   <system_output timestamp="1325.826177">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="1326.244128">g</user_input>
@@ -837,8 +833,7 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
   <system_output timestamp="1336.437424">
 </system_output>
   <system_output timestamp="1336.448473">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="1337.664634">OA</user_input>
@@ -988,8 +983,7 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
  1 file changed, 2 insertions(+), 1 deletion(-)
 </system_output>
   <system_output timestamp="1355.88811">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="1359.030432">g</user_input>
@@ -1026,7 +1020,6 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
   <system_output timestamp="1366.001665">A</system_output>
   <user_input timestamp="1366.383805">	</user_input>
   <system_output timestamp="1366.414731">GIOS </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

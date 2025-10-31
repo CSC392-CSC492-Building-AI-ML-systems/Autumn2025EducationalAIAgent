@@ -244,8 +244,7 @@ discord or IRC.
   <system_output timestamp="42.091832">
 [?2004l
 [?2004h]0;bandit12@bandit: ~[01;32mbandit12@bandit[00m:[01;34m~[00m$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="42.919488">m</user_input>
@@ -311,8 +310,7 @@ discord or IRC.
   <system_output timestamp="61.459046">
 [?2004l
 [?2004h]0;bandit12@bandit: ~[01;32mbandit12@bandit[00m:[01;34m~[00m$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="63.016555">[A</user_input>
@@ -353,8 +351,7 @@ discord or IRC.
   <system_output timestamp="84.369025"/>
   <user_input timestamp="84.380451">[D</user_input>
   <system_output timestamp="84.400678"/>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="84.415804">[D</user_input>
@@ -2010,8 +2007,7 @@ Try 'tar --help' or 'tar --usage' for more information.
   <system_output timestamp="370.601405">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="370.606208">tar: You must specify one of the '-Acdtrux', '--delete' or '--test-label' options
@@ -7985,8 +7981,7 @@ logout
   <system_output timestamp="683.522742">Connection to bandit.labs.overthewire.org closed.
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="683.543641">[?2004h]0;renee_k@Renee: ~[01;32mrenee_k@Renee[00m:[01;34m~[00m$ </system_output>
@@ -9665,7 +9660,6 @@ logout
 [?2004l
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

@@ -1,5 +1,4 @@
-<annotation>
-</annotation>
+
 </event>
 <event >
 <?xml version="1.0" ?>
@@ -222,8 +221,7 @@ real[4C17m27.011s
 user[4C12m21.107s
 sys[5C1m57.635s
 demo@faiserver:/home/fai$ sudo bash -c 'time ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'[?2004h</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="4.220101">OB</user_input>
@@ -253,8 +251,7 @@ none             1029644     668   1028976   1% /tmp
 tmpfs            1647432   13752   1633680   1% /home/fai/nfsroot/var/lib/dpkg
 tmpfs            1647432    3736   1643696   1% /home/fai/nfsroot/var/cache
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="8.370576">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -301,8 +298,7 @@ libtiff5
 </system_output>
   <system_output timestamp="22.32064">libusb-0.1-4
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="22.322052">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -414,8 +410,7 @@ Use 'sudo apt autoremove' to remove them.
 After this operation, 279 kB disk space will be freed.
 Do you want to continue? [Y/n] </system_output>
   <user_input timestamp="36.435383"/>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="36.437988">^C</system_output>
@@ -630,8 +625,7 @@ Do you want to continue? [Y/n] </system_output>
 </system_output>
   <system_output timestamp="50.666758">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="50.677621">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -742,8 +736,7 @@ Do you want to continue? [Y/n] </system_output>
 </system_output>
   <system_output timestamp="61.267104">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="61.278403">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -781,8 +774,7 @@ Use 'sudo apt autoremove' to remove them.
 </system_output>
   <system_output timestamp="64.160145">0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="64.165087">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -985,8 +977,7 @@ Do you want to continue? [Y/n] </system_output>
 </system_output>
   <system_output timestamp="78.963348">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="78.979636">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -1262,8 +1253,7 @@ ii  libattr1:i386      </system_output>
 ii  libaudit-common                  1:3.0.9-1                               all          Dynamic library for security auditing - common files
 ii  libaudit1:i386                   1:3.0.9-1                               i386         Dynamic library for security auditing
 :[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="102.847302">q</user_input>
@@ -1397,8 +1387,7 @@ Do you want to continue? [Y/n] </system_output>
 [A</system_output>
   <system_output timestamp="112.948702">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="112.960107">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -1527,8 +1516,7 @@ Do you want to continue? [Y/n] </system_output>
 </system_output>
   <system_output timestamp="125.821139">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="125.837144">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -1659,8 +1647,7 @@ Do you want to continue? [Y/n] </system_output>
 </system_output>
   <system_output timestamp="133.412657">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="133.423126">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -1685,8 +1672,7 @@ none             1029644     668   1028976   1% /tmp
 tmpfs            1647432   13752   1633680   1% /home/fai/nfsroot/var/lib/dpkg
 tmpfs            1647432    3736   1643696   1% /home/fai/nfsroot/var/cache
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="175.770182">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -1994,8 +1980,7 @@ ii  libbinutils:i386                 2.40-2                                  i38
 ii  libblas3:i386                    3.11.0-2                                i386         Basic Linear Algebra Reference implementations, shared library
 ii  libblkid1:i386                   2.38.1-5+deb12u1                        i386         block device ID library
 :[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="211.459969">q</user_input>
@@ -2770,8 +2755,7 @@ ii  zstd                             1.5.4+dfsg2-5                           i38
   <user_input timestamp="288.510297">q</user_input>
   <system_output timestamp="288.513773">
 [K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="288.515077">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -2904,8 +2888,7 @@ After this operation, 63.5 kB disk space will be freed.
 [A</system_output>
   <system_output timestamp="297.461919">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="297.473245">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -2993,8 +2976,7 @@ USAGE:  ntpdig [-&lt;flag&gt; [&lt;val&gt;] | --&lt;name&gt;[{=| }&lt;val&gt;]].
    -h no  help            Display extended usage information and exit
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="316.467666">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -3020,8 +3002,7 @@ none             1029644     668   1028976   1% /tmp
 /dev/sda3        6339196 2685592   3337116  45% /home
 /dev/sda1          87847   41251     41981  50% /boot
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="360.215668">tmpfs            1647432   13752   1633680   1% /home/fai/nfsroot/var/lib/dpkg
@@ -4530,8 +4511,7 @@ tmpfs[12C1647432   13752   1633680   1% /home/fai/nfsroot/var/lib/dpkg
 tmpfs[12C1647432[4C3736   1643696   1% /home/fai/nfsroot/var/cache
 demo@faiserver:/home/fai$[?2004h 
 [7mCopy mode aborted[27m  </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="374.097448">l</user_input>
@@ -4546,8 +4526,7 @@ demo@faiserver:/hom[7C</system_output>
 [?2004l</system_output>
   <system_output timestamp="374.635795">[1m[32mcd_build_lint.sh[0m  [1m[32mcd_build_lint.sh~[0m  [1m[34mconfig[0m  [1m[31mconfig.tar.gz[0m  [1m[32mfailint.sh[0m  [1m[32mfailint.sh~[0m  fai_mirror.out  make-fai-cd.out  [1m[32mmake-fai-cd.sh[0m  [1m[32mmake-fai-cd.sh~[0m  [1m[34mnfsroot[0m  [1m[32mzram_swap.sh[0m  [1m[32mzram_swap.sh~[0m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="374.636257">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -4665,8 +4644,7 @@ demo@faiserver:/hom[7C</system_output>
 </system_output>
   <system_output timestamp="391.915539">4[7Cprivate
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="391.918449">[?2004hdemo@faiserver:/var/cache$ </system_output>
@@ -4725,8 +4703,7 @@ demo@faiserver:/hom[7C</system_output>
 [?2004l</system_output>
   <system_output timestamp="400.64834">lock  [1m[34mpartial[0m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="400.649056">[?2004hdemo@faiserver:/var/cache/apt/archives$ </system_output>
@@ -4746,8 +4723,7 @@ demo@faiserver:/hom[7C</system_output>
 [?2004l</system_output>
   <system_output timestamp="402.663077">-bash: cd: partial/: Permission denied
 [?2004hdemo@faiserver:/var/cache/apt/archives$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="402.847956">l</user_input>
@@ -4789,8 +4765,7 @@ demo@faiserver:/hom[7C</system_output>
 [?2004l</system_output>
   <system_output timestamp="407.888803">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="407.901032">[?2004hdemo@faiserver:/var/cache/apt/archives$ </system_output>
@@ -4886,8 +4861,7 @@ demo@faiserver:/hom[7C</system_output>
 [?2004l</system_output>
   <system_output timestamp="430.176988">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="430.189893">[?2004hdemo@faiserver:/var/cache$ </system_output>
@@ -4923,8 +4897,7 @@ none             1029644     668   1028976   1% /tmp
 tmpfs            1647432   13752   1633680   1% /home/fai/nfsroot/var/lib/dpkg
 </system_output>
   <system_output timestamp="442.052663">tmpfs            1647432    3736   1643696   1% /home/fai/nfsroot/var/cache
-<annotation>
-</annotation>
+
 </event>
 <event >
 [?2004hdemo@faiserver:/var/cache$ </system_output>
@@ -5210,8 +5183,7 @@ ii  libbinutils:i386                 2.40-2                                  i38
 ii  libblas3:i386                    3.11.0-2                                i386         Basic Linear Algebra Reference implementations, shared library
 ii  libblkid1:i386                   2.38.1-5+deb12u1                        i386         block device ID library
 :[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="466.566818">q</user_input>
@@ -5310,8 +5282,7 @@ du: cannot read directory 'spool/rsyslog': Permission denied</system_output>
 du: cannot read directory 'tmp/systemd-private-3817ddd687144d47ab24888e577d1a05-systemd-logind.service-e69WHa': Permission denied
 8[7Ctmp
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="473.028525">[?2004hdemo@faiserver:/var$ </system_output>
@@ -5354,8 +5325,7 @@ du: cannot read directory 'tmp/systemd-private-3817ddd687144d47ab24888e577d1a05-
 </system_output>
   <system_output timestamp="476.067997">12[6Ctmp
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="476.069799">[?2004hdemo@faiserver:/var$ </system_output>
@@ -5440,8 +5410,7 @@ du: cannot read directory 'tmp/systemd-private-3817ddd687144d47ab24888e577d1a05-
   <system_output timestamp="481.617426">92[6Cucf
 8[7Cvim
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="481.621176">[?2004hdemo@faiserver:/var/lib$ </system_output>
@@ -5618,8 +5587,7 @@ demo@faiserver:/var/lib/clamav$ </system_output>
 [?2004l</system_output>
   <system_output timestamp="513.227772">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="513.357536">[?2004hdemo@faiserver:/var/lib/clamav$ </system_output>
@@ -5698,8 +5666,7 @@ demo@faiserver:/var$ du -ks *[K</system_output>
 </system_output>
   <system_output timestamp="528.533923">12[6Ctmp
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="528.53654">[?2004hdemo@faiserver:/var$ </system_output>
@@ -5759,8 +5726,7 @@ demo@faiserver:/var$ du -ks *[K</system_output>
   <user_input timestamp="543.674672"/>
   <system_output timestamp="543.695789">[7mbas[27mh -c 'time ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'
 (reverse-i-search)`bas': sudo </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="545.170081">
@@ -7212,8 +7178,7 @@ Reading package lists...</system_output>
 </system_output>
   <system_output timestamp="691.416731">Reading package lists...</system_output>
   <system_output timestamp="691.456959">
-<annotation>
-</annotation>
+
 </event>
 <event >
 </system_output>
@@ -19801,8 +19766,7 @@ Number of packages in the mirror: </system_output>
 </system_output>
   <system_output timestamp="1542.489372">Copying the nfsroot to CD image
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1578.42004">Copying the config space to CD image
@@ -19822,8 +19786,7 @@ real[4C19m5.605s
 user[4C13m5.502s
 sys[5C2m11.432s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1690.889448">[?2004hdemo@faiserver:/home/fai$ </system_output>
@@ -19832,7 +19795,6 @@ sys[5C2m11.432s
   <system_output timestamp="37147.060016">[remote detached from 120968.pts-29.stephost]
 </system_output>
   <system_output timestamp="37147.060903">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

@@ -1,5 +1,4 @@
-<annotation>
-</annotation>
+
 </event>
 <event >
 <?xml version="1.0" ?>
@@ -38,8 +37,7 @@ Plan your installation, and FAI installs your plan.
 Last login: Thu Nov  7 14:00:26 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="6.901771">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
@@ -134,8 +132,7 @@ Last login: Thu Nov  7 14:00:26 2024 from 172.16.0.1
 </system_output>
   <system_output timestamp="17.034786">HWPHYS  QEMUCLIENT
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="17.035551">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
@@ -225,8 +222,7 @@ To add an exception for this directory, call:
 </user_input>
   <system_output timestamp="113.229232">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="113.34229">[?2004h</system_output>
@@ -266,8 +262,7 @@ To add an exception for this directory, call:
 </system_output>
   <system_output timestamp="132.591779">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="132.604877">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
@@ -971,8 +966,7 @@ Warning (comp): debian-el.el:90:26: Warning: reference to free variable ‘dired
   <user_input timestamp="414.795035"/>
   <system_output timestamp="414.806552">[196d[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="414.819185">[?2004h]0;demo@faiserver: /home/fai/config/disk_configdemo@faiserver:/home/fai/config/disk_config$ </system_output>
@@ -1021,8 +1015,7 @@ Warning (comp): debian-el.el:90:26: Warning: reference to free variable ‘dired
   <system_output timestamp="451.397206">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="451.397843">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -1044,8 +1037,7 @@ Warning (comp): debian-el.el:90:26: Warning: reference to free variable ‘dired
 ]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ sudo bash -c 'time ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="454.718302">sudo: unable to resolve host faiserver: Name or service not known
@@ -2518,8 +2510,7 @@ Upgrading /srv/fai/nfsroot
 Reading package lists...</system_output>
   <system_output timestamp="603.010395">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="604.715892">Reading package lists...
@@ -14820,8 +14811,7 @@ Writing extended state information...
 Number of packages in the mirror: </system_output>
   <system_output timestamp="1418.674282">2199
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1418.678409">Mirror size and location: </system_output>
@@ -14884,8 +14874,7 @@ real	20m37.950s
 user	13m7.367s
 sys	2m14.099s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1692.842897">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
@@ -15080,8 +15069,7 @@ fai_cd.iso                                                                      
   <system_output timestamp="1812.328783">
 fai_cd.iso                                                                                                                                                                                                   100% 1898MB  26.1MB/s   01:12    
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="1812.333876">[?2004hdemo@stephost:~$ </system_output>
@@ -15112,8 +15100,7 @@ Plan your installation, and FAI installs your plan.
 Last login: Thu Nov  7 14:00:36 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="6687.682377">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
@@ -15297,8 +15284,7 @@ Untracked files:
 </user_input>
   <system_output timestamp="7632.860242">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="7632.994804">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -15648,8 +15634,7 @@ Untracked files:
 * trailing whitespace (line 2)
 disk_config/GRUB:2:# disk size from 6144MB up, with the option to 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="7682.124997">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -15960,8 +15945,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
   <user_input timestamp="7714.797894"/>
   <system_output timestamp="7714.804999">[196d[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="7714.998538">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -16056,8 +16040,7 @@ Untracked files:
 	[31mscripts/SWFIREWALL/[m
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="7727.235286">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -16349,8 +16332,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
 </system_output>
   <system_output timestamp="7749.789215">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="7749.806098">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -16378,8 +16360,7 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
  create mode 100644 disk_config/GRUB
  rename disk_config/{HWPHYS =&gt; GRUBEFI} (100%)
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="7751.948331">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
@@ -16411,7 +16392,6 @@ faibase-_home   /home   50-             ext4    rw,errors=remount-ro[K
   <system_output timestamp="30787.625916">[K</system_output>
   <user_input timestamp="30787.773959"></user_input>
   <system_output timestamp="30787.778396">[K</system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

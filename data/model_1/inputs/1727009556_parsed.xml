@@ -63,8 +63,7 @@ Last login: Sun Sep 22 12:50:30 2024 from 10.0.7.1
 
 </system_output>
   <system_output timestamp="11.587303">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="11.985103">p</user_input>
@@ -141,8 +140,7 @@ Retype new password: </system_output>
 </system_output>
   <system_output timestamp="29.339981">passwd: password updated successfully
 [?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="31.580684"/>
@@ -155,8 +153,7 @@ logout
 </system_output>
   <system_output timestamp="31.591579">[?2004h</system_output>
   <system_output timestamp="31.591914">]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="33.647017"/>
@@ -164,7 +161,6 @@ logout
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

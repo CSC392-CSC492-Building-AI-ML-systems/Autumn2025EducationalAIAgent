@@ -83,8 +83,7 @@ ii  libkrb5-3:i386[19C1.15-1+deb9u1[21Ci386[9CMIT Kerberos runtime libraries
 ii  libkrb5support0:i386[13C1.15-1+deb9u1[21Ci386[9CMIT Kerberos runtime libraries - Support library
 :</system_output>
   <user_input timestamp="8.117454"/>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="8.45968">0</user_input>
@@ -531,15 +530,13 @@ ii  libkmod2:i386[20C23-2[30Ci386[9Clibkmod shared library
 ii  libkrb5-3:i386[19C1.15-1+deb9u1[21Ci386[9CMIT Kerberos runtime libraries
 ii  libkrb5support0:i386[13C1.15-1+deb9u1[21Ci386[9CMIT Kerberos runtime libraries - Support library
 :</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="39.014894">q</user_input>
   <system_output timestamp="39.017612">[K</system_output>
   <system_output timestamp="39.018432">demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="39.950857">s</user_input>
@@ -790,8 +787,7 @@ Do you want to continue? [Y/n] </system_output>
   <system_output timestamp="59.371556">
 [H[57B[A[J</system_output>
   <system_output timestamp="59.378012">demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="60.285293">s</user_input>
@@ -829,8 +825,7 @@ Do you want to continue? [Y/n] </system_output>
   <system_output timestamp="63.294082">sudo: unable to resolve host faiserver
 [59;1H</system_output>
   <system_output timestamp="63.330127">demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="64.43915">OA</user_input>
@@ -1780,8 +1775,7 @@ ii  libpng16-16:i386[17C1.6.28-1+deb9u1[19Ci386[9CPNG library - runtime (version
 ii  libpopt0:i386[20C1.16-10+b2[24Ci386[9Clib for parsing cmdline parameters
 :]0;]0;screen</system_output>
   <user_input timestamp="78.282262"/>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="78.698613">0</user_input>
@@ -1847,15 +1841,13 @@ ii  libpango-1.0-0:i386[14C1.40.5-1[26Ci386[9CLayout and rendering of internatio
 ii  libpangocairo-1.0-0:i386[9C1.40.5-1[26Ci386[9CLayout and rendering of internationalized text
 ii  libpangoft2-1.0-0:i386[11C1.40.5-1[26Ci386[9CLayout and rendering of internationalized text
 :</system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="99.621215">q</user_input>
   <system_output timestamp="99.623945">[K</system_output>
   <system_output timestamp="99.624764">demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="100.472349">s</user_input>
@@ -1991,8 +1983,7 @@ Do you want to continue? [Y/n] </system_output>
   <system_output timestamp="119.189384">
 [H[57B[A[J</system_output>
   <system_output timestamp="119.195225">demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 <event >
   <user_input timestamp="266.973476">OA</user_input>
@@ -2374,7 +2365,6 @@ ii  libltdl7:i386[20C2.4.6-2[27Ci386[9CSystem independent dlopen wrapper for GNU
 ii  liblua5.1-0:i386[17C5.1.5-8.1+b2[22Ci386[9CShared library for the Lua interpreter version 5.1
 ii  liblua5.3-0:i386[17C5.3.3-1[27Ci386[9CShared library for the Lua interpreter version 5.3
 ii  liblwp-mediatypes-perl[11C6.02-1[28Call[10Cmodule to guess me</system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

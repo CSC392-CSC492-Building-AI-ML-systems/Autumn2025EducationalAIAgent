@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Model-1 streamed annotator
+Model-1 streamed annotator - vLLM version
 
 """
 
@@ -13,21 +13,20 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 from lxml import etree
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from vllm import LLM, SamplingParams
 
 import json
 
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/inputs/1727009412_parsed.xml"
-GT_PATH = "../../data/model_1/outputs/1727009412_training.txt"
+XML_PATH = "../../data/model_1/inputs/1727009556_parsed.xml"
+GT_PATH = "../../data/model_1/outputs/1727009556_training.txt"
 
 # Model settings
-MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"  # ONE reasoning model for everything
-USE_INT4 = True
-MAX_NEW_TOKENS = 8000  # Let it think as much as needed
+MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"  # ONE reasoning model for everything
+USE_INT4 = True  # vLLM will handle quantization differently
+MAX_NEW_TOKENS = 2500
 SUMMARY_WORD_LIMIT = 50
 
 # Prompt packaging
@@ -56,173 +55,201 @@ DEPTH SEMANTICS:
 ═══════════════════════════════════════════════════════════════════════════════
 
 EXAMPLE A — Starting a new subtask (depth = -1)
-Context: User is editing a config file and decides to spawn a shell to check logs
+Context: User opens a text editor from the command line
 neighbor_tail:
-  - id=10 depth=0  summary="Edit network monitoring config in vim"
-  - id=11 depth=0  summary="Navigate to logging section of config"
+  - id=10 depth=0  summary="List directory contents"
+  - id=11 depth=0  summary="Change to project folder"
 currDepth before target: 0
 
 input xml:
 <event>
-  <user_input>:</user_input><system_output>:</system_output>
-  <user_input>!</user_input><system_output>!</system_output>
-  <user_input>g</user_input><system_output>g</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>p</user_input><system_output>p</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>-</user_input><system_output>-</system_output>
-  <user_input>i</user_input><system_output>i</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input>o</user_input><system_output>o</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>n</user_input><system_output>n</system_output>
   <user_input>a</user_input><system_output>a</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>n</user_input><system_output>n</system_output>
   <user_input>o</user_input><system_output>o</system_output>
-  <user_input>g</user_input><system_output>g</system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>y</user_input><system_output>y</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>l</user_input><system_output>l</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>c</user_input><system_output>c</system_output>
   <user_input>o</user_input><system_output>o</system_output>
+  <user_input>n</user_input><system_output>n</system_output>
+  <user_input>f</user_input><system_output>f</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
   <user_input>g</user_input><system_output>g</system_output>
-  <system_output>[shell spawned from vim]</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>x</user_input><system_output>x</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <system_output>[nano editor opens]</system_output>
 </event>
 
 Expected output:
-{"annotation": "Spawn shell from vim editor to grep syslog for errors.", "depth": -1}
+{"annotation": "Open config.txt in nano text editor.", "depth": -1}
 
-Why depth = -1? User is STARTING a new subtask (shell within editor) - entering deeper level.
+Why depth = -1? User is STARTING a new subtask (text editor) - entering deeper level.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
 EXAMPLE B — Continuing at same level (depth = 0)
-Context: User is working within the spawned shell, continuing their investigation
+Context: User is working inside the editor, making edits
 neighbor_tail:
-  - id=20 depth=-1 summary="Spawn shell from vim to investigate logs"
-  - id=21 depth=0  summary="Search syslog for error patterns"
+  - id=20 depth=-1 summary="Open config.txt in nano text editor"
+  - id=21 depth=0  summary="Navigate to database section"
 currDepth before target: -1
 
 input xml:
 <event>
-  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>[Ctrl-W]</user_input>
+  <system_output>Search: </system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>m</user_input><system_output>m</system_output>
   <user_input>e</user_input><system_output>e</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>v</user_input><system_output>v</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>l</user_input><system_output>l</system_output>
   <user_input>o</user_input><system_output>o</system_output>
-  <user_input>g</user_input><system_output>g</system_output>
-  <system_output>-rw-r----- 1 syslog  adm  2.4M Oct 26 15:32 syslog</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <system_output>[cursor moves to "timeout" line]</system_output>
 </event>
 
 Expected output:
-{"annotation": "List log directory to verify syslog file exists.", "depth": 0}
+{"annotation": "Search for timeout setting in config file.", "depth": 0}
 
-Why depth = 0? User is CONTINUING work at the same level (still in spawned shell) - ongoing task.
+Why depth = 0? User is CONTINUING work at the same level (still in editor) - ongoing task.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
 EXAMPLE C — Finishing a subtask (depth = +1)
-Context: User completes their work in the spawned shell and exits back to vim
+Context: User saves and exits the editor
 neighbor_tail:
-  - id=30 depth=-1 summary="Spawn shell from vim to check logs"
-  - id=31 depth=0  summary="Examine syslog entries for errors"
-  - id=32 depth=0  summary="Identify network timeout pattern in logs"
+  - id=30 depth=-1 summary="Open config.txt in nano editor"
+  - id=31 depth=0  summary="Modify timeout value to 30"
+  - id=32 depth=0  summary="Save changes to config file"
 currDepth before target: -1
 
 input xml:
 <event>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>x</user_input><system_output>x</system_output>
-  <user_input>i</user_input><system_output>i</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <system_output>[returning to vim]</system_output>
-  <system_output>demo@host:/etc/config.conf (modified)</system_output>
+  <user_input>[Ctrl-X]</user_input>
+  <system_output>Save modified buffer? (Y/N)</system_output>
+  <user_input>Y</user_input>
+  <system_output>[exiting nano]</system_output>
+  <system_output>user@laptop:~/project$ </system_output>
 </event>
 
 Expected output:
-{"annotation": "Exit shell and return to vim editor.", "depth": 1}
+{"annotation": "Exit nano editor and return to shell.", "depth": 1}
 
-Why depth = +1? User is FINISHING the shell subtask and returning to parent (vim) - exiting level.
+Why depth = +1? User is FINISHING the editor subtask and returning to parent (shell) - exiting level.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE D — Continuing at top level (depth = 0)
-Context: User is working in their main shell, typing a command
+EXAMPLE D — Starting a pager subtask (depth = -1)
+Context: User views a log file with less
 neighbor_tail:
-  - id=40 depth=0  summary="Interactive bash shell at home directory"
-  - id=41 depth=0  summary="List files in current directory"
+  - id=40 depth=0  summary="Navigate to logs directory"
 currDepth before target: 0
 
 input xml:
 <event>
-  <system_output>demo@boxtop:~$ </system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
   <user_input>s</user_input><system_output>s</system_output>
   <user_input>s</user_input><system_output>s</system_output>
-  <user_input>h</user_input><system_output>h</system_output>
   <user_input> </user_input><system_output> </system_output>
-  <user_input>1</user_input><system_output>1</system_output>
-  <user_input>0</user_input><system_output>0</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
   <user_input>.</user_input><system_output>.</system_output>
-  <user_input>0</user_input><system_output>0</system_output>
-  <user_input>.</user_input><system_output>.</system_output>
-  <user_input>7</user_input><system_output>7</system_output>
-  <user_input>.</user_input><system_output>.</system_output>
-  <user_input>1</user_input><system_output>1</system_output>
-  <user_input>3</user_input><system_output>3</system_output>
-  <user_input>8</user_input><system_output>8</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <system_output>[less pager opens showing log contents]</system_output>
 </event>
 
 Expected output:
-{"annotation": "Initiate SSH connection to 10.0.7.138.", "depth": 0}
+{"annotation": "Open app.log file in less pager.", "depth": -1}
 
-Why depth = 0? User is CONTINUING work at the main shell level - not entering or exiting.
+Why depth = -1? User is STARTING a new subtask (pager) - entering deeper level.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE E — Starting SSH session subtask (depth = -1)
-Context: After typing SSH command, user now authenticates and enters remote session
+EXAMPLE E — Continuing within pager (depth = 0)
+Context: User scrolls through the log file
 neighbor_tail:
-  - id=50 depth=0  summary="Initiate SSH connection to 10.0.7.138"
+  - id=50 depth=-1 summary="Open app.log file in less pager"
+  - id=51 depth=0  summary="Navigate to beginning of log"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>/</user_input>
+  <system_output>/</system_output>
+  <user_input>E</user_input><system_output>E</system_output>
+  <user_input>R</user_input><system_output>R</system_output>
+  <user_input>R</user_input><system_output>R</system_output>
+  <user_input>O</user_input><system_output>O</system_output>
+  <user_input>R</user_input><system_output>R</system_output>
+  <system_output>[highlighting ERROR matches]</system_output>
+</event>
+
+Expected output:
+{"annotation": "Search for ERROR keyword in log file.", "depth": 0}
+
+Why depth = 0? User is CONTINUING work at the same level (still in pager) - ongoing task.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE F — Finishing pager subtask (depth = +1)
+Context: User exits the pager
+neighbor_tail:
+  - id=60 depth=-1 summary="Open app.log in less pager"
+  - id=61 depth=0  summary="Search for ERROR keyword in log"
+  - id=62 depth=0  summary="Review error timestamps"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>q</user_input>
+  <system_output>[exiting less]</system_output>
+  <system_output>user@laptop:~/logs$ </system_output>
+</event>
+
+Expected output:
+{"annotation": "Exit less pager and return to shell.", "depth": 1}
+
+Why depth = +1? User is FINISHING the pager subtask and returning to parent (shell) - exiting level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE G — Starting Python interpreter (depth = -1)
+Context: User launches interactive Python session
+neighbor_tail:
+  - id=70 depth=0  summary="Check Python version installed"
 currDepth before target: 0
 
 input xml:
 <event>
-  <system_output>demo@10.0.7.138's password: </system_output>
-  <user_input>[password entered]</user_input>
-  <system_output>Welcome to Ubuntu 22.04.3 LTS</system_output>
-  <system_output>Last login: Fri Oct 25 14:23:11 2025</system_output>
-  <system_output>demo@remote-server:~$ </system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>y</user_input><system_output>y</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>n</user_input><system_output>n</system_output>
+  <user_input>3</user_input><system_output>3</system_output>
+  <system_output>Python 3.10.4</system_output>
+  <system_output>>>>></system_output>
 </event>
 
 Expected output:
-{"annotation": "Authenticate and log into remote server via SSH.", "depth": -1}
+{"annotation": "Launch Python3 interactive interpreter.", "depth": -1}
 
-Why depth = -1? User is STARTING a new subtask (remote SSH session) - entering deeper level.
+Why depth = -1? User is STARTING a new subtask (Python REPL) - entering deeper level.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE F — Finishing SSH session (depth = +1)
-Context: User completes work on remote server and exits SSH session
+EXAMPLE H — Exiting Python interpreter (depth = +1)
+Context: User exits Python back to shell
 neighbor_tail:
-  - id=60 depth=-1 summary="Log into remote server via SSH"
-  - id=61 depth=0  summary="Install monitoring package on remote server"
-  - id=62 depth=0  summary="Verify package installation completed"
+  - id=80 depth=-1 summary="Launch Python3 interpreter"
+  - id=81 depth=0  summary="Import json module and test parsing"
+  - id=82 depth=0  summary="Print parsed dictionary contents"
 currDepth before target: -1
 
 input xml:
@@ -231,20 +258,20 @@ input xml:
   <user_input>x</user_input><system_output>x</system_output>
   <user_input>i</user_input><system_output>i</system_output>
   <user_input>t</user_input><system_output>t</system_output>
-  <system_output>logout</system_output>
-  <system_output>Connection to 10.0.7.138 closed.</system_output>
-  <system_output>demo@boxtop:~$ </system_output>
+  <user_input>(</user_input><system_output>(</system_output>
+  <user_input>)</user_input><system_output>)</system_output>
+  <system_output>user@laptop:~$ </system_output>
 </event>
 
 Expected output:
-{"annotation": "Log out and close SSH connection to remote server.", "depth": 1}
+{"annotation": "Exit Python interpreter and return to shell.", "depth": 1}
 
-Why depth = +1? User is FINISHING the SSH session subtask and returning to local shell - exiting level.
+Why depth = +1? User is FINISHING the Python session and returning to parent (shell) - exiting level.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
 KEY PRINCIPLES:
-1. Use depth = -1 when ENTERING a new tool/context (vim, SSH, subshell, pager, etc.)
+1. Use depth = -1 when ENTERING a new tool/context (editor, pager, interpreter, debugger, etc.)
 2. Use depth = 0 when CONTINUING work in the current context
 3. Use depth = +1 when EXITING/CLOSING a tool/context back to parent
 4. Think of depth as task nesting: -1 = push onto stack, 0 = work at current level, +1 = pop from stack
@@ -422,7 +449,7 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
         "- do not copy xml tags or attributes; no repeated phrases\n"
         "- do not mention an address that was not explicitly mentioned in the event\n"
         "- if the target event contains an <annotation> tag or depth value ignore it\n"
-        "- if there are no neighbors then the depth should be 0"
+        "- if there are no neighbors then the depth you output should be 0"
     )
 
     prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
@@ -432,10 +459,11 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 </output_format>
 
 <think_first>
-- Use the <think>...</think> section to analyze what is happening in the event and assess whether the event starts a nested subtask (-1), continues at the same level (0), or exits one or more levels up (k).
-- In <think>...</think>, generate a concise summary at a higher level, considering broader context.
+- Keep reasoning CONCISE and FOCUSED
+- In <think>...</think>: analyze the command, check depth logic, then conclude
+- Aim for 2-3 sentences of reasoning maximum
+- Skip obvious observations
 - Use neighbors ONLY for continuity; do not invent context.
-- Think carefully about BOTH the annotation AND the depth together.
 </think_first>
 
 <rules>
@@ -452,7 +480,7 @@ for each target_event, output exactly one json with "annotation" first, then "de
 </instruction>
 
 <inputs>
-  <curr_depth_max>0</curr_depth_max>
+  <curr_depth_max>{pkg.get("currDepth")}</curr_depth_max>
   <neighbors>
 {neighbors_xml}
   </neighbors>
@@ -471,84 +499,53 @@ def build_messages(instruction: str) -> List[Dict[str, str]]:
 
 
 # ------------------------------
-# Model loading
+# Model loading (vLLM)
 # ------------------------------
-def load_model_and_tokenizer():
-    print(f"Loading model: {MODEL_ID}")
-    tok = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
-
-    if tok.pad_token_id is None:
-        tok.pad_token = tok.eos_token
-
-    if USE_INT4:
-        bnb_cfg = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_compute_dtype=torch.bfloat16,
-        )
-        m = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID,
-            quantization_config=bnb_cfg,
-            device_map="auto",
-            trust_remote_code=True,
-        )
-    else:
-        m = AutoModelForCausalLM.from_pretrained(
-            MODEL_ID,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
-            trust_remote_code=True,
-        )
-
-    m.eval()
-    return m, tok
+def load_model():
+    print(f"Loading model with vLLM: {MODEL_ID}")
+    
+    # vLLM initialization parameters
+    llm = LLM(
+        model=MODEL_ID,
+        gpu_memory_utilization=0.9,  # Use 90% of GPU memory
+        max_model_len=8192,  # Adjust based on your prompt length needs
+        trust_remote_code=True,
+        dtype="bfloat16",
+    )
+    
+    print(f"Model loaded successfully")
+    return llm
 
 
 # ------------------------------
-# Generation
+# Generation (vLLM)
 # ------------------------------
-def generate_with_thinking(model, tok, messages: List[Dict[str, str]]) -> Tuple[str, str]:
+def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[str, str]:
     """
-    Generate with thinking model - NO format constraints.
+    Generate with thinking model using vLLM.
     Returns: (full_output_with_thinking, extracted_json)
     """
-    text = tok.apply_chat_template(
+    # Get tokenizer from vLLM model
+    tokenizer = llm.get_tokenizer()
+    
+    # Apply chat template
+    prompt = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
         add_generation_prompt=True,
     )
-    inputs = tok(text, return_tensors="pt", add_special_tokens=False).to(model.device)
-
-    # Get EOS tokens
-    eos_ids = [tok.eos_token_id]
-    try:
-        im_end_id = tok.convert_tokens_to_ids("<|im_end|>")
-        if isinstance(im_end_id, int) and im_end_id != -1:
-            eos_ids.append(im_end_id)
-    except Exception:
-        pass
-    eos_ids = list({i for i in eos_ids if i is not None}) or None
-
-    input_len = inputs.input_ids.shape[-1]
-
-    # NO constraints - let it think freely
-    out_ids = model.generate(
-        input_ids=inputs.input_ids,
-        max_new_tokens=MAX_NEW_TOKENS,
-        do_sample=False,
-        num_beams=1,
-        pad_token_id=tok.eos_token_id,
-        eos_token_id=eos_ids,
-        use_cache=True,
-        temperature=0.4,        # was 0.7
-        top_p=0.7,             # was 0.85
-        repetition_penalty=1.2, # was 1.15
-        early_stopping=True,    
+    
+    # Define sampling parameters (equivalent to your transformers settings)
+    sampling_params = SamplingParams(
+        temperature=0.0,  # Greedy decoding (do_sample=False equivalent)
+        max_tokens=MAX_NEW_TOKENS,
+        repetition_penalty=1.2,
+        skip_special_tokens=True,
     )
-
-    gen_ids = out_ids[0, input_len:]
-    full_output = tok.decode(gen_ids, skip_special_tokens=True).strip()
+    
+    # Generate
+    outputs = llm.generate([prompt], sampling_params)
+    full_output = outputs[0].outputs[0].text.strip()
     
     # Extract JSON from output (after </think> if present)
     if "</think>" in full_output:
@@ -630,12 +627,10 @@ def run_flushes(evs: List[Event]) -> None:
     total = len(events)
     start_idx = 0
 
-    model, tok = load_model_and_tokenizer()
+    llm = load_model()
     
-    print("cuda_available:", torch.cuda.is_available())
-    print("torch.version.cuda:", getattr(torch.version, "cuda", None))
     print("MODEL:", MODEL_ID)
-    print("NO FORMAT CONSTRAINTS - letting model think freely")
+    print("Using vLLM for optimized inference")
 
     all_flush_logs = []
 
@@ -651,7 +646,7 @@ def run_flushes(evs: List[Event]) -> None:
 
         # Generate with thinking
         print("\n--- Model output (with thinking) ---")
-        full_output, json_part = generate_with_thinking(model, tok, messages)
+        full_output, json_part = generate_with_thinking(llm, messages)
         print(full_output)
 
         # Parse JSON
@@ -691,9 +686,6 @@ def run_flushes(evs: List[Event]) -> None:
             print(f"  idx={idx}  depth={v.get('depth')}  summary={v.get('summary')}")
 
         print_io_table(pkg["target_idxs"])
-
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
 
     # After-loop print
     print("\n" + "=" * 80)
