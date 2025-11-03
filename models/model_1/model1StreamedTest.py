@@ -37,7 +37,6 @@ K_TARGET = 1
 N_NEIGH = 20
 
 INCLUDE_FEWSHOTS_DEFAULT = True
-COLLAPSE_ECHO_INPUTS = False
 
 # ------------------------------
 # Statics
@@ -306,36 +305,6 @@ pred: Dict[int, Dict] = {}
 # ------------------------------
 # XML parsing
 # ------------------------------
-def collapse_echo(xml_str: str) -> str:
-    if not COLLAPSE_ECHO_INPUTS:
-        return xml_str
-
-    root = etree.fromstring(xml_str)
-    children = list(root)
-    collapsed: List[etree.Element] = []
-    i = 0
-
-    while i < len(children):
-        if i + 1 < len(children):
-            c1, c2 = children[i], children[i + 1]
-            if (
-                c1.tag == "user_input"
-                and c2.tag == "system_output"
-                and (c1.text or "") == (c2.text or "")
-            ):
-                merged = etree.Element("echo")
-                merged.text = c1.text
-                collapsed.append(merged)
-                i += 2
-                continue
-        collapsed.append(children[i])
-        i += 1
-
-    new_root = etree.Element(root.tag, attrib=root.attrib)
-    new_root.extend(collapsed)
-    return etree.tostring(new_root, encoding="unicode")
-
-
 def load_events(xml_path: str) -> List[Event]:
     tree = etree.parse(xml_path)
     root = tree.getroot()
@@ -351,7 +320,6 @@ def load_events(xml_path: str) -> List[Event]:
             summary = summary.strip()
 
         xml_str = etree.tostring(ev_el, encoding="unicode")
-        xml_str = collapse_echo(xml_str)
 
         out.append(
             Event(
