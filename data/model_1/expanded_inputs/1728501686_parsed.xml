@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="426" height="110" timestamp="1728501686">
-<event depth="-2">
+<event >
   <system_output timestamp="0.008864">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="172.464324">c</user_input>
   <system_output timestamp="172.464856">c</system_output>
@@ -159,10 +159,9 @@
 </system_output>
   <system_output timestamp="188.936936">nullhost-tearoff-15                172.16.0.16
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="188.937459">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="190.642123">s</user_input>
   <system_output timestamp="190.642594">s</system_output>
@@ -205,10 +204,9 @@
 </system_output>
   <system_output timestamp="207.707359">ssh: connect to host 172.16.0.17 port 22: No route to host
 
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
 </system_output>
   <system_output timestamp="207.709992">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="218.308738">c</user_input>
@@ -228,7 +226,6 @@
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

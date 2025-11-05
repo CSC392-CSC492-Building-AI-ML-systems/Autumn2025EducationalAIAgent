@@ -1,5 +1,6 @@
 from transformers import LogitsProcessor
 from typing import List, Dict, Set, Optional
+import torch
 
 class AsciiOnlyProcessor(LogitsProcessor):
     """
@@ -37,4 +38,4 @@ class AsciiOnlyProcessor(LogitsProcessor):
             mask[:, idxs] = scores[:, idxs]
             return mask
         return scores
-
+    

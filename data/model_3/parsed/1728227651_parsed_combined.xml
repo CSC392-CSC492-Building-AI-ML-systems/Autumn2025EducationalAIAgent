@@ -97,5 +97,5 @@ User lists the contents of the '/disk1/' directory in long format, including hid
 User exits the current terminal session after clearing the input line.
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </recording>

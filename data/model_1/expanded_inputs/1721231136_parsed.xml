@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1721231136">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006139">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.51115">OA</user_input>
   <system_output timestamp="0.511692">asciinema rec `date +%s`.rec --stdin</system_output>
@@ -183,14 +183,12 @@ tmpfs[12C1647432[4C3736   1643696   1% /home/fai/nfsroot/var/cache
 demo@faiserver:/home/fai$[?2004h </system_output>
   <system_output timestamp="7221.549783">[?2004l[?1l&gt;[196;1H
 [?1049l[23;0;0t</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="7221.569251">[remote detached from 120968.pts-29.stephost]
 </system_output>
   <system_output timestamp="7221.570485">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>
