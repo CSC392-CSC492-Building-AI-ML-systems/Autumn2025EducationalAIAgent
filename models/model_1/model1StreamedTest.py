@@ -20,8 +20,8 @@ import json
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/inputs/1727009556_parsed.xml"
-GT_PATH = "../../data/model_1/outputs/1727009556_training.txt"
+XML_PATH = "../../data/model_1/expanded_inputs/1727009556_parsed.xml"
+GT_PATH = "../../data/model_1/expanded_outputs/1727009556_training.txt"
 
 # Model settings
 MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"  # ONE reasoning model for everything
