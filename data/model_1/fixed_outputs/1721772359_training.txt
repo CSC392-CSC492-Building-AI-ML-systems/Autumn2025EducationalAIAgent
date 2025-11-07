@@ -1,0 +1,4 @@
+Attach to GNU screen session displaying FAI build logs and creation of fai_cd.iso.
+-1
+Detach from remote screen session and show shell prompt.
+1

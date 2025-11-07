@@ -10,17 +10,23 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 from lxml import etree
-from vllm import LLM, SamplingParams
+from transformers import AutoTokenizer
+
+import argparse
 
 import json
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from vllm import LLM  # type: ignore
 
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/expanded_inputs/1727009556_parsed.xml"
+XML_PATH = "../../data/model_1/expanded_inputs/1721946123_parsed.xml"
 GT_PATH = "../../data/model_1/expanded_outputs/1727009556_training.txt"
 
 # Model settings
@@ -473,6 +479,8 @@ def load_model():
     print(f"Loading model with vLLM: {MODEL_ID}")
     
     # vLLM initialization parameters
+    from vllm import LLM  # Imported lazily to avoid dependency when dumping prompts
+
     llm = LLM(
         model=MODEL_ID,
         gpu_memory_utilization=0.9,  # Use 90% of GPU memory
@@ -488,7 +496,7 @@ def load_model():
 # ------------------------------
 # Generation (vLLM)
 # ------------------------------
-def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[str, str]:
+def generate_with_thinking(llm, messages: List[Dict[str, str]]) -> Tuple[str, str]:
     """
     Generate with thinking model using vLLM.
     Returns: (full_output_with_thinking, extracted_json)
@@ -504,6 +512,8 @@ def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[st
     )
     
     # Define sampling parameters (equivalent to your transformers settings)
+    from vllm import SamplingParams  # Lazy import to keep dump-only mode lightweight
+
     sampling_params = SamplingParams(
         temperature=0.0,  # Greedy decoding (do_sample=False equivalent)
         max_tokens=MAX_NEW_TOKENS,
@@ -682,9 +692,50 @@ def run_flushes(evs: List[Event]) -> None:
 # ------------------------------
 # Entry point
 # ------------------------------
+def dump_processed_prompts(evs: List[Event], dump_dir: str, add_generation_prompt: bool = True) -> None:
+    """Write the fully processed prompt (after chat template) for each event."""
+    global events
+    events = evs
+
+    out_dir = Path(dump_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
+
+    for upto in range(len(events)):
+        pkg = make_flush_package(upto_idx=upto, K=K_TARGET, N=N_NEIGH)
+        instr = build_instruction(pkg, use_fewshots=INCLUDE_FEWSHOTS_DEFAULT)
+        messages = build_messages(instr)
+        prompt = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=add_generation_prompt,
+        )
+
+        out_file = out_dir / f"prompt_{upto:04d}.txt"
+        out_file.write_text(prompt)
+
+    print(f"Wrote {len(events)} prompt files to {out_dir}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Model-1 streamed annotator")
+    parser.add_argument(
+        "--dump-prompts",
+        metavar="DIR",
+        help="Dump processed prompts to DIR and exit without running inference",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    args = parse_args()
     events = load_events(XML_PATH)
     print(f"Loaded {len(events)} usable events")
     if events:
         print(events[0].xml[:300] + "...\n")
-    run_flushes(events)
+
+    if args.dump_prompts:
+        dump_processed_prompts(events, args.dump_prompts)
+    else:
+        run_flushes(events)
