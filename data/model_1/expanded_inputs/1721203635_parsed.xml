@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1721203635">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006062">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.727431">OA</user_input>
   <system_output timestamp="0.728228">screen -dr</system_output>
@@ -179,10 +179,9 @@ real[4C19m5.605s
 user[4C13m5.502s
 sys[5C2m11.432s
 demo@faiserver:/home/fai$[?2004h </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="55.122624">d</user_input>
   <system_output timestamp="55.124988">d</system_output>
   <user_input timestamp="55.303157">p</user_input>
@@ -931,10 +930,9 @@ ii  libparams-classify-perl:i386     0.015-2+b1                              i38
   <system_output timestamp="98.868485">[?5h[?5l[K:[K</system_output>
   <user_input timestamp="99.387724">q</user_input>
   <system_output timestamp="99.395298">[K</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="99.396225">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="102.603363">s</user_input>
   <system_output timestamp="102.605729">s</system_output>
@@ -1080,10 +1078,9 @@ After this operation, 17.3 MB disk space will be freed.
 </system_output>
   <system_output timestamp="128.928883">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="128.939408">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="129.739185">s</user_input>
   <system_output timestamp="129.741474">s</system_output>
@@ -1251,10 +1248,9 @@ Do you want to continue? [Y/n] </system_output>
 </system_output>
   <system_output timestamp="141.724883">
 [H[194B[A[J</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="141.743159">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="142.347594">s</user_input>
   <system_output timestamp="142.349159">s</system_output>
@@ -1333,10 +1329,9 @@ none             1029644     668   1028976   1% /tmp
 tmpfs            1647432   13752   1633680   1% /home/fai/nfsroot/var/lib/dpkg
 tmpfs            1647432    3736   1643696   1% /home/fai/nfsroot/var/cache
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="155.495994">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="156.782717">OA</user_input>
   <system_output timestamp="156.785151">df</system_output>
@@ -1352,10 +1347,9 @@ tmpfs            1647432    3736   1643696   1% /home/fai/nfsroot/var/cache
   <system_output timestamp="158.515129">sudo bash -c 'time ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'</system_output>
   <user_input timestamp="159.907695">
 </user_input>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="159.922406">
 [?2004l</system_output>
   <system_output timestamp="159.928532">sudo: unable to resolve host faiserver: Name or service not known
@@ -2827,10 +2821,9 @@ Reading package lists...</system_output>
   <system_output timestamp="305.507515">Reading package lists...</system_output>
   <system_output timestamp="305.543264">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="307.874512">Building dependency tree...
 The following additional packages will be installed:
   debconf-utils dracut-core fai-client fai-setup-storage file iputils-arping
@@ -15380,10 +15373,9 @@ Number of packages in the mirror: </system_output>
 </system_output>
   <system_output timestamp="1115.954239">Copying the nfsroot to CD image
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1149.77028">Copying the config space to CD image
 </system_output>
   <system_output timestamp="1150.129713">Copying the mirror to CD image
@@ -15401,10 +15393,9 @@ real[4C18m8.850s
 user[4C13m4.420s
 sys[5C2m8.123s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1248.855317">[?2004hdemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="1266.40727">d</user_input>
   <system_output timestamp="1266.409727">d</system_output>
@@ -15427,12 +15418,10 @@ none             1029644     668   1028976   1% /tmp
 tmpfs            1647432   13752   1633680   1% /home/fai/nfsroot/var/lib/dpkg
 tmpfs            1647432    3736   1643696   1% /home/fai/nfsroot/var/cache
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="1267.161365">[?2004hdemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

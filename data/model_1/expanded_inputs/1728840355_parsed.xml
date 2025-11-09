@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1728840355">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006605">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1.411606"/>
   <system_output timestamp="1.411998">
@@ -36,10 +36,9 @@ Last login: Sun Oct 13 17:09:03 2024 from 172.16.0.1
 
 </system_output>
   <system_output timestamp="9.242824">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9.78448">c</user_input>
   <system_output timestamp="9.786594">c</system_output>
   <user_input timestamp="9.972267">d</user_input>
@@ -199,10 +198,9 @@ Last login: Sun Oct 13 17:09:03 2024 from 172.16.0.1
   <system_output timestamp="896.755184">FAIBASE
 </system_output>
   <system_output timestamp="896.7565">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/ssh/ssh_configdemo@faiserver:/home/fai/config/files/etc/ssh/ssh_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="900.179463">r</user_input>
   <system_output timestamp="900.181711">r</system_output>
   <user_input timestamp="900.434962">m</user_input>
@@ -288,10 +286,9 @@ To add an exception for this directory, call:
   <system_output timestamp="912.41459">rm 'files/etc/ssh/ssh_config/FAIBASE'
 </system_output>
   <system_output timestamp="912.453475">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/ssh/ssh_configdemo@faiserver:/home/fai/config/files/etc/ssh/ssh_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="914.037739">c</user_input>
   <system_output timestamp="914.039803">c</system_output>
   <user_input timestamp="914.25965">d</user_input>
@@ -374,10 +371,9 @@ To add an exception for this directory, call:
 [?2004l
 </system_output>
   <system_output timestamp="921.408995">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1537.2794">g</user_input>
   <system_output timestamp="1537.280995">g</system_output>
   <user_input timestamp="1537.832775">r</user_input>
@@ -430,10 +426,9 @@ To add an exception for this directory, call:
   <system_output timestamp="1545.809157">FAIBASE/10-misc:fcopy /etc/ssh/ssh_config
 </system_output>
   <system_output timestamp="1545.972524">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1547.898389">e</user_input>
   <system_output timestamp="1547.900291">e</system_output>
   <user_input timestamp="1548.023098">m</user_input>
@@ -911,10 +906,9 @@ fcopy /etc/ssh/ssh_config[K
   <system_output timestamp="1582.455076">[196;1H[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
   <system_output timestamp="1582.712555">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1585.416626">l</user_input>
   <system_output timestamp="1585.418548">l</system_output>
   <user_input timestamp="1585.717459">s</user_input>
@@ -981,10 +975,9 @@ fcopy /etc/ssh/ssh_config[K
 -r-xr-xr-x 1 root root   69 Sep 13  2010 [01;32mFAIBASE/50-use_tmpfs_on_tmp[0m
 </system_output>
   <system_output timestamp="1592.435137">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1773.747613">s</user_input>
   <system_output timestamp="1773.749533">s</system_output>
   <user_input timestamp="1773.889311">u</user_input>
@@ -1034,10 +1027,9 @@ Changes not staged for commit:
 
 </system_output>
   <system_output timestamp="1776.496027">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1777.148784">s</user_input>
   <system_output timestamp="1777.16434">s</system_output>
   <user_input timestamp="1777.250394">u</user_input>
@@ -1255,10 +1247,9 @@ Changes not staged for commit:
  delete mode 100644 files/etc/ssh/ssh_config/FAIBASE
 </system_output>
   <system_output timestamp="1808.086953">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6572.678593">c</user_input>
   <system_output timestamp="6572.680668">c</system_output>
   <user_input timestamp="6572.889562">d</user_input>
@@ -2293,10 +2284,9 @@ sys	0m9.555s
 [?2004h[?2004l
 
 [?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6645.11637">c</user_input>
   <system_output timestamp="6645.126718">c</system_output>
   <user_input timestamp="6645.280994">d</user_input>
@@ -2342,10 +2332,9 @@ EADMIN   GRUBEFI   HOSTSTEP          ISCSICLIENT  LAPTOP     SELINUX      SERVER
 FAIBASE  [00;90mGRUBEFI~[0m  HOSTXFCE          JADMIN       LATEXDEV   SERVERCACHE  SERVERFAI       SERVERISCSI     SERVERNTOP          SERVERREPRAP   SERVERWIFIDOG     SERVERWWW                SERVERWWWOEMR      XORG
 </system_output>
   <system_output timestamp="6648.980374">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6679.14247">e</user_input>
   <system_output timestamp="6679.144537">e</system_output>
   <user_input timestamp="6679.323621">m</user_input>
@@ -3292,10 +3281,9 @@ admesh</system_output>
   <system_output timestamp="8191.563436">[196d[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
   <system_output timestamp="8191.573933">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="8193.901618">s</user_input>
   <system_output timestamp="8193.903565">s</system_output>
   <user_input timestamp="8194.007013">u</user_input>
@@ -3552,10 +3540,9 @@ admesh</system_output>
  create mode 100644 package_config/PRINTERDEV
 </system_output>
   <system_output timestamp="8233.29649">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="8237.499215">c</user_input>
   <system_output timestamp="8237.501281">c</system_output>
   <user_input timestamp="8237.753479">d</user_input>
@@ -17663,10 +17650,9 @@ user	13m22.019s
 sys	2m21.126s
 </system_output>
   <system_output timestamp="9389.702789">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9599.100307"/>
   <system_output timestamp="9599.10245">[?2004l
 
@@ -17677,10 +17663,9 @@ sys	2m21.126s
 
 </system_output>
   <system_output timestamp="9599.192051">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9600.270094"/>
   <system_output timestamp="9600.270771">
 (reverse-i-search)`': </system_output>
@@ -17844,16 +17829,14 @@ fai_cd.iso                                                                      
 fai_cd.iso                                                                                                                                                                                                   100% 1906MB  28.4MB/s   01:07    
 </system_output>
   <system_output timestamp="9677.551485">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="12915.538199"/>
   <system_output timestamp="12915.538648">[?2004l
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

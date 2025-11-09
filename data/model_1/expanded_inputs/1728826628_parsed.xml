@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1728826628">
-<event depth="-2">
+<event >
   <system_output timestamp="0.008512">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.990233"/>
   <system_output timestamp="0.990657">
@@ -36,10 +36,9 @@ Last login: Sat Oct 12 21:02:25 2024 from 172.16.0.1
 
 </system_output>
   <system_output timestamp="13.314426">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="13.735874">c</user_input>
   <system_output timestamp="13.738154">c</system_output>
   <user_input timestamp="13.956592">d</user_input>
@@ -92,10 +91,9 @@ Last login: Sat Oct 12 21:02:25 2024 from 172.16.0.1
   <system_output timestamp="21.80106">[0m[01;34mclass[0m  [01;34mdebconf[0m  [01;34mdisk_config[0m  [01;34mfiles[0m  [01;34mhooks[0m  [01;34mpackage_config[0m  [01;34mscripts[0m
 </system_output>
   <system_output timestamp="21.802473">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="23.791253">c</user_input>
   <system_output timestamp="23.793372">c</system_output>
   <user_input timestamp="23.990253">d</user_input>
@@ -160,10 +158,9 @@ GRUBEFI~:grub-efi
 GRUBEFI~:grub-efi-amd64
 </system_output>
   <system_output timestamp="29.605232">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="34.303704">e</user_input>
   <system_output timestamp="34.305757">e</system_output>
   <user_input timestamp="34.482955">m</user_input>
@@ -1312,10 +1309,9 @@ grub-pc[98;6H[7m**--F1  [0m[39;49m[27m[7m[1mGRUB        [0m[39;49m[27m[7m   All 
   <system_output timestamp="1292.285234">[196;1H[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
   <system_output timestamp="1292.306595">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1292.981831">g</user_input>
   <system_output timestamp="1293.003641">g</system_output>
   <user_input timestamp="1293.060477">i</user_input>
@@ -1588,10 +1584,9 @@ Other diff options
   <system_output timestamp="1302.629815">
 [K[?1l&gt;</system_output>
   <system_output timestamp="1302.633312">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1303.957324">s</user_input>
   <system_output timestamp="1303.967551">s</system_output>
   <user_input timestamp="1304.056451">u</user_input>
@@ -1993,10 +1988,9 @@ Other diff options
  create mode 100644 package_config/GRUB
 </system_output>
   <system_output timestamp="1366.618924">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1367.583924">g</user_input>
   <system_output timestamp="1367.600986">g</system_output>
   <user_input timestamp="1367.685809">i</user_input>
@@ -2051,10 +2045,9 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 </system_output>
   <system_output timestamp="1371.521246">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1372.491498">s</user_input>
   <system_output timestamp="1372.492766">s</system_output>
   <user_input timestamp="1372.610546">u</user_input>
@@ -2259,10 +2252,9 @@ no changes added to commit (use "git add" and/or "git commit -a")
   <system_output timestamp="1400.088571"> 1 file changed, 2 insertions(+), 1 deletion(-)
 </system_output>
   <system_output timestamp="1400.0932">[?2004h]0;demo@faiserver: /home/fai/config/package_configdemo@faiserver:/home/fai/config/package_config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1401.821779">c</user_input>
   <system_output timestamp="1401.842167">c</system_output>
   <user_input timestamp="1401.98362">d</user_input>
@@ -16276,10 +16268,9 @@ user	13m17.459s
 sys	2m21.991s
 </system_output>
   <system_output timestamp="2583.018379">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2587.142664"/>
   <system_output timestamp="2587.144192">[?2004l
 
@@ -16291,10 +16282,9 @@ sys	2m21.991s
   <system_output timestamp="2587.710479">
 </system_output>
   <system_output timestamp="2587.713736">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2588.395951"/>
   <system_output timestamp="2588.396341">
 (reverse-i-search)`': </system_output>
@@ -16449,16 +16439,14 @@ fai_cd.iso                                                                      
 fai_cd.iso                                                                                                                                                                                                   100% 1901MB  24.4MB/s   01:17    
 </system_output>
   <system_output timestamp="2673.294455">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2677.072629"/>
   <system_output timestamp="2677.073041">[?2004l
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

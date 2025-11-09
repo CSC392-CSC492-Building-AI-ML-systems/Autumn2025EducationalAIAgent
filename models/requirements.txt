@@ -4,3 +4,7 @@ datasets
 transformers
 trl
 lm_eval
+accelerate
+bitsandbytes 
+lxml 
+lm-format-enforcer

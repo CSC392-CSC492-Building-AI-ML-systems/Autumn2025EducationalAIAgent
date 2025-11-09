@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1721946123">
-<event depth="-2">
+<event >
   <system_output timestamp="0.006768">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.800234"/>
   <system_output timestamp="0.80052">
@@ -220,10 +220,9 @@
   <system_output timestamp="2.652347">pid=289 comm="apparmor_parser"
 [32m[    8.084242] [33m8139cp 0000:00:03.0 ens3: [39mlink up, 100Mbps, full-duplex, lpa 0x05E1
 demo@faiserver:~$]0;]0;screen[?2004h </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="69.243599"/>
   <user_input timestamp="69.666125">1</user_input>
   <system_output timestamp="69.668977">]0;]0;screen[?2004l[H[2J]2;screenNeed to get 219 kB/2,943 kB of archives. After unpacking 13.0 MB will be used.
@@ -394,10 +393,9 @@ demo@172.16.0.1's password:
 fai_cd.iso[195C100% 1894MB  26.7MB/s   01:11
 demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
   <user_input timestamp="70.398154"/>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="70.74193">2</user_input>
   <system_output timestamp="70.744532">]0;]0;screen[?2004l[H[2J]2;screen[32m[    0.916645] [39mio scheduler mq-deadline registered
 [32m[    0.919042] [33mshpchp: [39mStandard Hot Plug PCI Controller Driver version: 0.4
@@ -602,10 +600,9 @@ demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
 [32m[    8.084242] [33m8139cp 0000:00:03.0 ens3: [39mlink up, 100Mbps, full-duplex, lpa 0x05E1
 demo@faiserver:~$]0;]0;screen[?2004h </system_output>
   <user_input timestamp="76.973653"/>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="77.752926">1</user_input>
   <system_output timestamp="77.755669">]0;]0;screen[?2004l[H[2J]2;screenNeed to get 219 kB/2,943 kB of archives. After unpacking 13.0 MB will be used.
 Writing extended state information...
@@ -781,10 +778,9 @@ demo@172.16.0.1's password:
 fai_cd.iso[195C100% 1894MB  26.7MB/s   01:11
 demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
   <user_input timestamp="79.985264"/>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="80.361124">0</user_input>
   <system_output timestamp="80.361911">]0;[?2004l[H[2J]2;screen[7mFile Edit Options Buffers Tools Help                                                                                                                                                                                                           
 [27mPACKAGES aptitude
@@ -813,10 +809,9 @@ time
 xauth
 [170B[7m-UU-:----F1  [1mFAIBASE     [27m[0m[7m   All L17   Git:master  (Fundamental) -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 [27m(reverse-i-search)`scp': [7mscp[C[27mfai_cd.iso demo@172.16.0.1:/disk1/isos/fai_dvd-`date +%Y%m%d`.iso[?2004h[69D</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="82.528428">OB</user_input>
   <system_output timestamp="82.530017">
 [1@demo@faiserver:/home/fai$ scpdpkg -l | less[K</system_output>
@@ -838,10 +833,9 @@ demo@faiserver:/home/fai$ [K</system_output>
   <user_input timestamp="85.396749">OB</user_input>
   <system_output timestamp="85.502785">[?5h[?5l</system_output>
   <user_input timestamp="1870.453194"/>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1870.805828">1</user_input>
   <system_output timestamp="1870.808649">]0;screen[?2004l[H[2J]2;screenNeed to get 219 kB/2,943 kB of archives. After unpacking 13.0 MB will be used.
 Writing extended state information...
@@ -1013,10 +1007,9 @@ demo@172.16.0.1's password:
 fai_cd.iso[195C100% 1894MB  26.7MB/s   01:11
 demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
   <user_input timestamp="1871.348383"/>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1871.781498">2</user_input>
   <system_output timestamp="1871.784232">]0;]0;screen[?2004l[H[2J]2;screen[32m[    0.916645] [39mio scheduler mq-deadline registered
 [32m[    0.919042] [33mshpchp: [39mStandard Hot Plug PCI Controller Driver version: 0.4
@@ -1220,10 +1213,9 @@ demo@faiserver:/home/fai$]0;]0;screen[?2004h </system_output>
 [32m[    8.084242] [33m8139cp 0000:00:03.0 ens3: [39mlink up, 100Mbps, full-duplex, lpa 0x05E1
 demo@faiserver:~$]0;]0;screen[?2004h </system_output>
   <user_input timestamp="1873.003275"/>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1873.795558">0</user_input>
   <system_output timestamp="1873.796373">]0;[?2004l[H[2J]2;screen[7mFile Edit Options Buffers Tools Help                                                                                                                                                                                                           
 [27mPACKAGES aptitude
@@ -1253,10 +1245,9 @@ xauth
 [170B[7m-UU-:----F1  [1mFAIBASE     [27m[0m[7m   All L17   Git:master  (Fundamental) ----------------------------------------------------------------------------------------------------------------------------</system_output>
   <system_output timestamp="1873.796448">---------------------------------------------------
 [27mdemo@faiserver:/home/fai$[?2004h </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1877.039296">g</user_input>
   <system_output timestamp="1877.040508">g</system_output>
   <user_input timestamp="1877.178257">i</user_input>
@@ -1326,10 +1317,9 @@ To add an exception for this directory, call:
 [8Cgit config --global --add safe.directory /home/fai/config
 </system_output>
   <system_output timestamp="1883.683084">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1900.531341">l</user_input>
   <system_output timestamp="1900.532713">l</system_output>
   <user_input timestamp="1900.830729">s</user_input>
@@ -1361,10 +1351,9 @@ dr-xr-xr-x  2 root root 4096 Jul 25 17:55 [1m[34mpackage_config[0m
 dr-xr-xr-x 32 root root 4096 Apr 26  2017 [1m[34mscripts[0m
 </system_output>
   <system_output timestamp="1902.83761">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1910.091112">c</user_input>
   <system_output timestamp="1910.092336">c</system_output>
   <user_input timestamp="1912.066053"></user_input>
@@ -1510,10 +1499,9 @@ The key's randomart image is:
 +----[SHA256]-----+
 </system_output>
   <system_output timestamp="2240.038365">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2264.505635">s</user_input>
   <system_output timestamp="2264.5069">s</system_output>
   <user_input timestamp="2264.656882">u</user_input>
@@ -1543,7 +1531,6 @@ The key's randomart image is:
   <system_output timestamp="2266.654011">ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM0w6go6EkUZXUY9e1xabbVDHooXZEhcLPNFAjPEd1BZ root@faiserver
 </system_output>
   <system_output timestamp="2266.655482">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

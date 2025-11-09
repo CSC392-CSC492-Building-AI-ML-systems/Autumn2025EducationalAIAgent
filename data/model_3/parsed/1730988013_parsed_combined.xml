@@ -85,5 +85,5 @@ exit
 User exits the current terminal session.
 </annotation>
 </event>
-<event depth="-2">
+<event >
 </recording>

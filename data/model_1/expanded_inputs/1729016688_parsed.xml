@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1729016688">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009683">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="12.23813"/>
   <system_output timestamp="12.238714">
@@ -36,10 +36,9 @@ Last login: Tue Oct 15 18:49:51 2024 from 172.16.0.1
 
 </system_output>
   <system_output timestamp="28.271742">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="138.682618">c</user_input>
   <system_output timestamp="138.684726">c</system_output>
   <user_input timestamp="138.901209">d</user_input>
@@ -138,10 +137,9 @@ Last login: Tue Oct 15 18:49:51 2024 from 172.16.0.1
   <system_output timestamp="150.326286">[0m[01;32m10-misc[0m  [01;32m20-copy-mirror[0m  [01;32m30-interface[0m  [01;32m40-misc.sh[0m  [01;32m50-use_tmpfs_on_tmp[0m
 </system_output>
   <system_output timestamp="150.326865">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="151.180224">c</user_input>
   <system_output timestamp="151.201967">c</system_output>
   <user_input timestamp="151.29854">a</user_input>
@@ -200,10 +198,9 @@ else
     }
 fi</system_output>
   <system_output timestamp="155.335318">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="230.787848">g</user_input>
   <system_output timestamp="230.789943">g</system_output>
   <user_input timestamp="230.910658">i</user_input>
@@ -268,10 +265,9 @@ To add an exception for this directory, call:
 </system_output>
   <system_output timestamp="240.605958">[?2004h</system_output>
   <system_output timestamp="240.606383">]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="241.133161">s</user_input>
   <system_output timestamp="241.145135">s</system_output>
   <user_input timestamp="241.280573">u</user_input>
@@ -492,10 +488,9 @@ To add an exception for this directory, call:
 </system_output>
   <system_output timestamp="293.097814">[?2004h</system_output>
   <system_output timestamp="293.098704">]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="333.725324">c</user_input>
   <system_output timestamp="333.727384">c</system_output>
   <user_input timestamp="333.947424">d</user_input>
@@ -606,10 +601,9 @@ To add an exception for this directory, call:
   <system_output timestamp="351.751225">DEFAULT  QEMUCLIENT
 </system_output>
   <system_output timestamp="351.752017">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="353.029418">c</user_input>
   <system_output timestamp="353.036132">c</system_output>
   <user_input timestamp="353.172291">a</user_input>
@@ -645,10 +639,9 @@ deb-src http://http.us.debian.org/debian stable main
 
 deb http://security.debian.org/ stable/updates main</system_output>
   <system_output timestamp="355.045069">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="358.108142">g</user_input>
   <system_output timestamp="358.110465">g</system_output>
   <user_input timestamp="358.267362">i</user_input>
@@ -789,10 +782,9 @@ To add an exception for this directory, call:
   <system_output timestamp="387.339096">QEMUCLIENT
 </system_output>
   <system_output timestamp="387.339944">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="387.730851">c</user_input>
   <system_output timestamp="387.73912">c</system_output>
   <user_input timestamp="387.848327">a</user_input>
@@ -825,10 +817,9 @@ deb-src http://faiserver/debian stable main
 
 deb http://security.debian.org/ stable/updates main</system_output>
   <system_output timestamp="389.750726">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="410.741023">OA</user_input>
   <system_output timestamp="410.743168">cat QEMUCLIENT </system_output>
   <user_input timestamp="411.690591">OB</user_input>
@@ -900,10 +891,9 @@ To add an exception for this directory, call:
   <system_output timestamp="436.582555">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="436.602779">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="624.69699">g</user_input>
   <system_output timestamp="624.699113">g</system_output>
   <user_input timestamp="624.866268">i</user_input>
@@ -1804,10 +1794,9 @@ deb http://security.debian.org/debian-security stable-security main[K
   <system_output timestamp="1033.826029">[196d[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
   <system_output timestamp="1033.839945">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1035.465269">s</user_input>
   <system_output timestamp="1035.468233">s</system_output>
   <user_input timestamp="1035.645817">u</user_input>
@@ -1872,10 +1861,9 @@ deb http://security.debian.org/debian-security stable-security main[K
   <system_output timestamp="1044.239479">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
   <system_output timestamp="1044.322261">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1046.778367">s</user_input>
   <system_output timestamp="1046.780377">s</system_output>
   <user_input timestamp="1046.861496">u</user_input>
@@ -2072,10 +2060,9 @@ Reading state information... Done
   <system_output timestamp="1141.770711">DEFAULT
 </system_output>
   <system_output timestamp="1141.771686">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1145.890314">s</user_input>
   <system_output timestamp="1145.89308">s</system_output>
   <user_input timestamp="1146.031814">u</user_input>
@@ -2209,10 +2196,9 @@ Reading state information... Done
   <system_output timestamp="1235.541438">DEFAULT  QEMUCLIENT
 </system_output>
   <system_output timestamp="1235.542288">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1237.538488">s</user_input>
   <system_output timestamp="1237.540706">s</system_output>
   <user_input timestamp="1237.676362">u</user_input>
@@ -2609,10 +2595,9 @@ deb http://security.debian.org/debian-security stable-security main[K
   <system_output timestamp="1590.915435">[196;1H[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
   <system_output timestamp="1590.968748">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1592.237432">s</user_input>
   <system_output timestamp="1592.258081">s</system_output>
   <user_input timestamp="1593.039905"></user_input>
@@ -2915,10 +2900,9 @@ Reading state information... Done
   <system_output timestamp="1629.157414">41 packages can be upgraded. Run 'apt list --upgradable' to see them.
 </system_output>
   <system_output timestamp="1629.173452">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1668.651603">s</user_input>
   <system_output timestamp="1668.65365">s</system_output>
   <user_input timestamp="1668.839982">u</user_input>
@@ -2980,10 +2964,9 @@ Reading state information... Done
   <system_output timestamp="1671.051882">
 [K[?1l&gt;</system_output>
   <system_output timestamp="1671.056074">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1674.71825">s</user_input>
   <system_output timestamp="1674.720421">s</system_output>
   <user_input timestamp="1674.860371">u</user_input>
@@ -3308,10 +3291,9 @@ Reading state information... Done
   <system_output timestamp="1723.659784"> 2 files changed, 6 insertions(+), 9 deletions(-)
 </system_output>
   <system_output timestamp="1723.662688">[?2004h]0;demo@faiserver: /home/fai/config/files/etc/apt/sources.listdemo@faiserver:/home/fai/config/files/etc/apt/sources.list$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1948.649426">c</user_input>
   <system_output timestamp="1948.651461">c</system_output>
   <user_input timestamp="1948.854424">d</user_input>
@@ -17315,10 +17297,9 @@ user	13m11.873s
 sys	2m21.677s
 </system_output>
   <system_output timestamp="3082.741038">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3796.001924"/>
   <system_output timestamp="3796.004318">[?2004l
 
@@ -17328,10 +17309,9 @@ logout
 
 </system_output>
   <system_output timestamp="3796.110437">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="3798.103792"/>
   <system_output timestamp="3798.104528">
 (reverse-i-search)`': </system_output>
@@ -17484,10 +17464,9 @@ fai_cd.iso                                                                      
 
 </system_output>
   <system_output timestamp="3878.952385">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="4148.27386">l</user_input>
   <system_output timestamp="4148.274226">l</system_output>
   <user_input timestamp="4148.688714">s</user_input>
@@ -17576,10 +17555,9 @@ fai_cd.iso                                                                      
 /disk1/isos/fai_dvd-20240723.iso    /disk1/isos/fai_dvd-20240725.iso	/disk1/isos/fai_dvd-20241013.iso  /disk1/isos/fai_dvd.iso
 </system_output>
   <system_output timestamp="4161.085177">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="4166.95222">r</user_input>
   <system_output timestamp="4166.952927">r</system_output>
   <user_input timestamp="4167.239856">m</user_input>
@@ -17889,10 +17867,9 @@ fai_cd.iso                                                                      
 [?2004l
 </system_output>
   <system_output timestamp="4249.472379">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="4250.165372">[A</user_input>
   <system_output timestamp="4250.165883">rm /disk1/isos/fai_dvd-20240725-2.iso </system_output>
   <user_input timestamp="4250.382508">[A</user_input>
@@ -18046,16 +18023,14 @@ fai_cd.iso                                                                      
 fai_cd.iso                                                                                                                                                                                                   100% 1899MB  35.9MB/s   00:52    
 </system_output>
   <system_output timestamp="4307.816082">[?2004hdemo@stephost:~$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="6019.801361"/>
   <system_output timestamp="6019.80183">[?2004l
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>
