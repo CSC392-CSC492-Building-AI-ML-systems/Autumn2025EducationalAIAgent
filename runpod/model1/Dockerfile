@@ -1,0 +1,32 @@
+# ---- Base: CUDA + PyTorch (RunPod official)
+FROM runpod/pytorch:2.4.0-py310-cuda12.1
+
+ENV HF_HUB_ENABLE_HF_TRANSFER=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# vLLM + deps.
+# Pin vLLM to a CUDA12-compatible version. If this fails due to wheel availability,
+# try the exact version from vLLM’s release notes for CUDA 12.1.
+RUN pip install --no-cache-dir \
+    runpod \
+    vllm==0.6.2.post1 \
+    transformers>=4.44.0 \
+    accelerate \
+    huggingface_hub \
+    einops
+
+# Copy your handler
+COPY handler.py /app/handler.py
+
+# Common envs you can override in the RunPod console
+ENV MODEL1_MODEL_ID="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B" \
+    MODEL1_MAX_NEW_TOKENS=1024 \
+    MODEL1_TEMPERATURE=0.0 \
+    MODEL1_TOP_P=1.0 \
+    MODEL1_GPU_UTIL=0.90 \
+    MODEL1_MAX_MODEL_LEN=8192
+
+# Start the serverless worker
+CMD ["python", "-u", "handler.py"]
