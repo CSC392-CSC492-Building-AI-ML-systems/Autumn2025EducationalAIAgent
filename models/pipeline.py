@@ -10,52 +10,65 @@ class Model0:
     def __init__(self):
         print("Loading model...")
 
-        adapter_id = "patea4/deepseek-r1-educational-lora"
+        adapter_id = "patea4/deepseek-r1-educational-lora-tuned3"
         base_id = "unsloth/DeepSeek-R1-Distill-Llama-8B"
 
-        self.tokenizer = AutoTokenizer.from_pretrained(base_id, use_fast=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(adapter_id, use_fast=True)
         self.tokenizer.truncation_side = "left"
+        self.tokenizer.pad_token = self.tokenizer.eos_token
+
 
         self.model = AutoPeftModelForCausalLM.from_pretrained(
             adapter_id,
-            load_in_4bit=True,
             device_map="cuda:0",
         )
+
+
+        # from transformers import AutoModelForCausalLM
+        # self.model = AutoModelForCausalLM.from_pretrained(
+        #     base_id,
+        #     load_in_4bit=True,
+        #     device_map="cuda:0",
+        # )
 
         print("Model loaded!")
 
     def generate(self, prompt: str) -> str:
+        
+        messages = [
+            {"role": "user", "content": prompt},
+            {"role": "assistant", "content": "Answer:"},
+        ]
+        
+        prompt = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
+        
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+        input_length = inputs.input_ids.shape[1]
 
         with torch.inference_mode():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=1024,
-                temperature=0.5,
-                do_sample=True,
+                max_new_tokens=512,
+                do_sample=False,
+                eos_token_id=self.tokenizer.eos_token_id,
+                pad_token_id=self.tokenizer.eos_token_id,
+                use_cache=True,
             )
 
-        full_output = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        generated_tokens = outputs[0][input_length:]
+        response = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
+        
+        return response.strip()
 
-        if "### Response:" in full_output:
-            return full_output.split("### Response:")[-1].strip()
-        return full_output
 
 
 model = Model0()
 
 output = None
-
-ALPACA_PROMPT = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
-{}
-
-### Input:
-{}
-
-### Response:
-    """
 
 def load_xml_chunks(xml_path: str) -> List[str]:
     with open(xml_path, "r", encoding="utf-8") as f:
@@ -67,12 +80,8 @@ def load_xml_chunks(xml_path: str) -> List[str]:
     )
     return pattern.findall(content)
 
-
-
-
-def build_model0_prompt(context_events: List[Tuple[str, int]], current_event: str, system_prompt: str, max_context: int = 20) -> str:
+def build_model0_prompt(context_events, current_event, system_prompt, max_context: int = 20) -> str:
     input_parts = []
-
     recent_events = context_events[-max_context:] if len(context_events) > max_context else context_events
 
     for prev_event_xml, group_id in recent_events:
@@ -83,43 +92,56 @@ def build_model0_prompt(context_events: List[Tuple[str, int]], current_event: st
     input_parts.append(current_with_sortme)
     input_xml = "\n".join(input_parts)
 
-    prompt = ALPACA_PROMPT.format(system_prompt, input_xml)
+    user_msg = f"{system_prompt}\n\n{input_xml}"
 
-    prompt_tokens = len(model.tokenizer.encode(prompt, add_special_tokens=False))
-
-    while prompt_tokens > 2048 and len(input_parts) > 1:
+    tok = model.tokenizer
+    while len(tok.encode(user_msg, add_special_tokens=False)) > 2048 and len(input_parts) > 1:
         input_parts.pop(0)
         input_xml = "\n".join(input_parts)
-        prompt = ALPACA_PROMPT.format(system_prompt, input_xml)
-        prompt_tokens = len(model.tokenizer.encode(prompt, add_special_tokens=False))
+        user_msg = f"### Instruction:\n{system_prompt}\n\n### Input:\n{input_xml}"
 
-    return prompt
+    return user_msg
 
 
 def model0_call_api(prompt: str, idx: int) -> str:
     global output
+    print(f"Calling model for event {idx}")
+
+    if output is not None:
+        output.write(f"\n=== Event {idx} ===\n")
+        output.write("INPUT:\n")
+        output.write(prompt)
+        output.write("\n\nOUTPUT:\n")
+
     response = model.generate(prompt)
+    print(response)
+
+    output.write(response)
+    output.write("\n" + "="*50 + "\n")
+    output.flush()
+
     return response 
 
 
-def parse_model0_response(response: str) -> Tuple[str, int]:
+def parse_model0_response(response: str, current_group_id: int) -> Tuple[str, int]:
     match = re.search(r"Answer:\s*(NEW|\d+)", response, re.IGNORECASE)
 
     if not match:
-        return "UNKNOWN", 0
+        # If not found assume its the same group
+        return "EXISTING", current_group_id
 
     answer = match.group(1)
 
     if answer.upper() == "NEW":
         return "NEW", 0
     else:
-        return "EXISTING", int(answer)
+        return "EXISTING", current_group_id
 
 
 def send_grouped_event_model1(hlc_events: List[str], group_id: int):
     global output
     print(f"Writing HLC group {group_id} with {len(hlc_events)} events")
-    if output:
+    if output is not None:
         output.write(f"<event>\n")
         for event in hlc_events:
             output.write(event + "\n")
@@ -132,7 +154,7 @@ def process_event(event_xml: str, context_events: List[Tuple[str, int]],
 
     prompt = build_model0_prompt(context_events, event_xml, system_prompt)
     response = model0_call_api(prompt, idx)
-    pred_type, group_num = parse_model0_response(response)
+    pred_type, group_num = parse_model0_response(response, current_group_id)
 
     if pred_type == "NEW":
         if current_hlc_events:
@@ -150,15 +172,21 @@ def process_event(event_xml: str, context_events: List[Tuple[str, int]],
 
 
 def stream_events(events: List[str], system_prompt: str):
+    print(f"Processing {len(events)} events...")
     context_events = []
     current_hlc_events = []
     current_group_id = -1
 
     for idx, event_xml in enumerate(events):
-        current_hlc_events, current_group_id, _ = process_event(
-            event_xml, context_events, current_hlc_events,
-            current_group_id, system_prompt, idx
-        )
+        if idx == 0:
+            current_group_id = 0
+            current_hlc_events = [event_xml]
+            context_events.append((event_xml, current_group_id))
+        else:
+            current_hlc_events, current_group_id, _ = process_event(
+                event_xml, context_events, current_hlc_events,
+                current_group_id, system_prompt, idx
+            )
         if (idx + 1) % 10 == 0:
             print(f"Processed {idx + 1}/{len(events)} events...")
 
@@ -174,7 +202,7 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
-    system_prompt = open("model_0/system_prompt.txt").read()
+    system_prompt = open("model_0/system_prompt2.txt").read()
 
     events = load_xml_chunks(args.input)
 
