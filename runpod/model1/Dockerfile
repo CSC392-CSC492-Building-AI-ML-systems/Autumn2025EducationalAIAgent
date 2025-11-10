@@ -3,18 +3,16 @@ FROM runpod/pytorch:1.0.2-cu1281-torch271-ubuntu2204
 
 ENV HF_HUB_ENABLE_HF_TRANSFER=1
 ENV PYTHONUNBUFFERED=1
-
 WORKDIR /app
 
-# vLLM + deps.
-# Pin vLLM to a CUDA12-compatible version. If this fails due to wheel availability,
-# try the exact version from vLLM’s release notes for CUDA 12.1.
+# vLLM + deps
 RUN pip install --no-cache-dir \
     runpod \
     vllm \
     transformers \
     accelerate \
     huggingface_hub \
+    hf_transfer \
     einops
 
 # Copy your handler
@@ -27,6 +25,3 @@ ENV MODEL1_MODEL_ID="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B" \
     MODEL1_TOP_P=1.0 \
     MODEL1_GPU_UTIL=0.90 \
     MODEL1_MAX_MODEL_LEN=8192
-
-# Start the serverless worker
-CMD ["python", "-u", "handler.py"]
