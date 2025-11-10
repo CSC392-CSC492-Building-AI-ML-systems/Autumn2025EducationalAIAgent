@@ -54,6 +54,7 @@
             padding: 10px;
             border-radius: 4px;
             border: 1px solid #555;
+            resize: vertical;
         }
 
         .event-line {
@@ -100,6 +101,8 @@
             padding: 10px;
             margin-bottom: 12px;
             min-height: 80px;
+            resize: vertical;
+            overflow: auto;
         }
 
         .subsection-title {
@@ -123,6 +126,8 @@
             font-size: 0.85em;
             line-height: 1.4;
             font-style: italic;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         .answer {
@@ -172,15 +177,19 @@
         }
 
         .status {
-            text-align: center;
-            padding: 10px;
+            display: inline-block;
+            margin-left: 10px;
             font-size: 0.9em;
-            color: #888;
+            color: #FFB74D;
         }
 
         .processing {
             color: #FFB74D;
             animation: pulse 1.5s infinite;
+        }
+
+        .error-status {
+            color: #f44336;
         }
 
         @keyframes pulse {
@@ -230,26 +239,26 @@
         <div class="pipeline-container">
             <!-- Model 0 Pipeline -->
             <div class="pipeline">
-                <div class="pipeline-title">MODEL 0 PIPELINE</div>
+                <div class="pipeline-title">MODEL 0</div>
 
                 <!-- Model 0 Input -->
-                <div class="subsection">
+                <div class="subsection" style="height: 300px;">
                     <div class="subsection-title">Model 0 Input Context</div>
-                    <div id="model0Input" class="xml-content" style="max-height: 300px; overflow-y: auto;">
+                    <div id="model0Input" class="xml-content" style="height: calc(100% - 30px); overflow-y: auto;">
                         <div class="empty-state">Waiting for input...</div>
                     </div>
                 </div>
 
                 <!-- Model 0 Response -->
-                <div class="subsection">
+                <div class="subsection" style="height: 300px;">
                     <div class="subsection-title">Model 0 Full Response</div>
-                    <div id="model0Thinking" class="thinking-content" style="max-height: 300px; overflow-y: auto;">
+                    <div id="model0Thinking" class="thinking-content" style="height: calc(100% - 30px); overflow-y: auto;">
                         <div class="empty-state">Waiting for response...</div>
                     </div>
                 </div>
 
                 <!-- Model 0 Answer -->
-                <div class="subsection">
+                <div class="subsection" style="resize: none;">
                     <div class="subsection-title">Model 0 Answer</div>
                     <div id="model0Answer">
                         <div class="empty-state">Waiting for answer...</div>
@@ -259,42 +268,42 @@
 
             <!-- Model 1 Pipeline -->
             <div class="pipeline">
-                <div class="pipeline-title model1-title">MODEL 1 PIPELINE</div>
+                <div class="pipeline-title model1-title">
+                    MODEL 1
+                    <span class="status" id="model1Status" style="display: none;"></span>
+                </div>
 
                 <!-- Previous Summaries (Neighbors) -->
-                <div class="subsection">
+                <div class="subsection" style="height: 100px;">
                     <div class="subsection-title">Previous Summaries (Neighbors)</div>
-                    <div id="neighbors">
+                    <div id="neighbors" style="height: calc(100% - 30px); overflow-y: auto;">
                         <div class="empty-state">No summaries yet...</div>
                     </div>
                 </div>
 
                 <!-- Current HLC Group to Process -->
-                <div class="subsection">
+                <div class="subsection" style="height: 150px;">
                     <div class="subsection-title">Current HLC Group to Process</div>
-                    <div id="model1Input" class="xml-content" style="max-height: 150px; overflow-y: auto;">
+                    <div id="model1Input" class="xml-content" style="height: calc(100% - 30px); overflow-y: auto;">
                         <div class="empty-state">Waiting for completed group...</div>
                     </div>
                 </div>
 
                 <!-- Model 1 Summary -->
-                <div class="subsection">
+                <div class="subsection" style="resize: none;">
                     <div class="subsection-title">Model 1 Summary</div>
                     <div id="model1Summary">
                         <div class="empty-state">Waiting for summary...</div>
                     </div>
                 </div>
-
-                <!-- Status -->
-                <div class="status" id="model1Status">Ready</div>
             </div>
         </div>
 
         <!-- Current Group Building Section -->
         <div class="section">
             <div class="section-title">Current Group Being Built</div>
-            <div class="subsection">
-                <div id="currentGroup" class="xml-content">
+            <div class="subsection" style="height: 150px;">
+                <div id="currentGroup" class="xml-content" style="height: 100%; overflow-y: auto;">
                     <div class="empty-state">No group yet...</div>
                 </div>
             </div>
@@ -450,25 +459,26 @@
                 case 'model1_input':
                     updateModel1Input(message.data.group_id, message.data.events);
                     model1Status.innerHTML = '<span class="processing">Processing...</span>';
+                    model1Status.style.display = 'inline-block';
                     break;
 
                 case 'model1_summary':
                     updateModel1Summary(message.data.summary);
                     addNeighbor(message.data.group_id, message.data.summary);
-                    model1Status.textContent = 'Complete';
-                    setTimeout(() => {
-                        model1Status.textContent = 'Ready';
-                    }, 1000);
+                    // Hide status after summary arrives
+                    model1Status.style.display = 'none';
                     break;
 
                 case 'complete':
-                    model1Status.textContent = 'All processing complete!';
+                    // Hide status when complete
+                    model1Status.style.display = 'none';
                     console.log('Pipeline complete');
                     break;
 
                 case 'error':
                     console.error('Error:', message.data);
-                    model1Status.innerHTML = `<span style="color: #f44336">Error: ${message.data}</span>`;
+                    model1Status.innerHTML = `<span class="error-status">Error: ${escapeHtml(message.data)}</span>`;
+                    model1Status.style.display = 'inline-block';
                     break;
             }
         };
@@ -479,7 +489,8 @@
 
         ws.onclose = () => {
             console.log('Disconnected from server');
-            model1Status.textContent = 'Disconnected';
+            model1Status.innerHTML = '<span class="error-status">Disconnected</span>';
+            model1Status.style.display = 'inline-block';
         };
     </script>
 </body>

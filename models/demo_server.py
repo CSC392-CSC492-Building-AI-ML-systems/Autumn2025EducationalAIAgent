@@ -59,8 +59,10 @@ class Model0:
         prompt = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
-            add_generation_prompt=True
+            add_generation_prompt=False
         )
+
+        print(prompt)
 
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
         input_length = inputs.input_ids.shape[1]
@@ -112,7 +114,37 @@ async def broadcast_message(message: Dict):
         connected_clients.remove(client)
 
 
+async def process_model1(group_id: int, events: List[str]):
+    """Process a single group with Model 1 in the background"""
+    try:
+        # Show we're processing this group
+        await broadcast_message({
+            "type": "model1_input",
+            "data": {
+                "group_id": group_id,
+                "events": events
+            }
+        })
+
+        # Simulate Model 1 API call (replace with actual RunPod API call)
+        await asyncio.sleep(2.0)  # Simulates slow API response
+        summary = f"Summary of group {group_id} with {len(events)} events"
+
+        # Send result when it arrives
+        await broadcast_message({
+            "type": "model1_summary",
+            "data": {
+                "group_id": group_id,
+                "summary": summary
+            }
+        })
+
+    except Exception as e:
+        print(f"Error in Model 1 processing: {e}")
+
+
 async def process_model0_pipeline(dataset, system_prompt: str):
+    """Process Model 0 pipeline - continues while Model 1 runs in background"""
     global current_group_events, current_group_id, model0_instance, processing_complete, processing_in_progress
 
     if processing_in_progress or processing_complete:
@@ -176,27 +208,7 @@ async def process_model0_pipeline(dataset, system_prompt: str):
 
         if prediction_type == "NEW":
             if current_group_events:
-                # Send completed group to Model 1 Visualization
-                await broadcast_message({
-                    "type": "model1_input",
-                    "data": {
-                        "group_id": current_group_id,
-                        "events": current_group_events
-                    }
-                })
-
-                # Simulate Model 1 processing
-                await asyncio.sleep(0.5)
-                summary = f"Summary of group {current_group_id} with {len(current_group_events)} events"
-
-                # Send model 1 output to visualization
-                await broadcast_message({
-                    "type": "model1_summary",
-                    "data": {
-                        "group_id": current_group_id,
-                        "summary": summary
-                    }
-                })
+                asyncio.create_task(process_model1(current_group_id, current_group_events.copy()))
 
             current_group_id += 1
             current_group_events = [clean_event]
@@ -214,22 +226,7 @@ async def process_model0_pipeline(dataset, system_prompt: str):
         await asyncio.sleep(0.3)
 
     if current_group_events:
-        await broadcast_message({
-            "type": "model1_input",
-            "data": {
-                "group_id": current_group_id,
-                "events": current_group_events
-            }
-        })
-
-        summary = f"Summary of group {current_group_id} with {len(current_group_events)} events"
-        await broadcast_message({
-            "type": "model1_summary",
-            "data": {
-                "group_id": current_group_id,
-                "summary": summary
-            }
-        })
+        asyncio.create_task(process_model1(current_group_id, current_group_events.copy()))
 
     await broadcast_message({"type": "complete"})
     processing_complete = True
@@ -260,12 +257,10 @@ async def websocket_endpoint(websocket: WebSocket):
             system_prompt_path = Path(__file__).parent / "model_0" / "system_prompt.txt"
             system_prompt = system_prompt_path.read_text()
 
-            # Start processing (runs in background)
             asyncio.create_task(process_model0_pipeline(dataset, system_prompt))
 
         while True:
             try:
-                # Wait for messages from client (keep alive)
                 await websocket.receive_text()
             except WebSocketDisconnect:
                 break
