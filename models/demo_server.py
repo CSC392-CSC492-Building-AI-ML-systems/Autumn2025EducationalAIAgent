@@ -5,17 +5,20 @@ Streams processing updates via WebSocket.
 """
 
 import asyncio
-import json
+import os
 import re
+import time
 from typing import List, Dict, Optional
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-import torch
-from peft import AutoPeftModelForCausalLM
 from datasets import load_dataset
+import requests
+from dotenv import load_dotenv
 from transformers import AutoTokenizer
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -38,47 +41,86 @@ sortme_pattern = re.compile(
 )
 
 
+def send_vllm_request(url, headers, payload, max_retries=3):
+    """Send request to vLLM worker with retry logic and error handling"""
+    for attempt in range(max_retries):
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=300)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.Timeout:
+            print(f"Request timed out. Attempt {attempt + 1}/{max_retries}")
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)  # Exponential backoff
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429:
+                print("Rate limit exceeded. Waiting before retry...")
+                time.sleep(5)
+            elif e.response.status_code >= 500:
+                print(f"Server error: {e.response.status_code}")
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)
+            else:
+                raise
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)
+
+    raise Exception("Max retries exceeded")
+
+
 class Model0:
     def __init__(self):
-        print("Loading Model 0...")
-        adapter_id = "patea4/deepseek-r1-educational-lora-tuned3"
+        print("Initializing Model 0 vLLM client...")
+        self.tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/DeepSeek-R1-Distill-Llama-8B")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(adapter_id, use_fast=True)
-        self.tokenizer.truncation_side = "left"
-        self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        self.model = AutoPeftModelForCausalLM.from_pretrained(
-            adapter_id,
-            device_map="cuda:0",
-        )
-        print("Model 0 loaded!")
+        self.base_url = os.environ.get("MODEL0_BASE_URL")
+        self.api_key = os.environ.get("MODEL0_API_KEY")
+        
+        self.url = f"{self.base_url}/v1/completions"
+        self.headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+
+        print(f"Model 0 configured for endpoint: {self.base_url}")
 
     def generate(self, prompt: str) -> str:
+        
         messages = [{"role": "user", "content": prompt}]
-
-        prompt = self.tokenizer.apply_chat_template(
+        formatted_prompt = self.tokenizer.apply_chat_template(
             messages,
             tokenize=False,
-            add_generation_prompt=False
+            add_generation_prompt=True
         )
+        
+        payload = {
+            "model": "educational",
+            "prompt": formatted_prompt,
+            "temperature": 0.5,
+            "max_tokens": 512
+        }
 
-        print(prompt)
+        print(f"Calling Model 0 API with prompt length: {len(prompt)}")
 
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
-        input_length = inputs.input_ids.shape[1]
+        try:
+            result = send_vllm_request(self.url, self.headers, payload)
 
-        with torch.inference_mode():
-            outputs = self.model.generate(
-                **inputs,
-                max_new_tokens=512,
-                temperature=0.5,
-                do_sample=True,
-            )
+            if "choices" in result and len(result["choices"]) > 0:
+                generated_text = result["choices"][0]["text"]
+                generated_text = generated_text.replace('</think>', '').strip()
+                print(f"Model 0 response received: {len(generated_text)} chars")
+                return generated_text.strip()
+            else:
+                print(f"Unexpected response format: {result}")
+                return "ERROR: Unexpected response format"
 
-        generated_tokens = outputs[0][input_length:]
-        response = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
-
-        return response.strip()
+        except Exception as e:
+            error_msg = f"Model 0 generation failed: {str(e)}"
+            print(error_msg)
+            return f"ERROR: {error_msg}"
 
 
 def extract_clean_event(event_with_attrs: str) -> str:
