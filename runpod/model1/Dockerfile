@@ -11,8 +11,8 @@ WORKDIR /app
 # try the exact version from vLLM’s release notes for CUDA 12.1.
 RUN pip install --no-cache-dir \
     runpod \
-    vllm==0.6.2.post1 \
-    transformers>=4.44.0 \
+    vllm \
+    transformers \
     accelerate \
     huggingface_hub \
     einops
