@@ -246,22 +246,22 @@ class Model0:
 
         print(f"Calling Model 0 API with prompt length: {len(prompt)}")
 
-        # try:
-        #     result = send_vllm_request(self.url, self.headers, payload)
-        #
-        #     if "choices" in result and len(result["choices"]) > 0:
-        #         generated_text = result["choices"][0]["text"]
-        #         generated_text = generated_text.replace('</think>', '').strip()
-        #         print(f"Model 0 response received: {len(generated_text)} chars")
-        #         return generated_text.strip()
-        #     else:
-        #         print(f"Unexpected response format: {result}")
-        #         return "ERROR: Unexpected response format"
-        #
-        # except Exception as e:
-        #     error_msg = f"Model 0 generation failed: {str(e)}"
-        #     print(error_msg)
-        #     return f"ERROR: {error_msg}"
+        try:
+            result = send_vllm_request(self.url, self.headers, payload)
+
+            if "choices" in result and len(result["choices"]) > 0:
+                generated_text = result["choices"][0]["text"]
+                generated_text = generated_text.replace('</think>', '').strip()
+                print(f"Model 0 response received: {len(generated_text)} chars")
+                return generated_text.strip()
+            else:
+                print(f"Unexpected response format: {result}")
+                return "ERROR: Unexpected response format"
+
+        except Exception as e:
+            error_msg = f"Model 0 generation failed: {str(e)}"
+            print(error_msg)
+            return f"ERROR: {error_msg}"
         return "a"
 
 
@@ -353,24 +353,37 @@ async def process_model1(group_id: int, events: List[str]):
             raw_text = json_output.get("raw", "")
             print(f"JSON parsing failed, attempting to extract from raw text: {raw_text[:200]}...")
 
-            # Remove markdown code blocks
             import json as json_module
-            cleaned = raw_text.strip()
-            if cleaned.startswith("```"):
-                # Remove ```json and trailing ```
-                lines = cleaned.split('\n')
-                if lines[0].startswith("```"):
-                    lines = lines[1:]
-                if lines and lines[-1].strip() == "```":
-                    lines = lines[:-1]
-                cleaned = '\n'.join(lines)
 
-            try:
-                json_output = json_module.loads(cleaned.strip())
-                print(f"Successfully extracted JSON: {json_output}")
-            except Exception as e:
-                print(f"Failed to extract JSON: {e}")
-                json_output = {"annotation": "Failed to parse model response", "depth": 0}
+            # First try to find markdown code blocks with JSON using regex
+            markdown_match = re.search(r'```(?:json)?\s*\n(.*?)\n```', raw_text, re.DOTALL)
+            if markdown_match:
+                print("Found JSON in markdown code block")
+                json_text = markdown_match.group(1).strip()
+                try:
+                    json_output = json_module.loads(json_text)
+                    print(f"Successfully extracted JSON from markdown: {json_output}")
+                except Exception as e:
+                    print(f"Failed to parse markdown JSON: {e}")
+                    json_output = {"annotation": "Failed to parse model response", "depth": 0}
+            else:
+                # Fallback: Remove markdown code blocks if text starts with them
+                cleaned = raw_text.strip()
+                if cleaned.startswith("```"):
+                    # Remove ```json and trailing ```
+                    lines = cleaned.split('\n')
+                    if lines[0].startswith("```"):
+                        lines = lines[1:]
+                    if lines and lines[-1].strip() == "```":
+                        lines = lines[:-1]
+                    cleaned = '\n'.join(lines)
+
+                try:
+                    json_output = json_module.loads(cleaned.strip())
+                    print(f"Successfully extracted JSON: {json_output}")
+                except Exception as e:
+                    print(f"Failed to extract JSON: {e}")
+                    json_output = {"annotation": "Failed to parse model response", "depth": 0}
 
         annotation = json_output.get("annotation", "No summary generated")
         depth = json_output.get("depth", 0)
@@ -577,6 +590,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Store the system prompt path in environment for access in websocket handler
-    os.environ["MODEL1_SYSTEM_PROMPT"] = args.model1_system_prompt
+    os.environ["MODEL1_SYSTEM_PROMPT"] = args.system_prompt
 
-    uvicorn.run(app, host=args.host, port=args.port)
+    uvicorn.run(app)
