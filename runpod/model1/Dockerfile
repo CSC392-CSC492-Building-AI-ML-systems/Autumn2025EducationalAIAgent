@@ -1,5 +1,5 @@
 # ---- Base: CUDA + PyTorch (RunPod official)
-FROM runpod/pytorch:2.4.0-py310-cuda12.1
+FROM runpod/pytorch:1.0.2-cu1281-torch271-ubuntu2204
 
 ENV HF_HUB_ENABLE_HF_TRANSFER=1
 ENV PYTHONUNBUFFERED=1
