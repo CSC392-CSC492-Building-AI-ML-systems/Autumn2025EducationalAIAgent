@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1730988014">
-<event depth="-2">
+<event >
   <system_output timestamp="0.005867">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1.439236"/>
   <system_output timestamp="1.439986">
@@ -30,10 +30,9 @@ demo@172.16.0.17's password: </system_output>
 </system_output>
   <system_output timestamp="10.768878">
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="10.769305">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="11.542018">[A</user_input>
   <system_output timestamp="11.542496">ssh 172.16.0.17</system_output>
@@ -59,10 +58,9 @@ Plan your installation, and FAI installs your plan.
 Last login: Wed Oct 23 20:07:49 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="13.415396">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="14.347809"/>
   <system_output timestamp="14.350083">[?2004l
@@ -73,18 +71,16 @@ Last login: Wed Oct 23 20:07:49 2024 from 172.16.0.1
   <system_output timestamp="14.361051">Connection to 172.16.0.17 closed.
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="14.364676">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="15.645189"/>
   <system_output timestamp="15.645528">[?2004l
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
 </recording>

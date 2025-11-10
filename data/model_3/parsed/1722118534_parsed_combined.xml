@@ -6977,7 +6977,7 @@ User adds and commits change to print errors.
 User adds and commits change to allow demo user to login.
 </annotation>
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6966.567566">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6966.884705">OA</user_input>
   <system_output timestamp="6966.89947">sudo git commit -m 'make it where the demo user can log in.'</system_output>

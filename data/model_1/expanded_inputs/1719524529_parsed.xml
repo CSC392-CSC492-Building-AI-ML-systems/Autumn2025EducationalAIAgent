@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="212" height="59" timestamp="1719524530">
-<event depth="-2">
+<event >
   <system_output timestamp="0.009324">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.595493">[A</user_input>
   <system_output timestamp="0.596001">asciinema rec `date +%s`.rec --stdin</system_output>
@@ -86,10 +86,9 @@ debhelper
 sudo: unable to resolve host faiserver
 [sudo] password for demo:
 demo@faiserver:/home/fai/config$ git commit -m </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="9.070577">'</user_input>
   <system_output timestamp="9.072963">'</system_output>
   <user_input timestamp="10.720271">l</user_input>
@@ -209,10 +208,9 @@ demo@faiserver:/home/fai/config$ </system_output>
   <system_output timestamp="29.181531"> 1 file changed, 5 insertions(+), 1 deletion(-)
 </system_output>
   <system_output timestamp="29.183796">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="30.693452">OA</user_input>
   <system_output timestamp="30.715911">sudo git commit -m 'libgnutls30-dev is not in debian 9.'</system_output>
   <user_input timestamp="30.890955">OA</user_input>
@@ -757,18 +755,16 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
   <user_input timestamp="38.184004"> </user_input>
   <system_output timestamp="38.290491">
 [K[?5h[?5l[K[7m(END)[27m[K</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1325.822228">q</user_input>
   <system_output timestamp="1325.824706">
 [K</system_output>
   <system_output timestamp="1325.826177">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1326.244128">g</user_input>
   <system_output timestamp="1326.261898">g</system_output>
   <user_input timestamp="1326.404758">i</user_input>
@@ -837,10 +833,9 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
   <system_output timestamp="1336.437424">
 </system_output>
   <system_output timestamp="1336.448473">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1337.664634">OA</user_input>
   <system_output timestamp="1337.666923">sudo git add package_config/SERVERNTOP </system_output>
   <user_input timestamp="1337.807897">u</user_input>
@@ -988,10 +983,9 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
  1 file changed, 2 insertions(+), 1 deletion(-)
 </system_output>
   <system_output timestamp="1355.88811">demo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="1359.030432">g</user_input>
   <system_output timestamp="1359.032976">g</system_output>
   <user_input timestamp="1359.28454">i</user_input>
@@ -1026,7 +1020,6 @@ demo@faiserver:/home/fai/config$ git diff[K</system_output>
   <system_output timestamp="1366.001665">A</system_output>
   <user_input timestamp="1366.383805">	</user_input>
   <system_output timestamp="1366.414731">GIOS </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

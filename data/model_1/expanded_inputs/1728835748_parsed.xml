@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1728835748">
-<event depth="-2">
+<event >
   <system_output timestamp="0.008357">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="1.143972"/>
   <system_output timestamp="1.144467">
@@ -35,10 +35,9 @@ Plan your installation, and FAI installs your plan.
 Last login: Sun Oct 13 16:11:19 2024 from 172.16.0.1
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="6.620943">[?2004h]0;demo@faiserver: ~demo@faiserver:~$ </system_output>
   <user_input timestamp="7.367986">c</user_input>
   <system_output timestamp="7.369271">c</system_output>
@@ -93,10 +92,9 @@ Last login: Sun Oct 13 16:11:19 2024 from 172.16.0.1
   <system_output timestamp="12.898998">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="13.030326">[0m[01;34mclass[0m  [01;34mdebconf[0m  [01;34mdisk_config[0m  [01;34mfiles[0m  [01;34mhooks[0m  [01;34mpackage_config[0m  [01;34mscripts[0m
 </system_output>
   <system_output timestamp="13.031468">[?2004h</system_output>
@@ -133,10 +131,9 @@ Last login: Sun Oct 13 16:11:19 2024 from 172.16.0.1
   <system_output timestamp="18.266568">[0m[01;34mDEMO[0m     [01;34mGRUB[0m     [01;34mISCSICLIENT[0m  [01;34mLAST[0m        [01;34mSERVERDHCP[0m      [01;34mSERVERDNS[0m        [01;34mSERVERDRUPAL[0m  [01;34mSERVERGIFT[0m      [01;34mSERVERMAIL[0m          [01;34mSERVERMAILSHL[0m  [01;34mSERVERNAGIOS[0m  [01;34mSERVERWIFIDOG[0m  [01;34mSERVERWIKIMEDIA[0m  [01;34mSERVERWWW[0m      [01;34mSERVERWWWOEMR[0m     [01;34mSERVERZONEMINDER[0m
 [01;34mFAIBASE[0m  [01;34mGRUBEFI[0m  [01;34mJADMIN[0m       [01;34mQEMUCLIENT[0m  [01;34mSERVERDHCPBOOT[0m  [01;34mSERVERDNSMASTER[0m  [01;34mSERVERFAI[0m     [01;34mSERVERIMPLICIT[0m  [01;34mSERVERMAILPARANOID[0m  [01;34mSERVERMRTG[0m     [01;34mSERVERSNMP[0m    [01;34mSERVERWIKI[0m     [01;34mSERVERWORDPRESS[0m  [01;34mSERVERWWWMRTG[0m  [01;34mSERVERWWWSSLONLY[0m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="18.267233">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
   <user_input timestamp="65.93046">g</user_input>
   <system_output timestamp="65.93246">g</system_output>
@@ -187,10 +184,9 @@ Last login: Sun Oct 13 16:11:19 2024 from 172.16.0.1
 FAIBASE/30-interface:#      [ -n &quot;$IPADDR&quot; ] &amp;&amp; cat &gt; $target/etc/network/interfaces &lt;&lt;-EOF
 FAIBASE/30-interface:fcopy -iM /etc/network/interfaces /etc/networks
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="71.952441">[?2004h]0;demo@faiserver: /home/fai/config/scriptsdemo@faiserver:/home/fai/config/scripts$ </system_output>
   <user_input timestamp="73.690513">c</user_input>
   <system_output timestamp="73.692489">c</system_output>
@@ -223,10 +219,9 @@ FAIBASE/30-interface:fcopy -iM /etc/network/interfaces /etc/networks
   <system_output timestamp="77.124912">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="77.125951">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
   <user_input timestamp="254.981387">s</user_input>
   <system_output timestamp="254.983333">s</system_output>
@@ -542,10 +537,9 @@ fcopy -iM /etc/network/interfaces /etc/networks[K
   <user_input timestamp="646.420915"/>
   <system_output timestamp="646.431996">[196d[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="646.671611">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
   <user_input timestamp="648.171773">c</user_input>
   <system_output timestamp="648.187893">c</system_output>
@@ -600,10 +594,9 @@ fcopy -iM /etc/network/interfaces /etc/networks[K
 </system_output>
   <system_output timestamp="652.282101">[0m[01;34metc[0m  [01;34mhome[0m  [01;34mroot[0m  [01;34musr[0m  [01;34mvar[0m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="652.283398">[?2004h]0;demo@faiserver: /home/fai/config/filesdemo@faiserver:/home/fai/config/files$ </system_output>
   <user_input timestamp="652.963433">f</user_input>
   <system_output timestamp="652.971235">f</system_output>
@@ -676,10 +669,9 @@ fcopy -iM /etc/network/interfaces /etc/networks[K
 </system_output>
   <system_output timestamp="659.829293">./etc/resolv.conf/postinst
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="659.853938">[?2004h]0;demo@faiserver: /home/fai/config/filesdemo@faiserver:/home/fai/config/files$ </system_output>
   <user_input timestamp="672.676939">c</user_input>
   <system_output timestamp="672.678823">c</system_output>
@@ -729,10 +721,9 @@ perl -pi -e 's/#(\w+)#/$ENV{$1}/g' $2
 exit $error
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="677.682083">[?2004h]0;demo@faiserver: /home/fai/config/filesdemo@faiserver:/home/fai/config/files$ </system_output>
   <user_input timestamp="699.925417">c</user_input>
   <system_output timestamp="699.927515">c</system_output>
@@ -809,10 +800,9 @@ postinst         SERVERDNS        SERVERDNSMASTER
 </system_output>
   <system_output timestamp="710.642045">search #PRIMARY_DOMAIN_DNS#
 nameserver 127.0.0.1</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="710.642901">[?2004h]0;demo@faiserver: /home/fai/config/filesdemo@faiserver:/home/fai/config/files$ </system_output>
   <user_input timestamp="760.695599">c</user_input>
   <system_output timestamp="760.69757">c</system_output>
@@ -886,10 +876,9 @@ nameserver 127.0.0.1</system_output>
 </system_output>
   <system_output timestamp="781.953232">cp: cannot create regular file 'etc/network/interfaces/postinst': Permission denied
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="781.954199">[?2004h]0;demo@faiserver: /home/fai/config/filesdemo@faiserver:/home/fai/config/files$ </system_output>
   <user_input timestamp="782.873544">[A</user_input>
   <system_output timestamp="782.879167">cp etc/resolv.conf/postinst etc/network/interfaces/</system_output>
@@ -912,10 +901,9 @@ nameserver 127.0.0.1</system_output>
 </system_output>
   <system_output timestamp="784.440516">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="784.514828">[?2004h]0;demo@faiserver: /home/fai/config/filesdemo@faiserver:/home/fai/config/files$ </system_output>
   <user_input timestamp="844.192613">e</user_input>
   <system_output timestamp="844.194957">e</system_output>
@@ -1360,10 +1348,9 @@ iface eth0 inet dhcp[K
   <system_output timestamp="986.573334">
 [?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="986.573888">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="986.947688">c</user_input>
   <system_output timestamp="986.950007">c</system_output>
@@ -1438,10 +1425,9 @@ iface eth0 inet dhcp[K
 </system_output>
   <system_output timestamp="998.127008">[0m[01;32m10-misc[0m  [01;32m20-copy-mirror[0m  [01;32m30-interface[0m  [01;32m40-misc.sh[0m  [01;32m50-use_tmpfs_on_tmp[0m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="998.12805">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
   <user_input timestamp="1720.752854">e</user_input>
   <system_output timestamp="1720.754885">e</system_output>
@@ -2731,10 +2717,9 @@ iface #PRIMARY_NIC# inet dhcp
   <system_output timestamp="2340.807829">[196;1H[?25lWrote /home/fai/config/files/etc/network/interfaces/DHCPC[K[102;33H[?12l[?25h[?12;25h</system_output>
   <system_output timestamp="2340.816735">[196;1H[?25lC-x C-c[K[102;33H[?12l[?25h[?12;25h[196;1H[K[?1004l[?2004l[&gt;4m[?1l&gt;[?12l[?25h[?1049l[23;0;0t[39;49m
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2340.867329">[?2004h]0;demo@faiserver: /home/fai/config/scripts/FAIBASEdemo@faiserver:/home/fai/config/scripts/FAIBASE$ </system_output>
   <user_input timestamp="2342.378428">c</user_input>
   <system_output timestamp="2342.380754">c</system_output>
@@ -2825,10 +2810,9 @@ Untracked files:
 
 no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2349.576476">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="2350.811154">s</user_input>
   <system_output timestamp="2350.826781">s</system_output>
@@ -2873,10 +2857,9 @@ no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&q
 </system_output>
   <system_output timestamp="2373.750456">sudo: unable to resolve host faiserver: Name or service not known
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2373.881574">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="2375.049929">s</user_input>
   <system_output timestamp="2375.052582">s</system_output>
@@ -3150,10 +3133,9 @@ no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&q
   <system_output timestamp="2413.236341"> 3 files changed, 19 insertions(+), 5 deletions(-)
  create mode 100755 files/etc/network/interfaces/postinst
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2413.239362">[?2004h]0;demo@faiserver: /home/fai/configdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="2414.708955">c</user_input>
   <system_output timestamp="2414.716846">c</system_output>
@@ -3171,10 +3153,9 @@ no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&q
 </system_output>
   <system_output timestamp="2415.637106">[?2004l
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="2415.637934">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="2416.326911"/>
   <system_output timestamp="2416.336006">
@@ -3189,10 +3170,9 @@ no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&q
   <system_output timestamp="2418.801558">
 [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[58Pm': sudo bash -c '[7mtim[27me ./make-fai-cd.sh 2&gt;&amp;1 | tee make-fai-cd.out'
 [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C</system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="2418.992429">e</user_input>
   <system_output timestamp="2419.007127">[1@e': sudo bash -c '[7mtime[27m</system_output>
   <user_input timestamp="2419.594289">
@@ -4687,10 +4667,9 @@ Reading package lists...</system_output>
 </system_output>
   <system_output timestamp="2569.401345">Reading package lists...</system_output>
   <system_output timestamp="2569.435745">
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
 </system_output>
   <system_output timestamp="2569.441217">Building dependency tree...</system_output>
   <system_output timestamp="2569.731173">
@@ -17135,10 +17114,9 @@ Number of packages in the mirror: </system_output>
 </system_output>
   <system_output timestamp="3386.680185">Copying the nfsroot to CD image
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3429.28273">Copying the config space to CD image
 </system_output>
   <system_output timestamp="3430.445302">Copying the mirror to CD image
@@ -17194,10 +17172,9 @@ real	18m45.474s
 user	13m13.857s
 sys	2m22.380s
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3545.227099">[?2004h]0;demo@faiserver: /home/faidemo@faiserver:/home/fai$ </system_output>
   <user_input timestamp="3607.41196"/>
   <system_output timestamp="3607.413495">[?2004l
@@ -17208,10 +17185,9 @@ sys	2m22.380s
   <system_output timestamp="3607.576137">Connection to 172.16.0.17 closed.
 
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3607.578238">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="3609.25437"/>
   <system_output timestamp="3609.254946">
@@ -17367,10 +17343,9 @@ fai_cd.iso                                                                      
   <system_output timestamp="3680.982731">
 fai_cd.iso                                                                                                                                                                                                   100% 1901MB  29.1MB/s   01:05    
 </system_output>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="3680.988402">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="3896.328618"/>
   <system_output timestamp="3896.329036">[?2004l
@@ -17378,7 +17353,6 @@ fai_cd.iso                                                                      
 </system_output>
   <system_output timestamp="3896.329307">exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

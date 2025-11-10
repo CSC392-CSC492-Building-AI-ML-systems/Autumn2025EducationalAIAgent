@@ -1,29 +1,46 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+
+Model-1 streamed annotator - vLLM version
+
+"""
+
 from __future__ import annotations
-import os, re, json
+
+import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
+
 from lxml import etree
 from vllm import LLM, SamplingParams
+
+import json
 
 # ------------------------------
 # Config
 # ------------------------------
-MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
+XML_PATH = "../../data/model_1/inputs/1727009556_parsed.xml"
+GT_PATH = "../../data/model_1/outputs/1727009556_training.txt"
+
+# Model settings
+MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"  # ONE reasoning model for everything
+USE_INT4 = True  # vLLM will handle quantization differently
 MAX_NEW_TOKENS = 2500
 SUMMARY_WORD_LIMIT = 50
+
+# Prompt packaging
+ADD_DONE_SENTINEL = False  # Not needed with thinking models
+
+# Flush parameters
+K_TARGET = 1
+N_NEIGH = 20
+
 INCLUDE_FEWSHOTS_DEFAULT = True
-K_TARGET_DEFAULT = 1
-N_NEIGH_DEFAULT = 20
-# MAX_MODEL_CONTEXT_LEN = 32768
-MAX_MODEL_CONTEXT_LEN = 25000
 
-SYSTEM_ROLE = f"""You are an expert terminal session annotator. Your goal is to generate concise summaries of user actions.
-Rules:
-- summaries must not exceed {SUMMARY_WORD_LIMIT} words
-- depth changes: -1=enter subtask, 0=continue same, +1=exit one level
-- output must be valid JSON
-""".strip()
-
+# ------------------------------
+# Statics
+# ------------------------------
 FEWSHOTS_BLOCK = """
 EXAMPLES (for format/logic only — do not output these)
 
@@ -266,6 +283,10 @@ Rules:
 - output must be valid JSON
 """.strip()
 
+
+# ------------------------------
+# Event model
+# ------------------------------
 @dataclass
 class Event:
     idx: int
@@ -273,166 +294,152 @@ class Event:
     depth_xml: Optional[int] = None
     summary_xml: Optional[str] = None
 
-class Model1Annotator:
-    def __init__(
-        self,
-        model_id: str = MODEL_ID,
-        summary_word_limit: int = SUMMARY_WORD_LIMIT,
-        include_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT,
-        n_neighbors: int = N_NEIGH_DEFAULT,
-    ) -> None:
-        self.model_id = model_id
-        self.summary_word_limit = summary_word_limit
-        self.include_fewshots = include_fewshots
-        self.n_neighbors = n_neighbors
 
-        self.events: List[Event] = []
-        self.pred: Dict[int, Dict] = {}
+# ------------------------------
+# Global state
+# ------------------------------
+events: List[Event] = []
+pred: Dict[int, Dict] = {}
 
-        # Load vLLM once
-        print(f"Loading model with vLLM: {self.model_id}")
-        self.llm = LLM(
-            model=self.model_id,
-            gpu_memory_utilization=0.9,
-            max_model_len=MAX_MODEL_CONTEXT_LEN,
-            trust_remote_code=True,
-            dtype="bfloat16",
+
+# ------------------------------
+# XML parsing
+# ------------------------------
+def load_events(xml_path: str) -> List[Event]:
+    tree = etree.parse(xml_path)
+    root = tree.getroot()
+    out: List[Event] = []
+
+    for i, ev_el in enumerate(root.xpath("//event")):
+        depth = ev_el.get("depth")
+        summary = ev_el.get("summary")
+
+        if depth is not None:
+            depth = int(depth)
+        if summary is not None:
+            summary = summary.strip()
+
+        xml_str = etree.tostring(ev_el, encoding="unicode")
+
+        out.append(
+            Event(
+                idx=i,
+                xml=xml_str,
+                depth_xml=depth,
+                summary_xml=summary,
+            )
         )
-        self.tokenizer = self.llm.get_tokenizer()
-        print("Model loaded.")
+    return out
 
-    # ---------- public API ----------
 
-    def add_event(self, event_xml: str) -> int:
-        """Append a new <event>...</event> string. Returns its index."""
-        ev_xml = event_xml.strip()
-        if not ev_xml.startswith("<event"):
-            ev_xml = f"<event>{ev_xml}</event>"
-        idx = len(self.events)
-        self.events.append(Event(idx=idx, xml=ev_xml))
-        return idx
+# ------------------------------
+# Depth computation
+# ------------------------------
+def compute_curr_depth_upto(idx: int) -> int:
+    curr = 0
+    for i in range(idx):
+        dep = events[i].depth_xml
+        if dep is None:
+            continue
+        if dep == -1:
+            curr -= 1
+        elif dep > 0:
+            curr += dep
+    return curr
 
-    def annotate_latest(self) -> Tuple[int, Optional[int], Optional[str]]:
-        """Annotate only the most recently added event."""
-        if not self.events:
-            raise ValueError("No events to annotate.")
-        idx = len(self.events) - 1
-        self._annotate_upto(idx, k_target=1)
-        v = self.pred.get(idx, {})
-        return idx, v.get("depth"), v.get("summary")
 
-    def annotate_through(self, upto_idx: int, k_target: int = K_TARGET_DEFAULT) -> None:
-        """Annotate events up to index `upto_idx` (inclusive)."""
-        if upto_idx < 0 or upto_idx >= len(self.events):
-            raise IndexError("upto_idx out of range.")
-        self._annotate_upto(upto_idx, k_target=k_target)
+# ------------------------------
+# Packaging for prompts
+# ------------------------------
+def make_flush_package(upto_idx: int, K: int = 1, N: int = 20) -> Dict:
+    target_idxs = list(range(max(0, upto_idx - K + 1), upto_idx + 1))
+    start_neigh = max(0, target_idxs[0] - N)
+    neighbor_idxs = list(range(start_neigh, target_idxs[0]))
 
-    def get_event(self, idx: int) -> Event:
-        return self.events[idx]
+    def get_sum(i: int) -> str:
+        if 0 <= i < len(events):
+            s = events[i].summary_xml
+            return s if s else "???"
+        return "???"
 
-    def get_all_predictions(self) -> List[Tuple[int, Optional[int], Optional[str]]]:
-        out = []
-        for i, ev in enumerate(self.events):
-            out.append((i, ev.depth_xml, ev.summary_xml))
-        return out
-  
-    def format_summary_depth_lines(self) -> str:
-      lines: List[str] = []
-      for i in range(len(self.events)):
-          ev = self.events[i]
-          if ev.summary_xml is None or ev.depth_xml is None:
-              continue  # only print annotated
-          lines.append(ev.summary_xml.strip())
-          lines.append(str(int(ev.depth_xml)))  # ensure int -> str
+    def get_dep(i: int) -> int:
+        if 0 <= i < len(events):
+            d = events[i].depth_xml
+            return d if d is not None else 999
+        return 999
 
-      return "\n".join(lines) + ("\n" if lines else "")
+    neighbor_info = []
+    for i in neighbor_idxs:
+        neighbor_info.append(f"- id={i} depth={get_dep(i)}  summary={get_sum(i)}")
 
- ################### Internal Helpers ###################
+    target_events = []
+    for i in target_idxs:
+        if 0 <= i < len(events):
+            target_events.append(events[i].xml)
 
-    def _compute_curr_depth_upto(self, idx: int) -> int:
-        curr = 0
-        for i in range(idx):
-            dep = self.events[i].depth_xml
-            if dep is None:
-                continue
-            if dep == -1:
-                curr -= 1
-            elif dep > 0:
-                curr += dep
-        return curr
+    currDepth = compute_curr_depth_upto(target_idxs[0])
 
-    def _make_flush_package(self, upto_idx: int, k_target: int) -> Dict:
-        target_idxs = list(range(max(0, upto_idx - k_target + 1), upto_idx + 1))
-        start_neigh = max(0, target_idxs[0] - self.n_neighbors)
-        neighbor_idxs = list(range(start_neigh, target_idxs[0]))
+    return {
+        "target_idxs": target_idxs,
+        "neighbor_info": neighbor_info,
+        "target_events": target_events,
+        "currDepth": currDepth,
+    }
 
-        def _sum(i: int) -> str:
-            if 0 <= i < len(self.events):
-                s = self.events[i].summary_xml
-                return s if s else "???"
-            return "???"
 
-        def _dep(i: int) -> int:
-            if 0 <= i < len(self.events):
-                d = self.events[i].depth_xml
-                return d if d is not None else 999
-            return 999
-
-        neighbor_info = [f"- id={i} depth={_dep(i)}  summary={_sum(i)}" for i in neighbor_idxs]
-        target_events = [self.events[i].xml for i in target_idxs if 0 <= i < len(self.events)]
-        curr_depth = self._compute_curr_depth_upto(target_idxs[0])
-
-        return {
-            "target_idxs": target_idxs,
-            "neighbor_info": neighbor_info,
-            "target_events": target_events,
-            "currDepth": curr_depth,
-        }
-
-    def _build_instruction(self, pkg: Dict) -> str:
-        neighbor_items = []
-        for line in pkg.get("neighbor_info", []):
-            m = re.match(r"- id=(\d+) depth=(-?\d+)\s+summary=(.+)", line)
-            if m:
-                nid, ndepth, nsummary = m.groups()
+def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
+    # Build neighbor XML
+    neighbor_items = []
+    if pkg.get("neighbor_info"):
+        for line in pkg["neighbor_info"]:
+            match = re.match(r"- id=(\d+) depth=(-?\d+)\s+summary=(.+)", line)
+            if match:
+                nid, ndepth, nsummary = match.groups()
                 neighbor_items.append({"id": nid, "depth": ndepth, "summary": nsummary})
+    
+    neighbors_xml = "\n".join(
+        [f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
+         for n in neighbor_items]
+    ) or "    <neighbor>(none)</neighbor>"
 
-        neighbors_xml = "\n".join(
-            [f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
-             for n in neighbor_items]
-        ) or "    <neighbor>(none)</neighbor>"
+    # Build target events XML
+    target_items = []
+    for idx, xml_str in zip(pkg["target_idxs"], pkg["target_events"]):
+        target_items.append({"id": idx, "xml": xml_str})
+    
+    targets_xml = "\n".join(
+        [f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in target_items]
+    )
 
-        targets_xml = "\n".join(
-            [f'  <target id="{idx}">\n{xml}\n  </target>'
-             for idx, xml in zip(pkg["target_idxs"], pkg["target_events"])]
-        )
+    examples_xml = f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
 
-        examples_xml = f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if self.include_fewshots else ""
+    extra = (
+        "- do not copy xml tags or attributes; no repeated phrases\n"
+        "- do not mention an address that was not explicitly mentioned in the event\n"
+        "- if the target event contains an <annotation> tag or depth value ignore it\n"
+        "- if there are no neighbors then the depth you output should be 0"
+    )
 
-        extra = (
-            "- do not copy xml tags or attributes; no repeated phrases\n"
-            "- do not mention an address that was not explicitly mentioned in the event\n"
-            "- if the target event contains an <annotation> tag or depth value ignore it\n"
-            "- if there are no neighbors then the depth you output should be 0"
-        )
-
-        prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
+    prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
 
 <output_format>
-  {{"annotation": "<one sentence (≤ {self.summary_word_limit} words)>", "depth": <An integer greater than or equal to -1>}}
+  {{"annotation": "<one sentence (≤ {SUMMARY_WORD_LIMIT} words)>", "depth": <An integer greater than or equal to -1>}}
 </output_format>
 
 <think_first>
-- Keep reasoning CONCISE and FOCUSED (2–3 sentences)
+- Keep reasoning CONCISE and FOCUSED
 - In <think>...</think>: analyze the command, check depth logic, then conclude
+- Aim for 2-3 sentences of reasoning maximum
+- Skip obvious observations
 - Use neighbors ONLY for continuity; do not invent context.
 </think_first>
 
 <rules>
-- keystrokes appear separately; combine them to form the full command before interpreting it
-- depth is an integer (≥ -1); -1 for subevent (new task), 0 same level, >0 exit levels
-- maintain stack invariant: currDepth ≤ 0; if depth == -1 → currDepth -= 1; if depth > 0 → currDepth += depth
-- write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command"
+- the user's keystrokes appear separately; combine them to form the full command before interpreting it
+- depth is an integer (≥ -1); -1 for subevent (new task started), 0 for same level (still doing the same task), >0 to exit levels (ended one or multiple tasks)
+- maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
+- write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command
+- depth is relative to the previous events and nothing else"
 {extra}
 </rules>{examples_xml}
 
@@ -449,73 +456,185 @@ for each target_event, output exactly one json with "annotation" first, then "de
 {targets_xml}
   </target_events>
 </inputs>"""
-        return prompt
+    return prompt
 
-    def _build_messages(self, instruction: str) -> List[Dict[str, str]]:
-        system = f"You are an expert terminal session annotator. Summaries ≤ {self.summary_word_limit} words; depth: -1/0/+k; output valid JSON."
-        return [
-            {"role": "system", "content": system},
-            {"role": "user", "content": instruction},
-        ]
 
-    def _generate(self, messages: List[Dict[str, str]]) -> str:
-        prompt = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-        params = SamplingParams(
-            temperature=0.0,
-            max_tokens=MAX_NEW_TOKENS,
-            repetition_penalty=1.2,
-            skip_special_tokens=True,
-        )
-        outs = self.llm.generate([prompt], params)
-        return outs[0].outputs[0].text.strip()
+def build_messages(instruction: str) -> List[Dict[str, str]]:
+    return [
+        {"role": "system", "content": SYSTEM_ROLE},
+        {"role": "user", "content": instruction},
+    ]
 
-    def _parse_json_stream(self, text: str) -> List[Tuple[int, str]]:
-        dec = json.JSONDecoder()
-        i, n = 0, len(text)
-        out: List[Tuple[int, str]] = []
 
-        def add(obj):
-            ann = obj.get("annotation")
-            dep = obj.get("depth")
-            if isinstance(ann, str):
-                if isinstance(dep, str):
-                    try:
-                        dep = int(dep)
-                    except Exception:
-                        return
-                if isinstance(dep, int) and dep >= -1:
-                    out.append((dep, ann))
+# ------------------------------
+# Model loading (vLLM)
+# ------------------------------
+def load_model():
+    print(f"Loading model with vLLM: {MODEL_ID}")
+    
+    # vLLM initialization parameters
+    llm = LLM(
+        model=MODEL_ID,
+        gpu_memory_utilization=0.9,  # Use 90% of GPU memory
+        max_model_len=8192,  # Adjust based on your prompt length needs
+        trust_remote_code=True,
+        dtype="bfloat16",
+    )
+    
+    print(f"Model loaded successfully")
+    return llm
 
-        while i < n:
-            while i < n and text[i].isspace():
-                i += 1
-            if i >= n:
+
+# ------------------------------
+# Generation (vLLM)
+# ------------------------------
+def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[str, str]:
+    """
+    Generate with thinking model using vLLM.
+    Returns: (full_output_with_thinking, extracted_json)
+    """
+    # Get tokenizer from vLLM model
+    tokenizer = llm.get_tokenizer()
+    
+    # Apply chat template
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+    
+    # Define sampling parameters (equivalent to your transformers settings)
+    sampling_params = SamplingParams(
+        temperature=0.0,  # Greedy decoding (do_sample=False equivalent)
+        max_tokens=MAX_NEW_TOKENS,
+        repetition_penalty=1.2,
+        skip_special_tokens=True,
+    )
+    
+    # Generate
+    outputs = llm.generate([prompt], sampling_params)
+    full_output = outputs[0].outputs[0].text.strip()
+    
+    # Extract JSON from output (after </think> if present)
+    if "</think>" in full_output:
+        json_part = full_output.split("</think>", 1)[1].strip()
+    else:
+        json_part = full_output
+    
+    return full_output, json_part
+
+
+def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
+    dec = json.JSONDecoder()
+    i, n = 0, len(text)
+    out: List[Tuple[int, str]] = []
+
+    def add(obj):
+        ann = obj.get("annotation")
+        dep = obj.get("depth")
+        
+        if isinstance(ann, str):
+            # Convert string depth to int if needed
+            if isinstance(dep, str):
+                try:
+                    dep = int(dep)
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not convert depth '{dep}' to int")
+                    return
+            
+            if isinstance(dep, int) and dep >= -1:
+                out.append((dep, ann))
+
+    while i < n:
+        while i < n and text[i].isspace():
+            i += 1
+        if i >= n:
+            break
+        try:
+            obj, end = dec.raw_decode(text, i)
+        except json.JSONDecodeError:
+            j = text.find("\n", i)
+            if j == -1:
                 break
-            try:
-                obj, end = dec.raw_decode(text, i)
-            except json.JSONDecodeError:
-                j = text.find("\n", i)
-                if j == -1:
-                    break
-                i = j + 1
-                continue
-            i = end
-            if isinstance(obj, dict):
-                add(obj)
-            elif isinstance(obj, list):
-                for it in obj:
-                    if isinstance(it, dict):
-                        add(it)
-        return out
+            i = j + 1
+            continue
+        i = end
+        if isinstance(obj, dict):
+            add(obj)
+        elif isinstance(obj, list):
+            for it in obj:
+                if isinstance(it, dict):
+                    add(it)
+    return out
 
-    def _apply_pairs(self, pairs: List[Tuple[int, str]], target_idxs: List[int]) -> None:
-        for (depth, summary), idx in zip(pairs, target_idxs):
-            # Local invariant enforcement
+
+# ------------------------------
+# Pretty I/O table helper
+# ------------------------------
+
+def print_io_table(target_idxs: List[int]) -> None:
+    header = f"{'idx':>5} | {'depth':>5} | summary"
+    print("\n" + header)
+    print("-" * len(header))
+    for i in target_idxs:
+        d = events[i].depth_xml if (0 <= i < len(events)) else None
+        s = events[i].summary_xml if (0 <= i < len(events)) else None
+        d_str = "" if d is None else str(d)
+        s_str = "" if s is None else s
+        print(f"{i:>5} | {d_str:>5} | {s_str}")
+
+
+# ------------------------------
+# Main loop
+# ------------------------------
+
+def run_flushes(evs: List[Event]) -> None:
+    global events
+    events = evs
+
+    total = len(events)
+    start_idx = 0
+
+    llm = load_model()
+    
+    print("MODEL:", MODEL_ID)
+    print("Using vLLM for optimized inference")
+
+    all_flush_logs = []
+
+    for upto in range(start_idx, total):
+        pkg = make_flush_package(upto_idx=upto, K=K_TARGET, N=N_NEIGH)
+        instr = build_instruction(pkg, use_fewshots=INCLUDE_FEWSHOTS_DEFAULT)
+        messages = build_messages(instr)
+
+        print("=" * 80)
+        print(
+            f"FLUSH upto event idx={upto} | currDepth(before)={pkg['currDepth']} | targets={pkg['target_idxs']}"
+        )
+
+        # Generate with thinking
+        print("\n--- Model output (with thinking) ---")
+        full_output, json_part = generate_with_thinking(llm, messages)
+        print(full_output)
+
+        # Parse JSON
+        pairs = parse_depth_summary_pairs(json_part)
+        if len(pairs) != len(pkg["target_idxs"]):
+            print("\n(!) Output pairs != #targets; keeping whatever parsed.")
+
+        all_flush_logs.append({
+            "upto": upto,
+            "targets": pkg["target_idxs"],
+            "full_output": full_output,
+            "json_part": json_part,
+            "pairs": pairs,
+        })
+
+        # Apply predictions
+        for (depth, summary), idx in zip(pairs, pkg["target_idxs"]):
             if depth < -1:
                 depth = -1
-            live_curr = self._compute_curr_depth_upto(idx)
+            live_curr = compute_curr_depth_upto(idx)
             temp_curr = live_curr
             if depth == -1:
                 temp_curr -= 1
@@ -524,21 +643,48 @@ for each target_event, output exactly one json with "annotation" first, then "de
             if temp_curr > 0:
                 depth = 0
 
-            self.pred[idx] = {"depth": depth, "summary": summary}
-            self.events[idx].depth_xml = depth
-            self.events[idx].summary_xml = summary
+            pred[idx] = {"depth": depth, "summary": summary}
+            if 0 <= idx < len(events):
+                events[idx].depth_xml = depth
+                events[idx].summary_xml = summary
 
-    def _annotate_upto(self, upto_idx: int, k_target: int) -> None:
-        pkg = self._make_flush_package(upto_idx=upto_idx, k_target=k_target)
-        instr = self._build_instruction(pkg)
-        messages = self._build_messages(instr)
+        print("\n- Recorded predictions -")
+        for idx in pkg["target_idxs"]:
+            v = pred.get(idx, {})
+            print(f"  idx={idx}  depth={v.get('depth')}  summary={v.get('summary')}")
 
-        full_out = self._generate(messages)
-        # If the model emits <think>...</think>, strip to the JSON part
-        json_part = full_out.split("</think>", 1)[1].strip() if "</think>" in full_out else full_out
+        print_io_table(pkg["target_idxs"])
 
-        pairs = self._parse_json_stream(json_part)
-        if not pairs:
-            # fallback: no parse; mark depth 0 with a generic summary
-            pairs = [(0, "No-op or unclear action.")]
-        self._apply_pairs(pairs, pkg["target_idxs"])
+    # After-loop print
+    print("\n" + "=" * 80)
+    print("ALL MODEL OUTPUTS")
+    print("=" * 80)
+    for log in all_flush_logs:
+        print(f"\n[FLUSH upto={log['upto']} targets={log['targets']}]")
+        print(log["full_output"])
+
+    # Final table
+    print("\n" + "=" * 80)
+    print("FINAL CONSOLIDATED TABLE")
+    print("=" * 80)
+    header = f"{'idx':>5} | {'depth':>5} | summary"
+    print(header)
+    print("-" * len(header))
+    for log in all_flush_logs:
+        for idx in log["targets"]:
+            d = events[idx].depth_xml if (0 <= idx < len(events)) else None
+            s = events[idx].summary_xml if (0 <= idx < len(events)) else None
+            d_str = "" if d is None else str(d)
+            s_str = "" if s is None else s
+            print(f"{idx:>5} | {d_str:>5} | {s_str}")
+
+
+# ------------------------------
+# Entry point
+# ------------------------------
+if __name__ == "__main__":
+    events = load_events(XML_PATH)
+    print(f"Loaded {len(events)} usable events")
+    if events:
+        print(events[0].xml[:300] + "...\n")
+    run_flushes(events)

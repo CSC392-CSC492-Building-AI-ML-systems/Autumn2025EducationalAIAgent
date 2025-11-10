@@ -1,0 +1,261 @@
+<role>you are an event annotator for a linux terminal session.</role>
+
+<output_format>
+  {{"annotation": "<one sentence (≤ 50 words)>", "depth": <An integer greater than or equal to -1>}}
+</output_format>
+
+<think_first>
+- Keep reasoning CONCISE and FOCUSED
+- In <think>...</think>: analyze the command, check depth logic, then conclude
+- Aim for 2-3 sentences of reasoning maximum
+- Skip obvious observations
+- Use neighbors ONLY for continuity; do not invent context.
+</think_first>
+
+<rules>
+- the user's keystrokes appear separately; combine them to form the full command before interpreting it
+- depth is an integer (≥ -1); -1 for subevent (new task started), 0 for same level (still doing the same task), >0 to exit levels (ended one or multiple tasks)
+- maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
+- write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command
+- depth is relative to the previous events and nothing else"
+{extra}
+</rules>
+
+<examples>
+EXAMPLES (for format/logic only — do not output these)
+
+NOTE: Event XML often shows keystroke-by-keystroke input with echoed characters, not full commands.
+
+DEPTH SEMANTICS:
+- depth = -1: STARTING a new subtask (entering deeper level)
+- depth = 0:  CONTINUING at same level (ongoing work)
+- depth = +1: FINISHING a subtask (returning to parent level)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE A — Starting a new subtask (depth = -1)
+Context: User opens a text editor from the command line
+neighbor_tail:
+  - id=10 depth=0  summary="List directory contents"
+  - id=11 depth=0  summary="Change to project folder"
+currDepth before target: 0
+
+input xml:
+<event>
+  <user_input>n</user_input><system_output>n</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>n</user_input><system_output>n</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>n</user_input><system_output>n</system_output>
+  <user_input>f</user_input><system_output>f</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>x</user_input><system_output>x</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <system_output>[nano editor opens]</system_output>
+</event>
+
+Expected output:
+{"annotation": "Open config.txt in nano text editor.", "depth": -1}
+
+Why depth = -1? User is STARTING a new subtask (text editor) - entering deeper level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE B — Continuing at same level (depth = 0)
+Context: User is working inside the editor, making edits
+neighbor_tail:
+  - id=20 depth=-1 summary="Open config.txt in nano text editor"
+  - id=21 depth=0  summary="Navigate to database section"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>[Ctrl-W]</user_input>
+  <system_output>Search: </system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>m</user_input><system_output>m</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <system_output>[cursor moves to "timeout" line]</system_output>
+</event>
+
+Expected output:
+{"annotation": "Search for timeout setting in config file.", "depth": 0}
+
+Why depth = 0? User is CONTINUING work at the same level (still in editor) - ongoing task.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE C — Finishing a subtask (depth = +1)
+Context: User saves and exits the editor
+neighbor_tail:
+  - id=30 depth=-1 summary="Open config.txt in nano editor"
+  - id=31 depth=0  summary="Modify timeout value to 30"
+  - id=32 depth=0  summary="Save changes to config file"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>[Ctrl-X]</user_input>
+  <system_output>Save modified buffer? (Y/N)</system_output>
+  <user_input>Y</user_input>
+  <system_output>[exiting nano]</system_output>
+  <system_output>user@laptop:~/project$ </system_output>
+</event>
+
+Expected output:
+{"annotation": "Exit nano editor and return to shell.", "depth": 1}
+
+Why depth = +1? User is FINISHING the editor subtask and returning to parent (shell) - exiting level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE D — Starting a pager subtask (depth = -1)
+Context: User views a log file with less
+neighbor_tail:
+  - id=40 depth=0  summary="Navigate to logs directory"
+currDepth before target: 0
+
+input xml:
+<event>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>g</user_input><system_output>g</system_output>
+  <system_output>[less pager opens showing log contents]</system_output>
+</event>
+
+Expected output:
+{"annotation": "Open app.log file in less pager.", "depth": -1}
+
+Why depth = -1? User is STARTING a new subtask (pager) - entering deeper level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE E — Continuing within pager (depth = 0)
+Context: User scrolls through the log file
+neighbor_tail:
+  - id=50 depth=-1 summary="Open app.log file in less pager"
+  - id=51 depth=0  summary="Navigate to beginning of log"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>/</user_input>
+  <system_output>/</system_output>
+  <user_input>E</user_input><system_output>E</system_output>
+  <user_input>R</user_input><system_output>R</system_output>
+  <user_input>R</user_input><system_output>R</system_output>
+  <user_input>O</user_input><system_output>O</system_output>
+  <user_input>R</user_input><system_output>R</system_output>
+  <system_output>[highlighting ERROR matches]</system_output>
+</event>
+
+Expected output:
+{"annotation": "Search for ERROR keyword in log file.", "depth": 0}
+
+Why depth = 0? User is CONTINUING work at the same level (still in pager) - ongoing task.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE F — Finishing pager subtask (depth = +1)
+Context: User exits the pager
+neighbor_tail:
+  - id=60 depth=-1 summary="Open app.log in less pager"
+  - id=61 depth=0  summary="Search for ERROR keyword in log"
+  - id=62 depth=0  summary="Review error timestamps"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>q</user_input>
+  <system_output>[exiting less]</system_output>
+  <system_output>user@laptop:~/logs$ </system_output>
+</event>
+
+Expected output:
+{"annotation": "Exit less pager and return to shell.", "depth": 1}
+
+Why depth = +1? User is FINISHING the pager subtask and returning to parent (shell) - exiting level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE G — Starting Python interpreter (depth = -1)
+Context: User launches interactive Python session
+neighbor_tail:
+  - id=70 depth=0  summary="Check Python version installed"
+currDepth before target: 0
+
+input xml:
+<event>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>y</user_input><system_output>y</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>n</user_input><system_output>n</system_output>
+  <user_input>3</user_input><system_output>3</system_output>
+  <system_output>Python 3.10.4</system_output>
+  <system_output>>>>></system_output>
+</event>
+
+Expected output:
+{"annotation": "Launch Python3 interactive interpreter.", "depth": -1}
+
+Why depth = -1? User is STARTING a new subtask (Python REPL) - entering deeper level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE H — Exiting Python interpreter (depth = +1)
+Context: User exits Python back to shell
+neighbor_tail:
+  - id=80 depth=-1 summary="Launch Python3 interpreter"
+  - id=81 depth=0  summary="Import json module and test parsing"
+  - id=82 depth=0  summary="Print parsed dictionary contents"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>x</user_input><system_output>x</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>(</user_input><system_output>(</system_output>
+  <user_input>)</user_input><system_output>)</system_output>
+  <system_output>user@laptop:~$ </system_output>
+</event>
+
+Expected output:
+{"annotation": "Exit Python interpreter and return to shell.", "depth": 1}
+
+Why depth = +1? User is FINISHING the Python session and returning to parent (shell) - exiting level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+KEY PRINCIPLES:
+1. Use depth = -1 when ENTERING a new tool/context (editor, pager, interpreter, debugger, etc.)
+2. Use depth = 0 when CONTINUING work in the current context
+3. Use depth = +1 when EXITING/CLOSING a tool/context back to parent
+4. Think of depth as task nesting: -1 = push onto stack, 0 = work at current level, +1 = pop from stack
+</examples>
+
+<instruction>
+for each target_event, output exactly one json with "annotation" first, then "depth".
+</instruction>
