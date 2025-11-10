@@ -24,4 +24,6 @@ ENV MODEL1_MODEL_ID="deepseek-ai/DeepSeek-R1-Distill-Qwen-32B" \
     MODEL1_TEMPERATURE=0.0 \
     MODEL1_TOP_P=1.0 \
     MODEL1_GPU_UTIL=0.90 \
-    MODEL1_MAX_MODEL_LEN=8192
+    MODEL1_MAX_MODEL_LEN=32000
+
+CMD ["python", "-u", "handler.py"]
