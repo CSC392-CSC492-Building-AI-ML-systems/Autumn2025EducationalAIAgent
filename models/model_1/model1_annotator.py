@@ -547,45 +547,70 @@ def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[st
 
 
 def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
+    """
+    Robustly extract (depth, annotation) pairs from an arbitrary text blob.
+
+    Strategy:
+    - Scan for every '{' in the text.
+    - At each '{', try json.JSONDecoder.raw_decode.
+    - Accept dicts or lists of dicts containing "annotation" and "depth".
+    - Coerce depth from string to int when possible.
+    - Ignore everything else (logs, reasoning, junk).
+    """
     dec = json.JSONDecoder()
-    i, n = 0, len(text)
     out: List[Tuple[int, str]] = []
+    n = len(text)
+    i = 0
 
-    def add(obj):
-        ann = obj.get("annotation")
-        dep = obj.get("depth")
+    def maybe_add(obj):
+        """If obj is a dict or list of dicts with annotation+depth, add to out."""
+        def add_one(d):
+            if not isinstance(d, dict):
+                return
+            ann = d.get("annotation")
+            dep = d.get("depth")
 
-        if isinstance(ann, str):
+            if not isinstance(ann, str):
+                return
+
+            # Try to coerce depth to int
             if isinstance(dep, str):
                 try:
-                    dep = int(dep)
-                except (ValueError, TypeError):
-                    print(f"Warning: Could not convert depth '{dep}' to int")
+                    dep = int(dep.strip())
+                except Exception:
                     return
 
-            if isinstance(dep, int) and dep >= -1:
-                out.append((dep, ann))
+            if not isinstance(dep, int):
+                return
 
-    while i < n:
-        while i < n and text[i].isspace():
-            i += 1
-        if i >= n:
-            break
-        try:
-            obj, end = dec.raw_decode(text, i)
-        except json.JSONDecodeError:
-            j = text.find("\n", i)
-            if j == -1:
-                break
-            i = j + 1
-            continue
-        i = end
+            if dep < -1:
+                # Depth must be >= -1, ignore otherwise
+                return
+
+            out.append((dep, ann))
+
         if isinstance(obj, dict):
-            add(obj)
+            add_one(obj)
         elif isinstance(obj, list):
-            for it in obj:
-                if isinstance(it, dict):
-                    add(it)
+            for item in obj:
+                add_one(item)
+
+    while True:
+        # Find next '{'
+        start = text.find("{", i)
+        if start == -1:
+            break
+
+        try:
+            obj, end = dec.raw_decode(text, start)
+        except json.JSONDecodeError:
+            # Not valid JSON starting at this '{', move one char forward
+            i = start + 1
+            continue
+
+        maybe_add(obj)
+        i = end
+
     return out
 
 
