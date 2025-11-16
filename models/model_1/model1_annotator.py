@@ -1,13 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Model-1 streamed annotator - vLLM version (shared core + simple inference)
 
-Model-1 streamed annotator - vLLM version
-
+- Provides:
+    - Event dataclass and global `events`
+    - FEWSHOTS_BLOCK and SYSTEM_ROLE
+    - load_events, compute_curr_depth_upto, make_flush_package
+    - build_instruction (with fewshots on/off)
+    - build_messages
+    - load_model (vLLM)
+    - generate_with_thinking
+    - parse_depth_summary_pairs
+    - run_flushes (simple inference loop)
 """
 
 from __future__ import annotations
 
+import json
+import os
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
@@ -15,17 +26,18 @@ from typing import Dict, List, Optional, Tuple
 from lxml import etree
 from vllm import LLM, SamplingParams
 
-import json
-
 # ------------------------------
 # Config
 # ------------------------------
 XML_PATH = "../../data/model_1/inputs/1727009556_parsed.xml"
 GT_PATH = "../../data/model_1/outputs/1727009556_training.txt"
 
-# Model settings
-MODEL_ID = "openai/gpt-oss-20b"  # GPT-OSS 20B reasoning model
-USE_INT4 = True  # MXFP4-style quant is baked into the weights via HF/vLLM
+# Model settings (env overrides)
+MODEL_ID = "openai/gpt-oss-20b"
+GPU_UTIL = 0.9
+MAX_MODEL_LEN = 8192
+DTYPE = "bfloat16"
+
 MAX_NEW_TOKENS = 2500
 SUMMARY_WORD_LIMIT = 50
 
@@ -34,13 +46,15 @@ ADD_DONE_SENTINEL = False  # Not needed with thinking models
 
 # Flush parameters
 K_TARGET = 1
-N_NEIGH = 20
+N_NEIGH = 200
 
 INCLUDE_FEWSHOTS_DEFAULT = True
 
 # ------------------------------
-# Statics
+# Statics: few-shots
 # ------------------------------
+FEWSEP = "═══════════════════════════════════════════════════════════════════════════════"
+
 FEWSHOTS_BLOCK = """
 EXAMPLES (for format/logic only — do not output these)
 
@@ -56,8 +70,8 @@ DEPTH SEMANTICS:
 EXAMPLE A — Starting a new subtask (depth = -1)
 Context: User opens a text editor from the command line
 neighbor_tail:
-  - id=10 depth=0  summary="List directory contents"
-  - id=11 depth=0  summary="Change to project folder"
+  - id=0 depth=0  summary="List directory contents"
+  - id=1 depth=0  summary="Change to project folder"
 currDepth before target: 0
 
 input xml:
@@ -90,8 +104,10 @@ Why depth = -1? User is STARTING a new subtask (text editor) - entering deeper l
 EXAMPLE B — Continuing at same level (depth = 0)
 Context: User is working inside the editor, making edits
 neighbor_tail:
-  - id=20 depth=-1 summary="Open config.txt in nano text editor"
-  - id=21 depth=0  summary="Navigate to database section"
+  - id=0 depth=0  summary="List directory contents"
+  - id=1 depth=0  summary="Change to project folder"
+  - id=2 depth=-1 summary="Open config.txt in nano text editor"
+  - id=3 depth=0  summary="Navigate to database section"
 currDepth before target: -1
 
 input xml:
@@ -118,9 +134,11 @@ Why depth = 0? User is CONTINUING work at the same level (still in editor) - ong
 EXAMPLE C — Finishing a subtask (depth = +1)
 Context: User saves and exits the editor
 neighbor_tail:
-  - id=30 depth=-1 summary="Open config.txt in nano editor"
-  - id=31 depth=0  summary="Modify timeout value to 30"
-  - id=32 depth=0  summary="Save changes to config file"
+  - id=0 depth=0  summary="List directory contents"
+  - id=1 depth=0  summary="Change to project folder"
+  - id=2 depth=-1 summary="Open config.txt in nano editor"
+  - id=3 depth=0  summary="Modify timeout value to 30"
+  - id=4 depth=0  summary="Save changes to config file"
 currDepth before target: -1
 
 input xml:
@@ -142,7 +160,8 @@ Why depth = +1? User is FINISHING the editor subtask and returning to parent (sh
 EXAMPLE D — Starting a pager subtask (depth = -1)
 Context: User views a log file with less
 neighbor_tail:
-  - id=40 depth=0  summary="Navigate to logs directory"
+  - id=0 depth=0  summary="Navigate to project root"
+  - id=1 depth=0  summary="Navigate to logs directory"
 currDepth before target: 0
 
 input xml:
@@ -172,8 +191,10 @@ Why depth = -1? User is STARTING a new subtask (pager) - entering deeper level.
 EXAMPLE E — Continuing within pager (depth = 0)
 Context: User scrolls through the log file
 neighbor_tail:
-  - id=50 depth=-1 summary="Open app.log file in less pager"
-  - id=51 depth=0  summary="Navigate to beginning of log"
+  - id=0 depth=0  summary="Navigate to project root"
+  - id=1 depth=0  summary="Navigate to logs directory"
+  - id=2 depth=-1 summary="Open app.log file in less pager"
+  - id=3 depth=0  summary="Navigate to beginning of log"
 currDepth before target: -1
 
 input xml:
@@ -198,9 +219,11 @@ Why depth = 0? User is CONTINUING work at the same level (still in pager) - ongo
 EXAMPLE F — Finishing pager subtask (depth = +1)
 Context: User exits the pager
 neighbor_tail:
-  - id=60 depth=-1 summary="Open app.log in less pager"
-  - id=61 depth=0  summary="Search for ERROR keyword in log"
-  - id=62 depth=0  summary="Review error timestamps"
+  - id=0 depth=0  summary="Navigate to project root"
+  - id=1 depth=0  summary="Navigate to logs directory"
+  - id=2 depth=-1 summary="Open app.log in less pager"
+  - id=3 depth=0  summary="Search for ERROR keyword in log"
+  - id=4 depth=0  summary="Review error timestamps"
 currDepth before target: -1
 
 input xml:
@@ -220,7 +243,7 @@ Why depth = +1? User is FINISHING the pager subtask and returning to parent (she
 EXAMPLE G — Starting Python interpreter (depth = -1)
 Context: User launches interactive Python session
 neighbor_tail:
-  - id=70 depth=0  summary="Check Python version installed"
+  - id=0 depth=0  summary="Check Python version installed"
 currDepth before target: 0
 
 input xml:
@@ -246,9 +269,10 @@ Why depth = -1? User is STARTING a new subtask (Python REPL) - entering deeper l
 EXAMPLE H — Exiting Python interpreter (depth = +1)
 Context: User exits Python back to shell
 neighbor_tail:
-  - id=80 depth=-1 summary="Launch Python3 interpreter"
-  - id=81 depth=0  summary="Import json module and test parsing"
-  - id=82 depth=0  summary="Print parsed dictionary contents"
+  - id=0 depth=0  summary="Check Python version installed"
+  - id=1 depth=-1 summary="Launch Python3 interpreter"
+  - id=2 depth=0  summary="Import json module and test parsing"
+  - id=3 depth=0  summary="Print parsed dictionary contents"
 currDepth before target: -1
 
 input xml:
@@ -266,17 +290,19 @@ Expected output:
 {"annotation": "Exit Python interpreter and return to shell.", "depth": 1}
 
 Why depth = +1? User is FINISHING the Python session and returning to parent (shell) - exiting level.
-
 """.strip()
 
-SYSTEM_ROLE = """You are an expert terminal session annotator. Your goal is to generate concise summaries of user actions.
+# Optional: pre-split few-shots for ablation runner
+_raw_parts = FEWSHOTS_BLOCK.split(FEWSEP)
+FEWSHOTS_PREAMBLE = _raw_parts[0].strip()
+FEWSHOTS_EXAMPLES: List[str] = [p.strip() for p in _raw_parts[1:] if p.strip()]
+
+SYSTEM_ROLE = f"""You are an expert terminal session annotator. Your goal is to generate concise summaries of user actions.
 Rules:
 - summaries must not exceed {SUMMARY_WORD_LIMIT} words
 - depth changes: -1=enter subtask, 0=continue same, +1=exit one level
 - output must be valid JSON
-- Reasoning: high
 """.strip()
-
 
 # ------------------------------
 # Event model
@@ -362,15 +388,12 @@ def make_flush_package(upto_idx: int, K: int = 1, N: int = 20) -> Dict:
             return d if d is not None else 999
         return 999
 
-    neighbor_info = []
-    for i in neighbor_idxs:
-        neighbor_info.append(f"- id={i} depth={get_dep(i)}  summary={get_sum(i)}")
+    neighbor_info = [
+        f"- id={i} depth={get_dep(i)}  summary={get_sum(i)}"
+        for i in neighbor_idxs
+    ]
 
-    target_events = []
-    for i in target_idxs:
-        if 0 <= i < len(events):
-            target_events.append(events[i].xml)
-
+    target_events = [events[i].xml for i in target_idxs if 0 <= i < len(events)]
     currDepth = compute_curr_depth_upto(target_idxs[0])
 
     return {
@@ -381,33 +404,50 @@ def make_flush_package(upto_idx: int, K: int = 1, N: int = 20) -> Dict:
     }
 
 
-def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
-    # Build neighbor XML
+def _neighbors_to_xml(pkg: Dict) -> str:
     neighbor_items = []
     if pkg.get("neighbor_info"):
         for line in pkg["neighbor_info"]:
             match = re.match(r"- id=(\d+) depth=(-?\d+)\s+summary=(.+)", line)
             if match:
                 nid, ndepth, nsummary = match.groups()
-                neighbor_items.append({"id": nid, "depth": ndepth, "summary": nsummary})
-    
-    neighbors_xml = "\n".join(
-        [f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
-         for n in neighbor_items]
-    ) or "    <neighbor>(none)</neighbor>"
+                neighbor_items.append(
+                    {"id": nid, "depth": ndepth, "summary": nsummary}
+                )
 
-    # Build target events XML
-    target_items = []
-    for idx, xml_str in zip(pkg["target_idxs"], pkg["target_events"]):
-        target_items.append({"id": idx, "xml": xml_str})
-    
-    targets_xml = "\n".join(
-        [f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in target_items]
+    if not neighbor_items:
+        return "    <neighbor>(none)</neighbor>"
+
+    return "\n".join(
+        f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
+        for n in neighbor_items
     )
 
-    examples_xml = f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
+
+def _targets_to_xml(pkg: Dict) -> str:
+    target_items = [
+        {"id": idx, "xml": xml_str}
+        for idx, xml_str in zip(pkg["target_idxs"], pkg["target_events"])
+    ]
+    return "\n".join(
+        f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in target_items
+    )
 
 
+def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
+    neighbors_xml = _neighbors_to_xml(pkg)
+    targets_xml = _targets_to_xml(pkg)
+
+    examples_xml = (
+        f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
+    )
+
+    rules_extra = (
+        "- do not copy xml tags or attributes; no repeated phrases\n"
+        "- do not mention an address that was not explicitly mentioned in the event\n"
+        "- if the target event contains an <annotation> tag or depth value ignore it\n"
+        "- if there are no neighbors then the depth you output should be 0"
+    )
 
     prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
 
@@ -429,10 +469,7 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 - maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
 - write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command"
 - depth is relative to the previous events and nothing else
-- do not copy xml tags or attributes; no repeated phrases
-- do not mention an address that was not explicitly mentioned in the event
-- if the target event contains an <annotation> tag or depth value ignore it
-- if there are no neighbors then the depth you output should be 0
+{rules_extra}
 </rules>
 
 {examples_xml}
@@ -465,17 +502,14 @@ def build_messages(instruction: str) -> List[Dict[str, str]]:
 # ------------------------------
 def load_model():
     print(f"Loading model with vLLM: {MODEL_ID}")
-    
-    # vLLM initialization parameters
     llm = LLM(
         model=MODEL_ID,
-        gpu_memory_utilization=0.9,  # Use 90% of GPU memory
-        max_model_len=8192,          # Harmony context window
+        gpu_memory_utilization=GPU_UTIL,
+        max_model_len=MAX_MODEL_LEN,
         trust_remote_code=True,
-        dtype="bfloat16",            # Matches HF card (BF16 weights)
+        dtype=DTYPE,
     )
-    
-    print(f"Model loaded successfully")
+    print("Model loaded successfully")
     return llm
 
 
@@ -487,34 +521,28 @@ def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[st
     Generate with thinking model using vLLM.
     Returns: (full_output_with_thinking, extracted_json)
     """
-    # Get tokenizer from vLLM model
     tokenizer = llm.get_tokenizer()
-    
-    # Apply chat template (this applies Harmony format for gpt-oss)
     prompt = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
         add_generation_prompt=True,
     )
-    
-    # Define sampling parameters
+
     sampling_params = SamplingParams(
-        temperature=0.0,  # Greedy decoding
+        temperature=0.0,
         max_tokens=MAX_NEW_TOKENS,
         repetition_penalty=1.2,
         skip_special_tokens=True,
     )
-    
-    # Generate
+
     outputs = llm.generate([prompt], sampling_params)
     full_output = outputs[0].outputs[0].text.strip()
-    
-    # Extract JSON from output (after </think> if present)
+
     if "</think>" in full_output:
         json_part = full_output.split("</think>", 1)[1].strip()
     else:
         json_part = full_output
-    
+
     return full_output, json_part
 
 
@@ -526,16 +554,15 @@ def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
     def add(obj):
         ann = obj.get("annotation")
         dep = obj.get("depth")
-        
+
         if isinstance(ann, str):
-            # Convert string depth to int if needed
             if isinstance(dep, str):
                 try:
                     dep = int(dep)
                 except (ValueError, TypeError):
                     print(f"Warning: Could not convert depth '{dep}' to int")
                     return
-            
+
             if isinstance(dep, int) and dep >= -1:
                 out.append((dep, ann))
 
@@ -565,7 +592,6 @@ def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
 # ------------------------------
 # Pretty I/O table helper
 # ------------------------------
-
 def print_io_table(target_idxs: List[int]) -> None:
     header = f"{'idx':>5} | {'depth':>5} | summary"
     print("\n" + header)
@@ -579,9 +605,8 @@ def print_io_table(target_idxs: List[int]) -> None:
 
 
 # ------------------------------
-# Main loop
+# Main simple inference loop
 # ------------------------------
-
 def run_flushes(evs: List[Event]) -> None:
     global events
     events = evs
@@ -590,7 +615,7 @@ def run_flushes(evs: List[Event]) -> None:
     start_idx = 0
 
     llm = load_model()
-    
+
     print("MODEL:", MODEL_ID)
     print("Using vLLM for optimized inference")
 
@@ -606,23 +631,23 @@ def run_flushes(evs: List[Event]) -> None:
             f"FLUSH upto event idx={upto} | currDepth(before)={pkg['currDepth']} | targets={pkg['target_idxs']}"
         )
 
-        # Generate with thinking
         print("\n--- Model output (with thinking) ---")
         full_output, json_part = generate_with_thinking(llm, messages)
         print(full_output)
 
-        # Parse JSON
         pairs = parse_depth_summary_pairs(json_part)
         if len(pairs) != len(pkg["target_idxs"]):
             print("\n(!) Output pairs != #targets; keeping whatever parsed.")
 
-        all_flush_logs.append({
-            "upto": upto,
-            "targets": pkg["target_idxs"],
-            "full_output": full_output,
-            "json_part": json_part,
-            "pairs": pairs,
-        })
+        all_flush_logs.append(
+            {
+                "upto": upto,
+                "targets": pkg["target_idxs"],
+                "full_output": full_output,
+                "json_part": json_part,
+                "pairs": pairs,
+            }
+        )
 
         # Apply predictions
         for (depth, summary), idx in zip(pairs, pkg["target_idxs"]):
@@ -649,14 +674,6 @@ def run_flushes(evs: List[Event]) -> None:
 
         print_io_table(pkg["target_idxs"])
 
-    # After-loop print
-    print("\n" + "=" * 80)
-    print("ALL MODEL OUTPUTS")
-    print("=" * 80)
-    for log in all_flush_logs:
-        print(f"\n[FLUSH upto={log['upto']} targets={log['targets']}]")
-        print(log["full_output"])
-
     # Final table
     print("\n" + "=" * 80)
     print("FINAL CONSOLIDATED TABLE")
@@ -664,13 +681,12 @@ def run_flushes(evs: List[Event]) -> None:
     header = f"{'idx':>5} | {'depth':>5} | summary"
     print(header)
     print("-" * len(header))
-    for log in all_flush_logs:
-        for idx in log["targets"]:
-            d = events[idx].depth_xml if (0 <= idx < len(events)) else None
-            s = events[idx].summary_xml if (0 <= idx < len(events)) else None
-            d_str = "" if d is None else str(d)
-            s_str = "" if s is None else s
-            print(f"{idx:>5} | {d_str:>5} | {s_str}")
+    for i, ev in enumerate(events):
+        d = ev.depth_xml
+        s = ev.summary_xml
+        d_str = "" if d is None else str(d)
+        s_str = "" if s is None else s
+        print(f"{i:>5} | {d_str:>5} | {s_str}")
 
 
 # ------------------------------

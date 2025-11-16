@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Model-1 prompt ablation runner (separate script).
+Model-1 prompt ablation runner.
 
-This script performs prompt ablation experiments on the Model-1 streamed
-annotator. It depends on the main annotator module (imported as
-`model1_annotator`) which must define:
-
+Depends on `model1_annotator` which defines:
 - XML_PATH, MODEL_ID, SUMMARY_WORD_LIMIT
-- FEWSHOTS_BLOCK, SYSTEM_ROLE
+- FEWSHOTS_PREAMBLE, FEWSHOTS_EXAMPLES, FEWSEP
+- SYSTEM_ROLE
 - Event dataclass
 - load_events(xml_path: str) -> List[Event]
 - make_flush_package(upto_idx: int, K: int, N: int) -> Dict
@@ -16,18 +14,11 @@ annotator. It depends on the main annotator module (imported as
 - generate_with_thinking(llm, messages) -> (full_output, json_tail)
 - K_TARGET, N_NEIGH
 
-Usage examples:
-
+Usage:
   python model1_ablation_runner.py ablate_big   > big_ablation.json
   python model1_ablation_runner.py ablate_few   > fewshot_ablation.json
   python model1_ablation_runner.py ablate_rules > rules_ablation.json
   python model1_ablation_runner.py ablate_think > think_ablation.json
-
-Each JSON file contains, for every ablation config and every event:
-  - the config used
-  - the exact prompt sent
-  - the model's full output
-  - the JSON tail (everything after </think>)
 """
 
 from __future__ import annotations
@@ -42,23 +33,13 @@ from typing import Dict, List, Optional
 import model1_annotator as m1
 
 # ------------------------------
-# Event model
+# Event model (alias)
 # ------------------------------
-@dataclass
-class Event:
-    idx: int
-    xml: str
-    depth_xml: Optional[int] = None
-    summary_xml: Optional[str] = None
-
-# Type alias for convenience (we actually use the main module's Event)
 Event = m1.Event
-
 
 # -----------------------------------------------------------------------------
 # Prompt configuration
 # -----------------------------------------------------------------------------
-
 @dataclass
 class PromptConfig:
     """Controls which high-level blocks are included in the prompt.
@@ -67,19 +48,19 @@ class PromptConfig:
     ablated in this script (per design choice).
     """
 
-    # Big blocks
     include_system_role: bool = True
     include_fewshots: bool = True
     include_think_first: bool = True
     include_rules: bool = True
 
-    # Example granular toggle inside rules (kept for compatibility / labeling)
+    # kept for compatibility / labeling
     include_stack_invariant_rule: bool = True
 
 
-# Split FEWSHOTS into chunks for within-block ablation
-FEWSEP = "═══════════════════════════════════════════════════════════════════════════════"
-FEWSHOTS_EXAMPLES: List[str] = m1.FEWSHOTS_BLOCK.split(FEWSEP)
+# Few-shots: use structured data from annotator
+FEWSEP = m1.FEWSEP
+FEWSHOTS_PREAMBLE: str = m1.FEWSHOTS_PREAMBLE
+FEWSHOTS_EXAMPLES: List[str] = list(m1.FEWSHOTS_EXAMPLES)
 
 # Rules broken into individual lines for within-block ablation
 BASE_RULES: List[str] = [
@@ -94,7 +75,7 @@ BASE_RULES: List[str] = [
     "if there are no neighbors then the depth you output should be 0",
 ]
 
-# Think-first bullet points as separate items for within-block ablation
+# Think-first bullet points as separate items
 THINK_LINES: List[str] = [
     "- Keep reasoning CONCISE and FOCUSED",
     "- In <think>...</think>: analyze the command, check depth logic, then conclude",
@@ -103,16 +84,10 @@ THINK_LINES: List[str] = [
     "- Use neighbors ONLY for continuity; do not invent context.",
 ]
 
-
 # -----------------------------------------------------------------------------
 # Blocks: rules, examples, think-first
 # -----------------------------------------------------------------------------
-
 def build_rules_block(cfg: PromptConfig, rule_indices: Optional[List[int]] = None) -> str:
-    """Build the <rules> block, optionally using only a subset of BASE_RULES.
-
-    rule_indices: list of indices into BASE_RULES to keep. If None, keep all.
-    """
     if not cfg.include_rules:
         return ""
 
@@ -124,8 +99,9 @@ def build_rules_block(cfg: PromptConfig, rule_indices: Optional[List[int]] = Non
     return f"<rules>\n{rules_str}\n</rules>"
 
 
-def build_examples_block(cfg: PromptConfig, fewshot_indices: Optional[List[int]] = None) -> str:
-    """Build the <examples> block, optionally keeping only some few-shot chunks."""
+def build_examples_block(
+    cfg: PromptConfig, fewshot_indices: Optional[List[int]] = None
+) -> str:
     if not cfg.include_fewshots:
         return ""
 
@@ -134,15 +110,18 @@ def build_examples_block(cfg: PromptConfig, fewshot_indices: Optional[List[int]]
     else:
         chunks = [FEWSHOTS_EXAMPLES[i] for i in fewshot_indices]
 
-    body = FEWSEP.join(chunks)
+    if not chunks:
+        body = FEWSHOTS_PREAMBLE
+    else:
+        examples_body = ("\n\n" + FEWSEP + "\n\n").join(chunks)
+        body = f"{FEWSHOTS_PREAMBLE}\n\n{FEWSEP}\n\n{examples_body}"
+
     return f"\n<examples>\n{body}\n</examples>"
 
 
-def build_think_block(cfg: PromptConfig, think_indices: Optional[List[int]] = None) -> str:
-    """Build the <think_first> block as a list of bullet lines.
-
-    think_indices: list of indices into THINK_LINES to include. If None, include all.
-    """
+def build_think_block(
+    cfg: PromptConfig, think_indices: Optional[List[int]] = None
+) -> str:
     if not cfg.include_think_first:
         return ""
 
@@ -158,7 +137,6 @@ def build_think_block(cfg: PromptConfig, think_indices: Optional[List[int]] = No
 # -----------------------------------------------------------------------------
 # Configurable prompt builder (neighbors + currDepth always included)
 # -----------------------------------------------------------------------------
-
 def build_instruction_cfg(
     pkg: Dict,
     cfg: PromptConfig,
@@ -166,46 +144,39 @@ def build_instruction_cfg(
     rule_indices: Optional[List[int]] = None,
     think_indices: Optional[List[int]] = None,
 ) -> str:
-    """Build the instruction prompt using a PromptConfig and optional ablations.
-
-    - neighbors + currDepth are always included (no ablation).
-    - fewshot_indices, rule_indices, think_indices let us ablate within blocks.
-    """
-    # Neighbors (always included if present)
+    # Neighbors
     neighbor_items: List[Dict[str, str]] = []
     if pkg.get("neighbor_info"):
         for line in pkg["neighbor_info"]:
             match = re.match(r"- id=(\d+) depth=(-?\d+)\s+summary=(.+)", line)
             if match:
                 nid, ndepth, nsummary = match.groups()
-                neighbor_items.append({"id": nid, "depth": ndepth, "summary": nsummary})
+                neighbor_items.append(
+                    {"id": nid, "depth": ndepth, "summary": nsummary}
+                )
 
-    neighbors_xml = "\n".join(
-        [
+    neighbors_xml = (
+        "\n".join(
             f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
             for n in neighbor_items
-        ]
-    ) or "    <neighbor>(none)</neighbor>"
-
-    # Targets (always needed)
-    target_items: List[Dict[str, str]] = []
-    for idx, xml_str in zip(pkg["target_idxs"], pkg["target_events"]):
-        target_items.append({"id": idx, "xml": xml_str})
-
-    targets_xml = "\n".join(
-        [f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in target_items]
+        )
+        or "    <neighbor>(none)</neighbor>"
     )
 
-    # Examples (few-shots)
+    # Targets
+    target_items: List[Dict[str, str]] = [
+        {"id": idx, "xml": xml_str}
+        for idx, xml_str in zip(pkg["target_idxs"], pkg["target_events"])
+    ]
+    targets_xml = "\n".join(
+        f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' for t in target_items
+    )
+
+    # Examples / rules / think-first
     examples_xml = build_examples_block(cfg, fewshot_indices=fewshot_indices)
-
-    # Rules
     rules_block = build_rules_block(cfg, rule_indices=rule_indices)
-
-    # Think-first block
     think_block = build_think_block(cfg, think_indices=think_indices)
 
-    # currDepth (always present)
     curr_depth_xml = f"<curr_depth_max>{pkg.get('currDepth')}</curr_depth_max>"
 
     prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
@@ -245,21 +216,10 @@ def build_messages_cfg(instruction: str, cfg: PromptConfig) -> List[Dict[str, st
 
 
 # -----------------------------------------------------------------------------
-# Ablation runners
+# Ablation runners (all reuse m1.load_model & m1.generate_with_thinking)
 # -----------------------------------------------------------------------------
-
-def run_bigblock_ablation(evs: List[Event]) -> Dict:
-    """Big-block ablation over high-level prompt components.
-
-    Returns a JSON-serializable dict with, for each config:
-      - the config used
-      - per-event prompt
-      - full model output and JSON tail (assuming JSON is at the end)
-      - timing/resource summary per ablation config
-    """
-    # Ensure the annotator module sees the correct events list for depth tracking
+def run_bigblock_ablation(evs) -> Dict:
     m1.events = evs
-
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
 
@@ -279,7 +239,7 @@ def run_bigblock_ablation(evs: List[Event]) -> Dict:
     }
 
     total = len(evs)
-    start_idx = 0  # can clamp for smaller runs
+    start_idx = 0
 
     for name, cfg in configs.items():
         ablation_entry = {
@@ -294,7 +254,9 @@ def run_bigblock_ablation(evs: List[Event]) -> Dict:
         num_prompts = 0
 
         for upto in range(start_idx, total):
-            pkg = m1.make_flush_package(upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH)
+            pkg = m1.make_flush_package(
+                upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH
+            )
             instr = build_instruction_cfg(pkg, cfg)
             messages = build_messages_cfg(instr, cfg)
 
@@ -302,7 +264,6 @@ def run_bigblock_ablation(evs: List[Event]) -> Dict:
             full_output, json_part = m1.generate_with_thinking(llm, messages)
             elapsed = time.perf_counter() - start
 
-            # Token-based resource metrics
             prompt_tok_count = len(tokenizer.encode(instr))
             output_tok_count = len(tokenizer.encode(full_output))
 
@@ -322,7 +283,6 @@ def run_bigblock_ablation(evs: List[Event]) -> Dict:
                 }
             )
 
-        # Aggregate timing/resource metrics per ablation config
         if num_prompts > 0 and total_time > 0:
             avg_sec = total_time / num_prompts
             prompt_tps = total_prompt_tokens / total_time
@@ -347,8 +307,7 @@ def run_bigblock_ablation(evs: List[Event]) -> Dict:
     return all_results
 
 
-def run_fewshots_ablation(evs: List[Event]) -> Dict:
-    """Within-FEWSHOTS ablation: all examples, then leave-one-out over each example."""
+def run_fewshots_ablation(evs) -> Dict:
     m1.events = evs
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
@@ -372,13 +331,13 @@ def run_fewshots_ablation(evs: List[Event]) -> Dict:
             "flushes": [],
         }
 
-        total_time = 0.0
-        total_prompt_tokens = 0
-        total_output_tokens = 0
+        total_time = total_prompt_tokens = total_output_tokens = 0.0
         num_prompts = 0
 
         for upto in range(start_idx, total):
-            pkg = m1.make_flush_package(upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH)
+            pkg = m1.make_flush_package(
+                upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH
+            )
             instr = build_instruction_cfg(pkg, cfg, fewshot_indices=indices)
             messages = build_messages_cfg(instr, cfg)
 
@@ -423,14 +382,15 @@ def run_fewshots_ablation(evs: List[Event]) -> Dict:
             "output_tokens_per_sec": output_tps,
             "combined_tokens_per_sec": combined_tps,
         }
-
         return entry
 
-    # Baseline: all examples
+    # Baseline
     all_indices = list(range(n))
-    all_results["fewshots_ablations"].append(run_with_indices(all_indices, "all_fewshots"))
+    all_results["fewshots_ablations"].append(
+        run_with_indices(all_indices, "all_fewshots")
+    )
 
-    # Leave-one-out for each example
+    # Leave-one-out
     for i in range(n):
         indices = [j for j in range(n) if j != i]
         label = f"drop_example_{i}"
@@ -439,8 +399,7 @@ def run_fewshots_ablation(evs: List[Event]) -> Dict:
     return all_results
 
 
-def run_rules_ablation(evs: List[Event]) -> Dict:
-    """Within-RULES ablation: all rules, then drop each rule one at a time."""
+def run_rules_ablation(evs) -> Dict:
     m1.events = evs
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
@@ -464,13 +423,13 @@ def run_rules_ablation(evs: List[Event]) -> Dict:
             "flushes": [],
         }
 
-        total_time = 0.0
-        total_prompt_tokens = 0
-        total_output_tokens = 0
+        total_time = total_prompt_tokens = total_output_tokens = 0.0
         num_prompts = 0
 
         for upto in range(start_idx, total):
-            pkg = m1.make_flush_package(upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH)
+            pkg = m1.make_flush_package(
+                upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH
+            )
             instr = build_instruction_cfg(pkg, cfg, rule_indices=indices)
             messages = build_messages_cfg(instr, cfg)
 
@@ -515,24 +474,26 @@ def run_rules_ablation(evs: List[Event]) -> Dict:
             "output_tokens_per_sec": output_tps,
             "combined_tokens_per_sec": combined_tps,
         }
-
         return entry
 
-    # Baseline: all rules
+    # Baseline
     all_indices = list(range(n))
-    all_results["rules_ablations"].append(run_with_rule_indices(all_indices, "all_rules"))
+    all_results["rules_ablations"].append(
+        run_with_rule_indices(all_indices, "all_rules")
+    )
 
-    # Leave-one-out per rule
+    # Leave-one-out
     for i in range(n):
         indices = [j for j in range(n) if j != i]
         label = f"drop_rule_{i}"
-        all_results["rules_ablations"].append(run_with_rule_indices(indices, label))
+        all_results["rules_ablations"].append(
+            run_with_rule_indices(indices, label)
+        )
 
     return all_results
 
 
-def run_think_ablation(evs: List[Event]) -> Dict:
-    """Within-think-first ablation: all think-lines, then drop each bullet once."""
+def run_think_ablation(evs) -> Dict:
     m1.events = evs
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
@@ -556,13 +517,13 @@ def run_think_ablation(evs: List[Event]) -> Dict:
             "flushes": [],
         }
 
-        total_time = 0.0
-        total_prompt_tokens = 0
-        total_output_tokens = 0
+        total_time = total_prompt_tokens = total_output_tokens = 0.0
         num_prompts = 0
 
         for upto in range(start_idx, total):
-            pkg = m1.make_flush_package(upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH)
+            pkg = m1.make_flush_package(
+                upto_idx=upto, K=m1.K_TARGET, N=m1.N_NEIGH
+            )
             instr = build_instruction_cfg(pkg, cfg, think_indices=indices)
             messages = build_messages_cfg(instr, cfg)
 
@@ -607,20 +568,21 @@ def run_think_ablation(evs: List[Event]) -> Dict:
             "output_tokens_per_sec": output_tps,
             "combined_tokens_per_sec": combined_tps,
         }
-
         return entry
 
-    # Baseline: all think-lines
+    # Baseline
     all_indices = list(range(n))
     all_results["think_ablations"].append(
         run_with_think_indices(all_indices, "all_think_lines")
     )
 
-    # Leave-one-out per think-line
+    # Leave-one-out
     for i in range(n):
         indices = [j for j in range(n) if j != i]
         label = f"drop_think_{i}"
-        all_results["think_ablations"].append(run_with_think_indices(indices, label))
+        all_results["think_ablations"].append(
+            run_with_think_indices(indices, label)
+        )
 
     return all_results
 
@@ -628,9 +590,8 @@ def run_think_ablation(evs: List[Event]) -> Dict:
 # -----------------------------------------------------------------------------
 # Entry point
 # -----------------------------------------------------------------------------
-
 if __name__ == "__main__":
-    events: List[Event] = m1.load_events(m1.XML_PATH)
+    events = m1.load_events(m1.XML_PATH)
     if not events:
         raise SystemExit("No events loaded from XML_PATH")
 
@@ -638,19 +599,13 @@ if __name__ == "__main__":
 
     if mode == "ablate_big":
         results = run_bigblock_ablation(events)
-        print(json.dumps(results, ensure_ascii=False, indent=2))
-
     elif mode == "ablate_few":
         results = run_fewshots_ablation(events)
-        print(json.dumps(results, ensure_ascii=False, indent=2))
-
     elif mode == "ablate_rules":
         results = run_rules_ablation(events)
-        print(json.dumps(results, ensure_ascii=False, indent=2))
-
     elif mode == "ablate_think":
         results = run_think_ablation(events)
-        print(json.dumps(results, ensure_ascii=False, indent=2))
-
     else:
         raise SystemExit(f"Unknown mode: {mode}")
+
+    print(json.dumps(results, ensure_ascii=False, indent=2))
