@@ -26,7 +26,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/expanded_inputs/1721946123_parsed.xml"
+XML_PATH = "../../data/model_1/expanded_inputs/1728643499_parsed.xml"
 GT_PATH = "../../data/model_1/expanded_outputs/1727009556_training.txt"
 
 # Model settings
@@ -43,6 +43,13 @@ K_TARGET = 1
 N_NEIGH = 20
 
 INCLUDE_FEWSHOTS_DEFAULT = True
+
+DEBUG_PROMPT_PREAMBLE = (
+    "IMPORTANT: This prompt is part of a sequential trace. "
+    "The neighbors/currDepth metadata describe everything that happened before this target, "
+    "so use them when deciding depth (use -1 when entering new contexts, +1 when exiting). "
+    "Do not default to depth 0; follow the stack rules exactly."
+)
 
 # ------------------------------
 # Statics
@@ -393,7 +400,11 @@ def make_flush_package(upto_idx: int, K: int = 1, N: int = 20) -> Dict:
     }
 
 
-def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
+def build_instruction(
+    pkg: Dict,
+    use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT,
+    extra_prefix: Optional[str] = None,
+) -> str:
     # Build neighbor XML
     neighbor_items = []
     if pkg.get("neighbor_info"):
@@ -462,6 +473,8 @@ for each target_event, output exactly one json with "annotation" first, then "de
 {targets_xml}
   </target_events>
 </inputs>"""
+    if extra_prefix:
+        prompt = f"{extra_prefix}\n\n{prompt}"
     return prompt
 
 
@@ -704,7 +717,11 @@ def dump_processed_prompts(evs: List[Event], dump_dir: str, add_generation_promp
 
     for upto in range(len(events)):
         pkg = make_flush_package(upto_idx=upto, K=K_TARGET, N=N_NEIGH)
-        instr = build_instruction(pkg, use_fewshots=INCLUDE_FEWSHOTS_DEFAULT)
+        instr = build_instruction(
+            pkg,
+            use_fewshots=INCLUDE_FEWSHOTS_DEFAULT,
+            extra_prefix=DEBUG_PROMPT_PREAMBLE,
+        )
         messages = build_messages(instr)
         prompt = tokenizer.apply_chat_template(
             messages,
