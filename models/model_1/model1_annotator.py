@@ -29,13 +29,13 @@ from vllm import LLM, SamplingParams
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/inputs/1727009556_parsed.xml"
-GT_PATH = "../../data/model_1/outputs/1727009556_training.txt"
+XML_PATH = "../../data/model_1/inputs/renee_rec2_parsed.xml"
+GT_PATH = "../../data/model_1/outputs/renee_rec2_training.txt"
 
 # Model settings (env overrides)
 MODEL_ID = "openai/gpt-oss-20b"
 GPU_UTIL = 0.9
-MAX_MODEL_LEN = 8192
+MAX_MODEL_LEN = 131072
 DTYPE = "bfloat16"
 
 MAX_NEW_TOKENS = 2500
@@ -290,6 +290,61 @@ Expected output:
 {"annotation": "Exit Python interpreter and return to shell.", "depth": 1}
 
 Why depth = +1? User is FINISHING the Python session and returning to parent (shell) - exiting level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE I — SSH login is NOT a nested subtask (depth = 0)
+Context: User connects to a remote server and immediately starts working there
+neighbor_tail:
+  (none)
+currDepth before target: 0
+
+input xml:
+<event>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>@</user_input><system_output>@</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <system_output>user@host:~$ </system_output>
+</event>
+
+Expected output:
+{"annotation": "Connect to remote host via SSH and reach the shell prompt.", "depth": 0}
+
+Why depth = 0? Being on a remote shell is still the main task, not a nested tool like an editor or pager.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE J — Logging out of SSH finishes the current task (depth = +1)
+Context: User logs out after finishing the remote work
+neighbor_tail:
+  - id=0 depth=0  summary="Connect to remote host via SSH and reach the shell prompt."
+  - id=1 depth=-1 summary="Start solving a level using temporary files"
+  - id=2 depth=0  summary="Process and decode data to find password"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>x</user_input><system_output>x</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <system_output>Connection to host closed.</system_output>
+  <system_output>localuser@machine:~$ </system_output>
+</event>
+
+Expected output:
+{"annotation": "Log out of the remote SSH session and return to the local shell.", "depth": 1}
+
+Why depth = +1? User is finishing the level-solving subtask on the remote host and returning to the parent context.
 """.strip()
 
 # Optional: pre-split few-shots for ablation runner
@@ -508,6 +563,7 @@ def load_model():
         max_model_len=MAX_MODEL_LEN,
         trust_remote_code=True,
         dtype=DTYPE,
+        seed=42,
     )
     print("Model loaded successfully")
     return llm
@@ -516,10 +572,10 @@ def load_model():
 # ------------------------------
 # Generation (vLLM)
 # ------------------------------
-def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[str, str]:
+def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[str, str, int, int]:
     """
     Generate with thinking model using vLLM.
-    Returns: (full_output_with_thinking, extracted_json)
+    Returns: (full_output_with_thinking, extracted_json, prompt_tokens, generated_tokens)
     """
     tokenizer = llm.get_tokenizer()
     prompt = tokenizer.apply_chat_template(
@@ -533,17 +589,28 @@ def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[st
         max_tokens=MAX_NEW_TOKENS,
         repetition_penalty=1.2,
         skip_special_tokens=True,
+        seed=42,
     )
 
     outputs = llm.generate([prompt], sampling_params)
-    full_output = outputs[0].outputs[0].text.strip()
+
+    # vLLM's RequestOutput
+    req_out = outputs[0]
+    first_out = req_out.outputs[0]
+
+    full_output = first_out.text.strip()
+
+    # Token counts
+    prompt_tokens = len(req_out.prompt_token_ids) if hasattr(req_out, "prompt_token_ids") else 0
+    generated_tokens = len(first_out.token_ids) if hasattr(first_out, "token_ids") else 0
 
     if "</think>" in full_output:
         json_part = full_output.split("</think>", 1)[1].strip()
     else:
         json_part = full_output
 
-    return full_output, json_part
+    return full_output, json_part, prompt_tokens, generated_tokens
+
 
 
 def parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]:
@@ -657,10 +724,25 @@ def run_flushes(evs: List[Event]) -> None:
         )
 
         print("\n--- Model output (with thinking) ---")
-        full_output, json_part = generate_with_thinking(llm, messages)
+        full_output, json_part, prompt_tokens, gen_tokens = generate_with_thinking(llm, messages)
         print(full_output)
 
+        total_tokens = prompt_tokens + gen_tokens
+        print(f"\n[Tokens] prompt={prompt_tokens} | generated={gen_tokens} | total={total_tokens}")
+
         pairs = parse_depth_summary_pairs(json_part)
+
+
+        # Drop obvious placeholder annotations
+        pairs = [
+            (depth, ann)
+            for (depth, ann) in pairs
+            if ann is not None and ann.strip() not in ("...", '"..."') and len(ann.strip()) >= 5
+        ]
+
+        if len(pairs) > len(pkg["target_idxs"]):
+            pairs = pairs[-len(pkg["target_idxs"]):]
+
         if len(pairs) != len(pkg["target_idxs"]):
             print("\n(!) Output pairs != #targets; keeping whatever parsed.")
 
