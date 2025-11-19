@@ -33,6 +33,9 @@ def main():
     train_selected = selected[:cutoff_index] # 70% of files is training set
     test_selected = selected[cutoff_index:] # 30% of files is test set
 
+    print(train_selected)
+    print(test_selected)
+
     data = {
         "train": [str(f) for f in train_selected],
         "test": [str(f) for f in test_selected]
