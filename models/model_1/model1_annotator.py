@@ -26,6 +26,9 @@ from typing import Dict, List, Optional, Tuple
 from lxml import etree
 from vllm import LLM, SamplingParams
 
+from sentence_transformers import SentenceTransformer
+import numpy as np
+
 # ------------------------------
 # Config
 # ------------------------------
@@ -41,8 +44,6 @@ DTYPE = "bfloat16"
 MAX_NEW_TOKENS = 2500
 SUMMARY_WORD_LIMIT = 50
 
-# Prompt packaging
-ADD_DONE_SENTINEL = False  # Not needed with thinking models
 
 # Flush parameters
 K_TARGET = 1
@@ -61,25 +62,262 @@ EXAMPLES (for format/logic only — do not output these)
 NOTE: Event XML often shows keystroke-by-keystroke input with echoed characters, not full commands.
 
 DEPTH SEMANTICS:
-- depth = -1: STARTING a new subtask (entering deeper level)
-- depth = 0:  CONTINUING at same level (ongoing work)
-- depth = +1: FINISHING a subtask (returning to parent level)
+- depth = -1: STARTING a new subtask (a multi-step goal, often spanning several events)
+- depth = 0:  CONTINUING at the same level (still inside the current subtask)
+- depth > 0:  FINISHING one or more subtasks and returning toward the parent level
+
+A “subtask” is not only an editor or tool; it can also be a logical unit of work
+like “create a backup”, “run and debug tests”, or “set up a data pipeline”.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE A — Starting a new subtask (depth = -1)
-Context: User opens a text editor from the command line
+EXAMPLE A — Starting a backup subtask (depth = -1)
+Context: User has been exploring a project folder and decides to create a backup archive.
+
 neighbor_tail:
-  - id=0 depth=0  summary="List directory contents"
-  - id=1 depth=0  summary="Change to project folder"
+  - id=0 depth=0  summary="List project directory contents"
+  - id=1 depth=0  summary="Inspect size of source and data folders"
 currDepth before target: 0
 
 input xml:
 <event>
-  <user_input>n</user_input><system_output>n</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
   <user_input>a</user_input><system_output>a</system_output>
-  <user_input>n</user_input><system_output>n</system_output>
-  <user_input>o</user_input><system_output>o</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>-</user_input><system_output>-</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>z</user_input><system_output>z</system_output>
+  <user_input>f</user_input><system_output>f</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>b</user_input><system_output>b</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>k</user_input><system_output>k</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>/</user_input><system_output>/</system_output>
+  <user_input>d</user_input><system_output>d</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <system_output>Compressing files into backup.tar...</system_output>
+</event>
+
+Expected output:
+{"annotation": "Create a compressed backup archive of the source data.", "depth": -1}
+
+Why depth = -1? The user is beginning a multi-step backup subtask that will likely
+include verifying and possibly moving the archive.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE B — Continuing the backup subtask (depth = 0)
+Context: After creating the archive, the user verifies the file and checks its size.
+
+neighbor_tail:
+  - id=0 depth=0  summary="List project directory contents"
+  - id=1 depth=0  summary="Inspect size of source and data folders"
+  - id=2 depth=-1 summary="Create a compressed backup archive of the source data"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>-</user_input><system_output>-</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>b</user_input><system_output>b</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>k</user_input><system_output>k</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <system_output>-rw-r--r--  1 user  staff  42M backup.tar</system_output>
+</event>
+
+Expected output:
+{"annotation": "Verify the newly created backup archive and inspect its size.", "depth": 0}
+
+Why depth = 0? The user is still in the same backup subtask, checking the result
+of the archive they just created.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE C — Finishing the backup subtask (depth = +1)
+Context: The user moves the backup to a separate folder and marks the operation as done.
+
+neighbor_tail:
+  - id=0 depth=0  summary="List project directory contents"
+  - id=1 depth=0  summary="Inspect size of source and data folders"
+  - id=2 depth=-1 summary="Create a compressed backup archive of the source data"
+  - id=3 depth=0  summary="Verify the newly created backup archive and inspect its size"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>m</user_input><system_output>m</system_output>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>b</user_input><system_output>b</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>k</user_input><system_output>k</system_output>
+  <user_input>u</user_input><system_output>u</system_output>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>.</user_input><system_output>.</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>h</user_input><system_output>h</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <system_output>backup.tar -> archive/backup.tar</system_output>
+  <system_output>Backup completed.</system_output>
+</event>
+
+Expected output:
+{"annotation": "Move the backup archive to an archive folder and finish the backup task.", "depth": 1}
+
+Why depth = +1? The user is wrapping up the backup workflow and returning to the
+previous level of work.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE D — Starting a test/debug subtask (depth = -1)
+Context: After normal shell navigation, the user begins a focused testing session.
+
+neighbor_tail:
+  - id=0 depth=0  summary="Open project root directory"
+  - id=1 depth=0  summary="View current Git branch and status"
+currDepth before target: 0
+
+input xml:
+<event>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>y</user_input><system_output>y</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <system_output>================= test session starts =================</system_output>
+</event>
+
+Expected output:
+{"annotation": "Start a focused test run for the project using pytest.", "depth": -1}
+
+Why depth = -1? Running the test suite begins a dedicated testing/debugging subtask.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE E — Continuing the test/debug subtask (depth = 0)
+Context: The user reruns tests after editing code, still within the same testing workflow.
+
+neighbor_tail:
+  - id=0 depth=0  summary="Open project root directory"
+  - id=1 depth=0  summary="View current Git branch and status"
+  - id=2 depth=-1 summary="Start a focused test run for the project using pytest"
+  - id=3 depth=0  summary="Inspect failing test output and error trace"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>p</user_input><system_output>p</system_output>
+  <user_input>y</user_input><system_output>y</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>s</user_input><system_output>s</system_output>
+  <user_input>t</user_input><system_output>t</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>-</user_input><system_output>-</system_output>
+  <user_input>k</user_input><system_output>k</system_output>
+  <user_input> </user_input><system_output> </system_output>
+  <user_input>f</user_input><system_output>f</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>d</user_input><system_output>d</system_output>
+  <system_output>Re-running failed tests...</system_output>
+</event>
+
+Expected output:
+{"annotation": "Re-run only the previously failing tests to check the fix.", "depth": 0}
+
+Why depth = 0? The user remains in the same testing subtask, iterating on failures.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE F — Finishing the test/debug subtask (depth = +1)
+Context: All tests pass and the user leaves the focused testing workflow.
+
+neighbor_tail:
+  - id=0 depth=0  summary="Open project root directory"
+  - id=1 depth=0  summary="View current Git branch and status"
+  - id=2 depth=-1 summary="Start a focused test run for the project using pytest"
+  - id=3 depth=0  summary="Inspect failing test output and error trace"
+  - id=4 depth=0  summary="Re-run only the previously failing tests to check the fix"
+currDepth before target: -1
+
+input xml:
+<event>
+  <system_output>================= 20 passed in 3.21s =================</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>r</user_input><system_output>r</system_output>
+  <user_input></user_input><system_output>$ </system_output>
+</event>
+
+Expected output:
+{"annotation": "Finish the test run after all tests pass and return to regular shell work.", "depth": 1}
+
+Why depth = +1? The dedicated testing subtask is complete; depth returns to the
+parent level.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE G — Starting a nested editor subtask (depth = -1)
+Context: Inside an environment-setup subtask, the user opens a config file in an editor.
+
+neighbor_tail:
+  - id=0 depth=0  summary="Enter project environment setup directory"
+  - id=1 depth=-1 summary="Create and activate a virtual environment for the project"
+  - id=2 depth=0  summary="Install core dependencies into the virtual environment"
+currDepth before target: -1
+
+input xml:
+<event>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>m</user_input><system_output>m</system_output>
   <user_input> </user_input><system_output> </system_output>
   <user_input>c</user_input><system_output>c</system_output>
   <user_input>o</user_input><system_output>o</system_output>
@@ -88,264 +326,86 @@ input xml:
   <user_input>i</user_input><system_output>i</system_output>
   <user_input>g</user_input><system_output>g</system_output>
   <user_input>.</user_input><system_output>.</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>x</user_input><system_output>x</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <system_output>[nano editor opens]</system_output>
-</event>
-
-Expected output:
-{"annotation": "Open config.txt in nano text editor.", "depth": -1}
-
-Why depth = -1? User is STARTING a new subtask (text editor) - entering deeper level.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE B — Continuing at same level (depth = 0)
-Context: User is working inside the editor, making edits
-neighbor_tail:
-  - id=0 depth=0  summary="List directory contents"
-  - id=1 depth=0  summary="Change to project folder"
-  - id=2 depth=-1 summary="Open config.txt in nano text editor"
-  - id=3 depth=0  summary="Navigate to database section"
-currDepth before target: -1
-
-input xml:
-<event>
-  <user_input>[Ctrl-W]</user_input>
-  <system_output>Search: </system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>i</user_input><system_output>i</system_output>
-  <user_input>m</user_input><system_output>m</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>o</user_input><system_output>o</system_output>
-  <user_input>u</user_input><system_output>u</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <system_output>[cursor moves to "timeout" line]</system_output>
-</event>
-
-Expected output:
-{"annotation": "Search for timeout setting in config file.", "depth": 0}
-
-Why depth = 0? User is CONTINUING work at the same level (still in editor) - ongoing task.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE C — Finishing a subtask (depth = +1)
-Context: User saves and exits the editor
-neighbor_tail:
-  - id=0 depth=0  summary="List directory contents"
-  - id=1 depth=0  summary="Change to project folder"
-  - id=2 depth=-1 summary="Open config.txt in nano editor"
-  - id=3 depth=0  summary="Modify timeout value to 30"
-  - id=4 depth=0  summary="Save changes to config file"
-currDepth before target: -1
-
-input xml:
-<event>
-  <user_input>[Ctrl-X]</user_input>
-  <system_output>Save modified buffer? (Y/N)</system_output>
-  <user_input>Y</user_input>
-  <system_output>[exiting nano]</system_output>
-  <system_output>user@laptop:~/project$ </system_output>
-</event>
-
-Expected output:
-{"annotation": "Exit nano editor and return to shell.", "depth": 1}
-
-Why depth = +1? User is FINISHING the editor subtask and returning to parent (shell) - exiting level.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE D — Starting a pager subtask (depth = -1)
-Context: User views a log file with less
-neighbor_tail:
-  - id=0 depth=0  summary="Navigate to project root"
-  - id=1 depth=0  summary="Navigate to logs directory"
-currDepth before target: 0
-
-input xml:
-<event>
-  <user_input>l</user_input><system_output>l</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>p</user_input><system_output>p</system_output>
-  <user_input>p</user_input><system_output>p</system_output>
-  <user_input>.</user_input><system_output>.</system_output>
-  <user_input>l</user_input><system_output>l</system_output>
-  <user_input>o</user_input><system_output>o</system_output>
-  <user_input>g</user_input><system_output>g</system_output>
-  <system_output>[less pager opens showing log contents]</system_output>
-</event>
-
-Expected output:
-{"annotation": "Open app.log file in less pager.", "depth": -1}
-
-Why depth = -1? User is STARTING a new subtask (pager) - entering deeper level.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE E — Continuing within pager (depth = 0)
-Context: User scrolls through the log file
-neighbor_tail:
-  - id=0 depth=0  summary="Navigate to project root"
-  - id=1 depth=0  summary="Navigate to logs directory"
-  - id=2 depth=-1 summary="Open app.log file in less pager"
-  - id=3 depth=0  summary="Navigate to beginning of log"
-currDepth before target: -1
-
-input xml:
-<event>
-  <user_input>/</user_input>
-  <system_output>/</system_output>
-  <user_input>E</user_input><system_output>E</system_output>
-  <user_input>R</user_input><system_output>R</system_output>
-  <user_input>R</user_input><system_output>R</system_output>
-  <user_input>O</user_input><system_output>O</system_output>
-  <user_input>R</user_input><system_output>R</system_output>
-  <system_output>[highlighting ERROR matches]</system_output>
-</event>
-
-Expected output:
-{"annotation": "Search for ERROR keyword in log file.", "depth": 0}
-
-Why depth = 0? User is CONTINUING work at the same level (still in pager) - ongoing task.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE F — Finishing pager subtask (depth = +1)
-Context: User exits the pager
-neighbor_tail:
-  - id=0 depth=0  summary="Navigate to project root"
-  - id=1 depth=0  summary="Navigate to logs directory"
-  - id=2 depth=-1 summary="Open app.log in less pager"
-  - id=3 depth=0  summary="Search for ERROR keyword in log"
-  - id=4 depth=0  summary="Review error timestamps"
-currDepth before target: -1
-
-input xml:
-<event>
-  <user_input>q</user_input>
-  <system_output>[exiting less]</system_output>
-  <system_output>user@laptop:~/logs$ </system_output>
-</event>
-
-Expected output:
-{"annotation": "Exit less pager and return to shell.", "depth": 1}
-
-Why depth = +1? User is FINISHING the pager subtask and returning to parent (shell) - exiting level.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE G — Starting Python interpreter (depth = -1)
-Context: User launches interactive Python session
-neighbor_tail:
-  - id=0 depth=0  summary="Check Python version installed"
-currDepth before target: 0
-
-input xml:
-<event>
-  <user_input>p</user_input><system_output>p</system_output>
   <user_input>y</user_input><system_output>y</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>h</user_input><system_output>h</system_output>
-  <user_input>o</user_input><system_output>o</system_output>
-  <user_input>n</user_input><system_output>n</system_output>
-  <user_input>3</user_input><system_output>3</system_output>
-  <system_output>Python 3.10.4</system_output>
-  <system_output>>>>></system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>m</user_input><system_output>m</system_output>
+  <user_input>l</user_input><system_output>l</system_output>
+  <system_output>Opening config.yaml in vim...</system_output>
 </event>
 
 Expected output:
-{"annotation": "Launch Python3 interactive interpreter.", "depth": -1}
+{"annotation": "Open the project configuration file in vim while setting up the environment.", "depth": -1}
 
-Why depth = -1? User is STARTING a new subtask (Python REPL) - entering deeper level.
+Why depth = -1? Editing the config is a nested subtask inside the broader
+environment-setup workflow.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE H — Exiting Python interpreter (depth = +1)
-Context: User exits Python back to shell
+EXAMPLE H — Exiting the nested editor subtask but staying in the parent subtask (depth = +1)
+Context: The user saves the config file and returns to the environment-setup work.
+
 neighbor_tail:
-  - id=0 depth=0  summary="Check Python version installed"
-  - id=1 depth=-1 summary="Launch Python3 interpreter"
-  - id=2 depth=0  summary="Import json module and test parsing"
-  - id=3 depth=0  summary="Print parsed dictionary contents"
+  - id=0 depth=0  summary="Enter project environment setup directory"
+  - id=1 depth=-1 summary="Create and activate a virtual environment for the project"
+  - id=2 depth=0  summary="Install core dependencies into the virtual environment"
+  - id=3 depth=-1 summary="Open the project configuration file in vim while setting up the environment"
+currDepth before target: -2
+
+input xml:
+<event>
+  <user_input>:</user_input><system_output>:</system_output>
+  <user_input>w</user_input><system_output>w</system_output>
+  <user_input>q</user_input><system_output>q</system_output>
+  <user_input></user_input>
+  <system_output>config.yaml written</system_output>
+  <system_output>(back to shell inside virtual environment)</system_output>
+</event>
+
+Expected output:
+{"annotation": "Save changes in vim and return to the environment-setup shell.", "depth": 1}
+
+Why depth = +1? The nested editor subtask ends, but the user is still inside the
+higher-level environment-setup subtask.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+EXAMPLE I — Exiting multiple nested subtasks at once (depth = +2)
+Context: After finishing environment setup, the user deactivates the environment
+and returns to regular shell work.
+
+neighbor_tail:
+  - id=0 depth=0  summary="Enter project environment setup directory"
+  - id=1 depth=-1 summary="Create and activate a virtual environment for the project"
+  - id=2 depth=0  summary="Install core dependencies into the virtual environment"
+  - id=3 depth=-1 summary="Open the project configuration file in vim while setting up the environment"
+  - id=4 depth=1  summary="Save changes in vim and return to the environment-setup shell."
 currDepth before target: -1
 
 input xml:
 <event>
+  <user_input>d</user_input><system_output>d</system_output>
   <user_input>e</user_input><system_output>e</system_output>
-  <user_input>x</user_input><system_output>x</system_output>
-  <user_input>i</user_input><system_output>i</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
+  <user_input>c</user_input><system_output>c</system_output>
   <user_input>t</user_input><system_output>t</system_output>
-  <user_input>(</user_input><system_output>(</system_output>
-  <user_input>)</user_input><system_output>)</system_output>
-  <system_output>user@laptop:~$ </system_output>
-</event>
-
-Expected output:
-{"annotation": "Exit Python interpreter and return to shell.", "depth": 1}
-
-Why depth = +1? User is FINISHING the Python session and returning to parent (shell) - exiting level.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE I — SSH login is NOT a nested subtask (depth = 0)
-Context: User connects to a remote server and immediately starts working there
-neighbor_tail:
-  (none)
-currDepth before target: 0
-
-input xml:
-<event>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>h</user_input><system_output>h</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>u</user_input><system_output>u</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input>@</user_input><system_output>@</system_output>
-  <user_input>h</user_input><system_output>h</system_output>
-  <user_input>o</user_input><system_output>o</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <system_output>user@host:~$ </system_output>
-</event>
-
-Expected output:
-{"annotation": "Connect to remote host via SSH and reach the shell prompt.", "depth": 0}
-
-Why depth = 0? Being on a remote shell is still the main task, not a nested tool like an editor or pager.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE J — Logging out of SSH finishes the current task (depth = +1)
-Context: User logs out after finishing the remote work
-neighbor_tail:
-  - id=0 depth=0  summary="Connect to remote host via SSH and reach the shell prompt."
-  - id=1 depth=-1 summary="Start solving a level using temporary files"
-  - id=2 depth=0  summary="Process and decode data to find password"
-currDepth before target: -1
-
-input xml:
-<event>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>x</user_input><system_output>x</system_output>
   <user_input>i</user_input><system_output>i</system_output>
+  <user_input>v</user_input><system_output>v</system_output>
+  <user_input>a</user_input><system_output>a</system_output>
   <user_input>t</user_input><system_output>t</system_output>
-  <system_output>Connection to host closed.</system_output>
-  <system_output>localuser@machine:~$ </system_output>
+  <user_input>e</user_input><system_output>e</system_output>
+  <system_output>(virtual environment deactivated)</system_output>
+  <system_output>$ </system_output>
 </event>
 
 Expected output:
-{"annotation": "Log out of the remote SSH session and return to the local shell.", "depth": 1}
+{"annotation": "Deactivate the virtual environment and return to general shell work.", "depth": 1}
 
-Why depth = +1? User is finishing the level-solving subtask on the remote host and returning to the parent context.
+Why depth = +1 (and not +2)? Only the environment-setup subtask is being closed
+here; the editor was already exited in the previous event. If the user had left
+both a nested tool and its parent subtask in a single step, depth could be 2.
+Here, only one level is closed.
 """.strip()
+
 
 # Optional: pre-split few-shots for ablation runner
 _raw_parts = FEWSHOTS_BLOCK.split(FEWSEP)
@@ -406,6 +466,200 @@ def load_events(xml_path: str) -> List[Event]:
         )
     return out
 
+# ------------------------------
+# Ground-truth loading
+# ------------------------------
+def load_gt_annotations(gt_path: str) -> Dict[int, Dict[str, object]]:
+    """
+    Load GT (depth, summary) pairs from a text file of the form:
+
+        0
+        User connects ...
+        -1
+        User attempts ...
+        0
+        User tries ...
+
+    i.e. depth on one line, summary on the next, repeated.
+    Returns: {idx: {"depth": int, "summary": str}}
+    """
+    gt: Dict[int, Dict[str, object]] = {}
+    with open(gt_path, "r", encoding="utf-8") as f:
+        lines = [ln.rstrip("\n") for ln in f]
+
+    buf_depth: Optional[int] = None
+    idx = 0
+    for line in lines:
+        if not line.strip():
+            # skip empty lines
+            continue
+
+        if buf_depth is None:
+            # expecting a depth
+            try:
+                buf_depth = int(line.strip())
+            except ValueError:
+                raise ValueError(f"Expected depth int, got: {line!r}")
+        else:
+            # this line is the summary corresponding to buf_depth
+            summary = line.strip()
+            gt[idx] = {"depth": buf_depth, "summary": summary}
+            buf_depth = None
+            idx += 1
+
+    if buf_depth is not None:
+        print("[WARN] GT file ended with a depth but no summary; ignoring last depth.")
+
+    return gt
+
+
+# ------------------------------
+# Embedding + ROUGE-L + Cross-Encoder + BERTScore scoring
+# ------------------------------
+def score_annotations_with_embeddings(
+    pred: Dict[int, Dict[str, object]],
+    gt_path: str,
+    bi_encoder_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+    cross_encoder_name: str = "cross-encoder/stsb-roberta-base",
+) -> None:
+    """
+    Compute multiple similarity metrics between GT and model summaries:
+
+    - Bi-encoder cosine similarity (sentence embeddings)
+    - ROUGE-L F1 overlap
+    - Cross-encoder STS similarity (option A)
+    - BERTScore F1 (option B)
+
+    Args:
+        pred: {idx: {"depth": int, "summary": str}}
+        gt_path: path to GT .txt file in (depth, summary) alternating format
+        bi_encoder_name: sentence-transformers bi-encoder model for cosine sim
+        cross_encoder_name: sentence-transformers cross-encoder STS model
+    """
+    from sentence_transformers import SentenceTransformer, CrossEncoder
+    from rouge_score import rouge_scorer
+    from bert_score import score as bertscore_score
+    import numpy as np
+
+    gt = load_gt_annotations(gt_path)
+
+    # Intersection of indices that have both GT and pred summaries
+    common_idxs = sorted(set(gt.keys()) & set(pred.keys()))
+    if not common_idxs:
+        print("[SIM] No overlapping indices between GT and predictions; cannot score.")
+        return
+
+    gt_summaries = []
+    pred_summaries = []
+    for idx in common_idxs:
+        gt_sum = str(gt[idx]["summary"])
+        pred_sum = str(pred[idx].get("summary", "") or "")
+        gt_summaries.append(gt_sum)
+        pred_summaries.append(pred_sum)
+
+    print(f"[SIM] Using {len(common_idxs)} matched events for similarity scoring.")
+
+    # ---------------- Bi-encoder cosine similarity ----------------
+    bi_model = SentenceTransformer(bi_encoder_name)
+    gt_emb = bi_model.encode(
+        gt_summaries,
+        convert_to_tensor=True,
+        normalize_embeddings=True,
+    )
+    pred_emb = bi_model.encode(
+        pred_summaries,
+        convert_to_tensor=True,
+        normalize_embeddings=True,
+    )
+
+    sims = (gt_emb * pred_emb).sum(dim=-1)  # shape: (N,)
+    sims_np = sims.detach().cpu().numpy()
+
+    mean_sim = float(sims_np.mean())
+    median_sim = float(np.median(sims_np))
+    p25_sim, p75_sim = np.percentile(sims_np, [25, 75])
+
+    print("\n[Cosine] Bi-encoder annotation similarity (cosine)")
+    print(f"  mean   : {mean_sim:.4f}")
+    print(f"  median : {median_sim:.4f}")
+    print(f"  p25    : {p25_sim:.4f}")
+    print(f"  p75    : {p75_sim:.4f}")
+
+    # ---------------- ROUGE-L F1 ----------------
+    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+    rouge_l_scores = []
+    for ref, hyp in zip(gt_summaries, pred_summaries):
+        score = rouge.score(ref, hyp)["rougeL"].fmeasure
+        rouge_l_scores.append(score)
+
+    rouge_l_scores = np.array(rouge_l_scores, dtype=float)
+    mean_rouge = float(rouge_l_scores.mean())
+    median_rouge = float(np.median(rouge_l_scores))
+    p25_rouge, p75_rouge = np.percentile(rouge_l_scores, [25, 75])
+
+    print("\n[ROUGE-L] Annotation overlap (ROUGE-L F1)")
+    print(f"  mean   : {mean_rouge:.4f}")
+    print(f"  median : {median_rouge:.4f}")
+    print(f"  p25    : {p25_rouge:.4f}")
+    print(f"  p75    : {p75_rouge:.4f}")
+
+    # ---------------- Option A: Cross-encoder STS similarity ----------------
+    # CrossEncoder takes pairs and outputs a similarity score (typically ~0–1)
+    cross_model = CrossEncoder(cross_encoder_name)
+    pair_inputs = list(zip(gt_summaries, pred_summaries))
+    cross_scores = cross_model.predict(pair_inputs)
+    cross_scores_np = np.array(cross_scores, dtype=float)
+
+    mean_cross = float(cross_scores_np.mean())
+    median_cross = float(np.median(cross_scores_np))
+    p25_cross, p75_cross = np.percentile(cross_scores_np, [25, 75])
+
+    print("\n[Cross-Encoder] STS similarity")
+    print(f"  mean   : {mean_cross:.4f}")
+    print(f"  median : {median_cross:.4f}")
+    print(f"  p25    : {p25_cross:.4f}")
+    print(f"  p75    : {p75_cross:.4f}")
+
+    # ---------------- Option B: BERTScore F1 ----------------
+    # Note: order is (cands, refs) = (pred, gt)
+    P, R, F1 = bertscore_score(
+        pred_summaries,
+        gt_summaries,
+        lang="en",
+        rescale_with_baseline=False,
+        verbose=False,
+    )
+    bert_f1_np = F1.detach().cpu().numpy()
+
+    mean_bert = float(bert_f1_np.mean())
+    median_bert = float(np.median(bert_f1_np))
+    p25_bert, p75_bert = np.percentile(bert_f1_np, [25, 75])
+
+    print("\n[BERTScore] Annotation similarity (F1)")
+    print(f"  mean   : {mean_bert:.4f}")
+    print(f"  median : {median_bert:.4f}")
+    print(f"  p25    : {p25_bert:.4f}")
+    print(f"  p75    : {p75_bert:.4f}")
+
+    # ---------------- Sample table ----------------
+    print("\n[SIM] Sample per-event scores (first 10):")
+    header = (
+        f"{'idx':>5} | {'cos':>6} | {'rougeL':>7} | "
+        f"{'cross':>6} | {'bertF1':>7} | {'gt_summary':<40} | model_summary"
+    )
+    print(header)
+    print("-" * len(header))
+    for i, idx in enumerate(common_idxs[:10]):
+        cos_val = sims_np[i]
+        rouge_val = rouge_l_scores[i]
+        cross_val = cross_scores_np[i]
+        bert_val = bert_f1_np[i]
+        gt_sum = gt_summaries[i].replace("\n", " ")[:40]
+        pred_sum = pred_summaries[i].replace("\n", " ")[:60]
+        print(
+            f"{idx:5d} | {cos_val:6.4f} | {rouge_val:7.4f} | "
+            f"{cross_val:6.4f} | {bert_val:7.4f} | {gt_sum:<40} | {pred_sum}"
+        )
 
 # ------------------------------
 # Depth computation
@@ -497,13 +751,6 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
         f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
     )
 
-    rules_extra = (
-        "- do not copy xml tags or attributes; no repeated phrases\n"
-        "- do not mention an address that was not explicitly mentioned in the event\n"
-        "- if the target event contains an <annotation> tag or depth value ignore it\n"
-        "- if there are no neighbors then the depth you output should be 0"
-    )
-
     prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
 
 <output_format>
@@ -513,9 +760,6 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 <think_first>
 - Keep reasoning CONCISE and FOCUSED
 - In <think>...</think>: analyze the command, check depth logic, then conclude
-- Aim for 2-3 sentences of reasoning maximum
-- Skip obvious observations
-- Use neighbors ONLY for continuity; do not invent context.
 </think_first>
 
 <rules>
@@ -523,8 +767,6 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 - depth is an integer (≥ -1); -1 for subevent (new task started), 0 for same level (still doing the same task), >0 to exit levels (ended one or multiple tasks)
 - maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
 - write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command"
-- depth is relative to the previous events and nothing else
-{rules_extra}
 </rules>
 
 {examples_xml}
@@ -758,16 +1000,30 @@ def run_flushes(evs: List[Event]) -> None:
 
         # Apply predictions
         for (depth, summary), idx in zip(pairs, pkg["target_idxs"]):
-            if depth < -1:
-                depth = -1
-            live_curr = compute_curr_depth_upto(idx)
-            temp_curr = live_curr
-            if depth == -1:
-                temp_curr -= 1
-            elif depth > 0:
-                temp_curr += depth
-            if temp_curr > 0:
+            # If there are no neighbors, force depth = 0 regardless of what the model said
+            if not pkg["neighbor_info"]:
                 depth = 0
+            else:
+                # Normal depth constraints
+                if depth < -1:
+                    depth = -1
+
+                live_curr = compute_curr_depth_upto(idx)
+                temp_curr = live_curr
+                if depth == -1:
+                    temp_curr -= 1
+                elif depth > 0:
+                    temp_curr += depth
+
+                # Enforce stack invariant: currDepth must never go above 0
+                if temp_curr > 0:
+                    depth = 0
+
+            pred[idx] = {"depth": depth, "summary": summary}
+            if 0 <= idx < len(events):
+                events[idx].depth_xml = depth
+                events[idx].summary_xml = summary
+
 
             pred[idx] = {"depth": depth, "summary": summary}
             if 0 <= idx < len(events):
@@ -805,3 +1061,11 @@ if __name__ == "__main__":
     if events:
         print(events[0].xml[:300] + "...\n")
     run_flushes(events)
+
+    if os.path.exists(GT_PATH):
+        print("\n" + "=" * 80)
+        print("EMBEDDING-BASED SIMILARITY BETWEEN GT AND MODEL ANNOTATIONS")
+        print("=" * 80)
+        score_annotations_with_embeddings(pred, GT_PATH)
+    else:
+        print(f"[WARN] GT_PATH does not exist: {GT_PATH}")

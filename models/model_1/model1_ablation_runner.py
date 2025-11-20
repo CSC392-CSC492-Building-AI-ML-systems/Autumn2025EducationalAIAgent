@@ -4,7 +4,7 @@
 Model-1 prompt ablation runner.
 
 Depends on `model1_annotator` which defines:
-- XML_PATH, MODEL_ID, SUMMARY_WORD_LIMIT
+- XML_PATH, MODEL_ID, SUMMARY_WORD_LIMIT, GT_PATH
 - FEWSHOTS_PREAMBLE, FEWSHOTS_EXAMPLES, FEWSEP
 - SYSTEM_ROLE
 - Event dataclass
@@ -12,6 +12,7 @@ Depends on `model1_annotator` which defines:
 - make_flush_package(upto_idx: int, K: int, N: int) -> Dict
 - load_model() -> vLLM LLM
 - generate_with_thinking(llm, messages) -> (full_output, json_tail)
+- parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]
 - K_TARGET, N_NEIGH
 
 Usage:
@@ -83,6 +84,213 @@ THINK_LINES: List[str] = [
     "- Skip obvious observations",
     "- Use neighbors ONLY for continuity; do not invent context.",
 ]
+
+# -----------------------------------------------------------------------------
+# GT loader + metrics helpers
+# -----------------------------------------------------------------------------
+def _load_gt_annotations(gt_path: str) -> Dict[int, Dict[str, object]]:
+    """
+    Load GT annotations from a (depth, summary) alternating .txt file.
+
+    Returns:
+        {idx: {"depth": int, "summary": str}}
+    """
+    gt: Dict[int, Dict[str, object]] = {}
+    try:
+        with open(gt_path, "r", encoding="utf-8") as f:
+            lines = [ln.rstrip("\n") for ln in f]
+    except FileNotFoundError:
+        print(f"[GT] Could not open GT file: {gt_path}", file=sys.stderr)
+        return gt
+
+    idx = 0
+    i = 0
+    n = len(lines)
+    while i < n:
+        line = lines[i].strip()
+        if not line:
+            i += 1
+            continue
+        try:
+            depth = int(line)
+        except ValueError:
+            # Malformed depth line; skip
+            i += 1
+            continue
+
+        if i + 1 >= n:
+            break
+        summary = lines[i + 1].strip()
+        gt[idx] = {"depth": depth, "summary": summary}
+        idx += 1
+        i += 2
+
+    return gt
+
+
+def _build_pred_from_flushes(flushes: List[Dict]) -> Dict[int, Dict[str, object]]:
+    """
+    Reconstruct {idx: {"depth": int, "summary": str}} from a list of flush entries.
+
+    Each flush entry must contain:
+      - "target_idxs": List[int]
+      - "model_output_json_tail": str
+    """
+    pred: Dict[int, Dict[str, object]] = {}
+
+    for fl in flushes:
+        target_idxs = fl.get("target_idxs") or []
+        json_tail = fl.get("model_output_json_tail") or ""
+
+        pairs = m1.parse_depth_summary_pairs(json_tail)
+        # Drop placeholder / trivial annotations (mirror m1.run_flushes logic)
+        cleaned_pairs = [
+            (depth, ann)
+            for (depth, ann) in pairs
+            if ann is not None
+            and ann.strip() not in ("...", '"..."')
+            and len(ann.strip()) >= 5
+        ]
+
+        # If model produced more pairs than targets, keep the last ones
+        if len(cleaned_pairs) > len(target_idxs):
+            cleaned_pairs = cleaned_pairs[-len(target_idxs) :]
+
+        for (depth, summary), idx in zip(cleaned_pairs, target_idxs):
+            pred[idx] = {"depth": depth, "summary": summary}
+
+    return pred
+
+
+def _compute_annotation_metrics(
+    pred: Dict[int, Dict[str, object]],
+    gt_path: str,
+    bi_model,
+    cross_model,
+    rouge_scorer_obj,
+    bert_lang: str = "en",
+) -> Dict[str, object]:
+    """
+    Compute:
+      - bi-encoder cosine similarity
+      - ROUGE-L F1
+      - cross-encoder STS similarity
+      - BERTScore F1
+
+    Returns a dict of aggregate stats.
+    """
+    import numpy as np
+    from bert_score import score as bertscore_score
+
+    gt = _load_gt_annotations(gt_path)
+    if not gt:
+        return {"num_pairs": 0}
+
+    common_idxs = sorted(set(gt.keys()) & set(pred.keys()))
+    if not common_idxs:
+        return {"num_pairs": 0}
+
+    gt_summaries: List[str] = []
+    pred_summaries: List[str] = []
+    for idx in common_idxs:
+        gt_sum = str(gt[idx]["summary"])
+        pred_sum = str(pred[idx].get("summary", "") or "")
+        gt_summaries.append(gt_sum)
+        pred_summaries.append(pred_sum)
+
+    # ---------- Bi-encoder cosine ----------
+    gt_emb = bi_model.encode(
+        gt_summaries,
+        convert_to_tensor=True,
+        normalize_embeddings=True,
+    )
+    pred_emb = bi_model.encode(
+        pred_summaries,
+        convert_to_tensor=True,
+        normalize_embeddings=True,
+    )
+    sims = (gt_emb * pred_emb).sum(dim=-1)
+    sims_np = sims.detach().cpu().numpy()
+
+    mean_sim = float(sims_np.mean())
+    median_sim = float(np.median(sims_np))
+    p25_sim, p75_sim = np.percentile(sims_np, [25, 75])
+
+    # ---------- ROUGE-L ----------
+    rouge_scores = []
+    for ref, hyp in zip(gt_summaries, pred_summaries):
+        score = rouge_scorer_obj.score(ref, hyp)["rougeL"].fmeasure
+        rouge_scores.append(score)
+    rouge_np = np.array(rouge_scores, dtype=float)
+
+    mean_rouge = float(rouge_np.mean())
+    median_rouge = float(np.median(rouge_np))
+    p25_rouge, p75_rouge = np.percentile(rouge_np, [25, 75])
+
+    # ---------- Cross-encoder STS ----------
+    pair_inputs = list(zip(gt_summaries, pred_summaries))
+    cross_scores = cross_model.predict(pair_inputs)
+    cross_np = np.array(cross_scores, dtype=float)
+
+    mean_cross = float(cross_np.mean())
+    median_cross = float(np.median(cross_np))
+    p25_cross, p75_cross = np.percentile(cross_np, [25, 75])
+
+    # ---------- BERTScore F1 ----------
+    P, R, F1 = bertscore_score(
+        pred_summaries,
+        gt_summaries,
+        lang=bert_lang,
+        rescale_with_baseline=False,
+        verbose=False,
+    )
+    bert_f1_np = F1.detach().cpu().numpy()
+
+    mean_bert = float(bert_f1_np.mean())
+    median_bert = float(np.median(bert_f1_np))
+    p25_bert, p75_bert = np.percentile(bert_f1_np, [25, 75])
+
+    return {
+        "num_pairs": len(common_idxs),
+
+        "cosine_mean": mean_sim,
+        "cosine_median": median_sim,
+        "cosine_p25": p25_sim,
+        "cosine_p75": p75_sim,
+
+        "rougeL_mean": mean_rouge,
+        "rougeL_median": median_rouge,
+        "rougeL_p25": p25_rouge,
+        "rougeL_p75": p75_rouge,
+
+        "cross_mean": mean_cross,
+        "cross_median": median_cross,
+        "cross_p25": p25_cross,
+        "cross_p75": p75_cross,
+
+        "bertF1_mean": mean_bert,
+        "bertF1_median": median_bert,
+        "bertF1_p25": p25_bert,
+        "bertF1_p75": p75_bert,
+    }
+
+
+def _print_metrics_for_ablation(name: str, metrics: Dict[str, object]) -> None:
+    """Print a compact metrics line for an ablation (to stderr)."""
+    if not metrics or metrics.get("num_pairs", 0) == 0:
+        print(f"[METRICS] ablation={name}: no overlapping GT/pred pairs", file=sys.stderr)
+        return
+
+    msg = (
+        f"[METRICS] ablation={name} "
+        f"pairs={metrics['num_pairs']} "
+        f"cos_mean={metrics['cosine_mean']:.4f} "
+        f"rougeL_mean={metrics['rougeL_mean']:.4f} "
+        f"cross_mean={metrics['cross_mean']:.4f} "
+        f"bertF1_mean={metrics['bertF1_mean']:.4f}"
+    )
+    print(msg, file=sys.stderr)
+
 
 # -----------------------------------------------------------------------------
 # Blocks: rules, examples, think-first
@@ -219,9 +427,17 @@ def build_messages_cfg(instruction: str, cfg: PromptConfig) -> List[Dict[str, st
 # Ablation runners (all reuse m1.load_model & m1.generate_with_thinking)
 # -----------------------------------------------------------------------------
 def run_bigblock_ablation(evs) -> Dict:
+    from sentence_transformers import SentenceTransformer, CrossEncoder
+    from rouge_score import rouge_scorer
+
     m1.events = evs
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
+
+    # Evaluation models (shared across ablations in this run)
+    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
+    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
 
     configs = {
         "full": PromptConfig(),
@@ -261,11 +477,11 @@ def run_bigblock_ablation(evs) -> Dict:
             messages = build_messages_cfg(instr, cfg)
 
             start = time.perf_counter()
-            full_output, json_part = m1.generate_with_thinking(llm, messages)
+            full_output, json_part, prompt_tokens, gen_tokens = m1.generate_with_thinking(llm, messages)
             elapsed = time.perf_counter() - start
 
-            prompt_tok_count = len(tokenizer.encode(instr))
-            output_tok_count = len(tokenizer.encode(full_output))
+            prompt_tok_count = prompt_tokens
+            output_tok_count = gen_tokens
 
             total_time += elapsed
             total_prompt_tokens += prompt_tok_count
@@ -302,16 +518,36 @@ def run_bigblock_ablation(evs) -> Dict:
             "combined_tokens_per_sec": combined_tps,
         }
 
+        # ---- compute metrics for this ablation ----
+        pred = _build_pred_from_flushes(ablation_entry["flushes"])
+        metrics = _compute_annotation_metrics(
+            pred,
+            m1.GT_PATH,
+            bi_model=bi_model,
+            cross_model=cross_model,
+            rouge_scorer_obj=rouge,
+        )
+        ablation_entry["metrics"] = metrics
+        _print_metrics_for_ablation(name, metrics)
+
         all_results["ablations"].append(ablation_entry)
 
     return all_results
 
 
 def run_fewshots_ablation(evs) -> Dict:
+    from sentence_transformers import SentenceTransformer, CrossEncoder
+    from rouge_score import rouge_scorer
+
     m1.events = evs
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
     cfg = PromptConfig(include_fewshots=True)
+
+    # Evaluation models
+    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
+    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
 
     n = len(FEWSHOTS_EXAMPLES)
     all_results: Dict[str, object] = {
@@ -342,11 +578,11 @@ def run_fewshots_ablation(evs) -> Dict:
             messages = build_messages_cfg(instr, cfg)
 
             start = time.perf_counter()
-            full_output, json_part = m1.generate_with_thinking(llm, messages)
+            full_output, json_part, prompt_tokens, gen_tokens = m1.generate_with_thinking(llm, messages)
             elapsed = time.perf_counter() - start
 
-            prompt_tok_count = len(tokenizer.encode(instr))
-            output_tok_count = len(tokenizer.encode(full_output))
+            prompt_tok_count = prompt_tokens
+            output_tok_count = gen_tokens
 
             total_time += elapsed
             total_prompt_tokens += prompt_tok_count
@@ -382,6 +618,18 @@ def run_fewshots_ablation(evs) -> Dict:
             "output_tokens_per_sec": output_tps,
             "combined_tokens_per_sec": combined_tps,
         }
+
+        pred = _build_pred_from_flushes(entry["flushes"])
+        metrics = _compute_annotation_metrics(
+            pred,
+            m1.GT_PATH,
+            bi_model=bi_model,
+            cross_model=cross_model,
+            rouge_scorer_obj=rouge,
+        )
+        entry["metrics"] = metrics
+        _print_metrics_for_ablation(label, metrics)
+
         return entry
 
     # Baseline
@@ -400,10 +648,18 @@ def run_fewshots_ablation(evs) -> Dict:
 
 
 def run_rules_ablation(evs) -> Dict:
+    from sentence_transformers import SentenceTransformer, CrossEncoder
+    from rouge_score import rouge_scorer
+
     m1.events = evs
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
     cfg = PromptConfig(include_rules=True)
+
+    # Evaluation models
+    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
+    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
 
     n = len(BASE_RULES)
     all_results: Dict[str, object] = {
@@ -474,6 +730,18 @@ def run_rules_ablation(evs) -> Dict:
             "output_tokens_per_sec": output_tps,
             "combined_tokens_per_sec": combined_tps,
         }
+
+        pred = _build_pred_from_flushes(entry["flushes"])
+        metrics = _compute_annotation_metrics(
+            pred,
+            m1.GT_PATH,
+            bi_model=bi_model,
+            cross_model=cross_model,
+            rouge_scorer_obj=rouge,
+        )
+        entry["metrics"] = metrics
+        _print_metrics_for_ablation(label, metrics)
+
         return entry
 
     # Baseline
@@ -494,10 +762,18 @@ def run_rules_ablation(evs) -> Dict:
 
 
 def run_think_ablation(evs) -> Dict:
+    from sentence_transformers import SentenceTransformer, CrossEncoder
+    from rouge_score import rouge_scorer
+
     m1.events = evs
     llm = m1.load_model()
     tokenizer = llm.get_tokenizer()
     cfg = PromptConfig(include_think_first=True)
+
+    # Evaluation models
+    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
+    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
 
     n = len(THINK_LINES)
     all_results: Dict[str, object] = {
@@ -568,6 +844,18 @@ def run_think_ablation(evs) -> Dict:
             "output_tokens_per_sec": output_tps,
             "combined_tokens_per_sec": combined_tps,
         }
+
+        pred = _build_pred_from_flushes(entry["flushes"])
+        metrics = _compute_annotation_metrics(
+            pred,
+            m1.GT_PATH,
+            bi_model=bi_model,
+            cross_model=cross_model,
+            rouge_scorer_obj=rouge,
+        )
+        entry["metrics"] = metrics
+        _print_metrics_for_ablation(label, metrics)
+
         return entry
 
     # Baseline
