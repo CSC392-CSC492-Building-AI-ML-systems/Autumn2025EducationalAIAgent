@@ -15,20 +15,31 @@ Depends on `model1_annotator` which defines:
 - parse_depth_summary_pairs(text: str) -> List[Tuple[int, str]]
 - K_TARGET, N_NEIGH
 
-Usage:
+Usage (single XML, backward-compatible):
   python model1_ablation_runner.py ablate_big   > big_ablation.json
   python model1_ablation_runner.py ablate_few   > fewshot_ablation.json
   python model1_ablation_runner.py ablate_rules > rules_ablation.json
   python model1_ablation_runner.py ablate_think > think_ablation.json
+
+New usage (directory of XMLs):
+  python model1_ablation_runner.py ablate_big path/to/xml_dir > big_multi.json
+
+This will:
+  - run the requested ablation over every `*.xml` in the directory
+  - compute metrics per XML
+  - compute overall metrics (pair-count weighted means across XMLs)
+  - write a human-readable summary file: `ablate_big_metrics_summary.txt`
 """
 
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import time
 from dataclasses import dataclass, asdict
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import model1_annotator as m1
@@ -38,9 +49,22 @@ import model1_annotator as m1
 # ------------------------------
 Event = m1.Event
 
-# -----------------------------------------------------------------------------
+# Default safety cap for prompt tokens when not provided by m1/MAX_PROMPT_TOKENS
+DEFAULT_MAX_PROMPT_TOKENS = 6000
+
+# ------------------------------
+# Shared global model instances
+# ------------------------------
+_GLOBAL_LLM = None
+_GLOBAL_BI_MODEL = None
+_GLOBAL_CROSS_MODEL = None
+_GLOBAL_ROUGE = None
+
+
+
+# ----------------------------------------------------------------------------
 # Prompt configuration
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 @dataclass
 class PromptConfig:
     """Controls which high-level blocks are included in the prompt.
@@ -68,7 +92,7 @@ BASE_RULES: List[str] = [
     "the user's keystrokes appear separately; combine them to form the full command before interpreting it",
     "depth is an integer (≥ -1); -1 for subevent (new task started), 0 for same level (still doing the same task), >0 to exit levels (ended one or multiple tasks)",
     "maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth",
-    "write action-oriented summaries; avoid \"user\", \"they\", \"typed\", \"inputs\", \"enters a command\"",
+    'write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command"',
     "depth is relative to the previous events and nothing else",
     "do not copy xml tags or attributes; no repeated phrases",
     "do not mention an address that was not explicitly mentioned in the event",
@@ -85,12 +109,123 @@ THINK_LINES: List[str] = [
     "- Use neighbors ONLY for continuity; do not invent context.",
 ]
 
+
+# ----------------------------------------------------------------------------
+# Helpers: GT path + token counting
+# ----------------------------------------------------------------------------
+
+def infer_gt_path(xml_path: str) -> Optional[str]:
+    """Best-effort inference of the GT .txt path for a given parsed XML.
+
+    Heuristics:
+      - If name ends with `_parsed.xml`, try replacing with `_training.txt` in
+        the same directory.
+      - If the path contains an `inputs` segment, mirror it to `outputs` and
+        again replace `_parsed.xml` with `_training.txt`.
+      - Finally, fall back to m1.GT_PATH if it exists and is a file.
+    """
+
+    p = Path(xml_path)
+    candidates: List[Path] = []
+
+    if p.name.endswith("_parsed.xml"):
+        candidates.append(p.with_name(p.name.replace("_parsed.xml", "_training.txt")))
+
+    if "inputs" in p.parts:
+        parts = list(p.parts)
+        for i, part in enumerate(parts):
+            if part == "inputs":
+                parts[i] = "outputs"
+                break
+        out_p = Path(*parts)
+        if out_p.name.endswith("_parsed.xml"):
+            out_p = out_p.with_name(out_p.name.replace("_parsed.xml", "_training.txt"))
+        candidates.append(out_p)
+
+    # Fallback: whatever GT_PATH is currently set to
+    try:
+        if hasattr(m1, "GT_PATH"):
+            candidates.append(Path(m1.GT_PATH))
+    except Exception:
+        pass
+
+    for cand in candidates:
+        if cand.is_file():
+            return str(cand)
+
+    if candidates:
+        cand_str = ", ".join(str(c) for c in candidates)
+    else:
+        cand_str = "<none>"
+    print(f"[WARN] Could not infer GT path for XML {xml_path}. Tried: {cand_str}", file=sys.stderr)
+    return None
+
+
+def _resolve_max_prompt_tokens() -> int:
+    """Resolve max prompt tokens from m1 or env, with a safe default."""
+
+    # Prefer explicit config on annotator module if present
+    max_tokens = getattr(m1, "MAX_PROMPT_TOKENS", None)
+
+    # Optional env override
+    if max_tokens is None:
+        env_val = os.getenv("MAX_PROMPT_TOKENS")
+        if env_val:
+            try:
+                max_tokens = int(env_val)
+            except ValueError:
+                max_tokens = None
+
+    if max_tokens is None or max_tokens <= 0:
+        max_tokens = DEFAULT_MAX_PROMPT_TOKENS
+
+    return max_tokens
+
+
+def count_prompt_tokens(tokenizer, messages: List[Dict[str, str]]) -> Optional[int]:
+    """Approximate number of prompt tokens for a list of chat messages.
+
+    Returns None if counting fails for any reason.
+    """
+
+    try:
+        # Preferred for HF chat models
+        if hasattr(tokenizer, "apply_chat_template"):
+            ids = tokenizer.apply_chat_template(
+                messages,
+                add_generation_prompt=True,
+                tokenize=True,
+            )
+            # ids can be a list[int] or list[list[int]] depending on tokenizer
+            if isinstance(ids, list):
+                if ids and isinstance(ids[0], (list, tuple)):
+                    return len(ids[0])
+                return len(ids)
+            if hasattr(ids, "__len__"):
+                return len(ids)
+
+        # Fallback: concatenate contents and tokenize as a single string
+        text = "\n".join(msg.get("content", "") for msg in messages)
+        encoded = tokenizer(text, return_tensors=None)
+        if isinstance(encoded, dict) and "input_ids" in encoded:
+            input_ids = encoded["input_ids"]
+            if isinstance(input_ids, list) and input_ids and isinstance(input_ids[0], (list, tuple)):
+                return len(input_ids[0])
+            return len(input_ids)
+        if hasattr(encoded, "__len__"):
+            return len(encoded)
+    except Exception:
+        return None
+
+    return None
+
+
 # -----------------------------------------------------------------------------
 # GT loader + metrics helpers
 # -----------------------------------------------------------------------------
+
 def _load_gt_annotations(gt_path: str) -> Dict[int, Dict[str, object]]:
-    """
-    Load GT annotations from a (depth, summary) alternating .txt file.
+    """Load GT annotations from a (depth, summary) alternating .txt file.
 
     Returns:
         {idx: {"depth": int, "summary": str}}
@@ -129,12 +264,15 @@ def _load_gt_annotations(gt_path: str) -> Dict[int, Dict[str, object]]:
 
 
 def _build_pred_from_flushes(flushes: List[Dict]) -> Dict[int, Dict[str, object]]:
-    """
-    Reconstruct {idx: {"depth": int, "summary": str}} from a list of flush entries.
+    """Reconstruct {idx: {"depth": int, "summary": str}} from flush entries.
 
     Each flush entry must contain:
       - "target_idxs": List[int]
       - "model_output_json_tail": str
+
+    Any flush with an empty/placeholder tail (e.g. skipped due to length)
+    simply contributes no predictions for its target indices, so those
+    indices are not counted in the metrics.
     """
     pred: Dict[int, Dict[str, object]] = {}
 
@@ -170,15 +308,15 @@ def _compute_annotation_metrics(
     rouge_scorer_obj,
     bert_lang: str = "en",
 ) -> Dict[str, object]:
-    """
-    Compute:
-      - bi-encoder cosine similarity
+    """Compute semantic/overlap metrics between predictions and GT.
+
+    Metrics:
+      - bi-encoder cosine similarity (sentence-transformers)
       - ROUGE-L F1
       - cross-encoder STS similarity
       - BERTScore F1
-
-    Returns a dict of aggregate stats.
     """
+
     import numpy as np
     from bert_score import score as bertscore_score
 
@@ -295,6 +433,7 @@ def _print_metrics_for_ablation(name: str, metrics: Dict[str, object]) -> None:
 # -----------------------------------------------------------------------------
 # Blocks: rules, examples, think-first
 # -----------------------------------------------------------------------------
+
 def build_rules_block(cfg: PromptConfig, rule_indices: Optional[List[int]] = None) -> str:
     if not cfg.include_rules:
         return ""
@@ -345,6 +484,7 @@ def build_think_block(
 # -----------------------------------------------------------------------------
 # Configurable prompt builder (neighbors + currDepth always included)
 # -----------------------------------------------------------------------------
+
 def build_instruction_cfg(
     pkg: Dict,
     cfg: PromptConfig,
@@ -426,18 +566,32 @@ def build_messages_cfg(instruction: str, cfg: PromptConfig) -> List[Dict[str, st
 # -----------------------------------------------------------------------------
 # Ablation runners (all reuse m1.load_model & m1.generate_with_thinking)
 # -----------------------------------------------------------------------------
+
 def run_bigblock_ablation(evs) -> Dict:
     from sentence_transformers import SentenceTransformer, CrossEncoder
     from rouge_score import rouge_scorer
+    global _GLOBAL_LLM, _GLOBAL_BI_MODEL, _GLOBAL_CROSS_MODEL, _GLOBAL_ROUGE
 
+    # Attach events
     m1.events = evs
-    llm = m1.load_model()
+
+    # ---- vLLM singleton ----
+    if _GLOBAL_LLM is None:
+        _GLOBAL_LLM = m1.load_model()
+    llm = _GLOBAL_LLM
     tokenizer = llm.get_tokenizer()
 
-    # Evaluation models (shared across ablations in this run)
-    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
-    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+    # ---- scoring models singleton ----
+    if _GLOBAL_BI_MODEL is None:
+        _GLOBAL_BI_MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    if _GLOBAL_CROSS_MODEL is None:
+        _GLOBAL_CROSS_MODEL = CrossEncoder("cross-encoder/stsb-roberta-base")
+    if _GLOBAL_ROUGE is None:
+        _GLOBAL_ROUGE = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+
+    bi_model = _GLOBAL_BI_MODEL
+    cross_model = _GLOBAL_CROSS_MODEL
+    rouge = _GLOBAL_ROUGE
 
     configs = {
         "full": PromptConfig(),
@@ -538,16 +692,26 @@ def run_bigblock_ablation(evs) -> Dict:
 def run_fewshots_ablation(evs) -> Dict:
     from sentence_transformers import SentenceTransformer, CrossEncoder
     from rouge_score import rouge_scorer
+    global _GLOBAL_LLM, _GLOBAL_BI_MODEL, _GLOBAL_CROSS_MODEL, _GLOBAL_ROUGE
 
     m1.events = evs
-    llm = m1.load_model()
+
+    if _GLOBAL_LLM is None:
+        _GLOBAL_LLM = m1.load_model()
+    llm = _GLOBAL_LLM
     tokenizer = llm.get_tokenizer()
     cfg = PromptConfig(include_fewshots=True)
 
-    # Evaluation models
-    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
-    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+    if _GLOBAL_BI_MODEL is None:
+        _GLOBAL_BI_MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    if _GLOBAL_CROSS_MODEL is None:
+        _GLOBAL_CROSS_MODEL = CrossEncoder("cross-encoder/stsb-roberta-base")
+    if _GLOBAL_ROUGE is None:
+        _GLOBAL_ROUGE = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+
+    bi_model = _GLOBAL_BI_MODEL
+    cross_model = _GLOBAL_CROSS_MODEL
+    rouge = _GLOBAL_ROUGE
 
     n = len(FEWSHOTS_EXAMPLES)
     all_results: Dict[str, object] = {
@@ -650,16 +814,26 @@ def run_fewshots_ablation(evs) -> Dict:
 def run_rules_ablation(evs) -> Dict:
     from sentence_transformers import SentenceTransformer, CrossEncoder
     from rouge_score import rouge_scorer
+    global _GLOBAL_LLM, _GLOBAL_BI_MODEL, _GLOBAL_CROSS_MODEL, _GLOBAL_ROUGE
 
     m1.events = evs
-    llm = m1.load_model()
+
+    if _GLOBAL_LLM is None:
+        _GLOBAL_LLM = m1.load_model()
+    llm = _GLOBAL_LLM
     tokenizer = llm.get_tokenizer()
     cfg = PromptConfig(include_rules=True)
 
-    # Evaluation models
-    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
-    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+    if _GLOBAL_BI_MODEL is None:
+        _GLOBAL_BI_MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    if _GLOBAL_CROSS_MODEL is None:
+        _GLOBAL_CROSS_MODEL = CrossEncoder("cross-encoder/stsb-roberta-base")
+    if _GLOBAL_ROUGE is None:
+        _GLOBAL_ROUGE = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+
+    bi_model = _GLOBAL_BI_MODEL
+    cross_model = _GLOBAL_CROSS_MODEL
+    rouge = _GLOBAL_ROUGE
 
     n = len(BASE_RULES)
     all_results: Dict[str, object] = {
@@ -690,11 +864,11 @@ def run_rules_ablation(evs) -> Dict:
             messages = build_messages_cfg(instr, cfg)
 
             start = time.perf_counter()
-            full_output, json_part = m1.generate_with_thinking(llm, messages)
+            full_output, json_part, prompt_tokens, gen_tokens = m1.generate_with_thinking(llm, messages)
             elapsed = time.perf_counter() - start
 
-            prompt_tok_count = len(tokenizer.encode(instr))
-            output_tok_count = len(tokenizer.encode(full_output))
+            prompt_tok_count = prompt_tokens
+            output_tok_count = gen_tokens
 
             total_time += elapsed
             total_prompt_tokens += prompt_tok_count
@@ -764,16 +938,26 @@ def run_rules_ablation(evs) -> Dict:
 def run_think_ablation(evs) -> Dict:
     from sentence_transformers import SentenceTransformer, CrossEncoder
     from rouge_score import rouge_scorer
+    global _GLOBAL_LLM, _GLOBAL_BI_MODEL, _GLOBAL_CROSS_MODEL, _GLOBAL_ROUGE
 
     m1.events = evs
-    llm = m1.load_model()
+
+    if _GLOBAL_LLM is None:
+        _GLOBAL_LLM = m1.load_model()
+    llm = _GLOBAL_LLM
     tokenizer = llm.get_tokenizer()
     cfg = PromptConfig(include_think_first=True)
 
-    # Evaluation models
-    bi_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-    cross_model = CrossEncoder("cross-encoder/stsb-roberta-base")
-    rouge = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+    if _GLOBAL_BI_MODEL is None:
+        _GLOBAL_BI_MODEL = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    if _GLOBAL_CROSS_MODEL is None:
+        _GLOBAL_CROSS_MODEL = CrossEncoder("cross-encoder/stsb-roberta-base")
+    if _GLOBAL_ROUGE is None:
+        _GLOBAL_ROUGE = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
+
+    bi_model = _GLOBAL_BI_MODEL
+    cross_model = _GLOBAL_CROSS_MODEL
+    rouge = _GLOBAL_ROUGE
 
     n = len(THINK_LINES)
     all_results: Dict[str, object] = {
@@ -804,11 +988,11 @@ def run_think_ablation(evs) -> Dict:
             messages = build_messages_cfg(instr, cfg)
 
             start = time.perf_counter()
-            full_output, json_part = m1.generate_with_thinking(llm, messages)
+            full_output, json_part, prompt_tokens, gen_tokens = m1.generate_with_thinking(llm, messages)
             elapsed = time.perf_counter() - start
 
-            prompt_tok_count = len(tokenizer.encode(instr))
-            output_tok_count = len(tokenizer.encode(full_output))
+            prompt_tok_count = prompt_tokens
+            output_tok_count = gen_tokens
 
             total_time += elapsed
             total_prompt_tokens += prompt_tok_count
@@ -876,24 +1060,188 @@ def run_think_ablation(evs) -> Dict:
 
 
 # -----------------------------------------------------------------------------
-# Entry point
+# Entry point: single XML vs directory of XMLs
 # -----------------------------------------------------------------------------
+
 if __name__ == "__main__":
-    events = m1.load_events(m1.XML_PATH)
-    if not events:
-        raise SystemExit("No events loaded from XML_PATH")
-
     mode = sys.argv[1] if len(sys.argv) > 1 else "ablate_big"
+    path_arg = sys.argv[2] if len(sys.argv) > 2 else None
 
-    if mode == "ablate_big":
-        results = run_bigblock_ablation(events)
-    elif mode == "ablate_few":
-        results = run_fewshots_ablation(events)
-    elif mode == "ablate_rules":
-        results = run_rules_ablation(events)
-    elif mode == "ablate_think":
-        results = run_think_ablation(events)
-    else:
+    ablation_field_map = {
+        "ablate_big": "ablations",
+        "ablate_few": "fewshots_ablations",
+        "ablate_rules": "rules_ablations",
+        "ablate_think": "think_ablations",
+    }
+
+    if mode not in ablation_field_map:
         raise SystemExit(f"Unknown mode: {mode}")
 
-    print(json.dumps(results, ensure_ascii=False, indent=2))
+    # ------------------------
+    # Single-XML (backward-compatible)
+    # ------------------------
+    if path_arg is None:
+        events = m1.load_events(m1.XML_PATH)
+        if not events:
+            raise SystemExit("No events loaded from XML_PATH")
+
+        if mode == "ablate_big":
+            results = run_bigblock_ablation(events)
+        elif mode == "ablate_few":
+            results = run_fewshots_ablation(events)
+        elif mode == "ablate_rules":
+            results = run_rules_ablation(events)
+        elif mode == "ablate_think":
+            results = run_think_ablation(events)
+        else:
+            raise SystemExit(f"Unknown mode: {mode}")
+
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+        raise SystemExit(0)
+
+    # ------------------------
+    # Multi-XML directory or explicit XML file
+    # ------------------------
+    root = Path(path_arg)
+    if root.is_file() and root.suffix.lower() == ".xml":
+        xml_paths = [root]
+    elif root.is_dir():
+        xml_paths = sorted(root.glob("*.xml"))
+    else:
+        raise SystemExit(f"Provided path is neither an XML file nor a directory: {path_arg}")
+
+    if not xml_paths:
+        raise SystemExit(f"No .xml files found in: {path_arg}")
+
+    per_xml_results: List[Dict[str, object]] = []
+    ablation_field = ablation_field_map[mode]
+
+    for xml_path in xml_paths:
+        gt_path = infer_gt_path(str(xml_path))
+        if gt_path is None:
+            print(f"[WARN] Skipping XML without GT: {xml_path}", file=sys.stderr)
+            continue
+
+        m1.XML_PATH = str(xml_path)
+        m1.GT_PATH = gt_path
+        events = m1.load_events(m1.XML_PATH)
+        if not events:
+            print(f"[WARN] No events loaded for {xml_path}, skipping.", file=sys.stderr)
+            continue
+
+        print(f"[INFO] Running {mode} on {xml_path.name}", file=sys.stderr)
+
+        if mode == "ablate_big":
+            res = run_bigblock_ablation(events)
+        elif mode == "ablate_few":
+            res = run_fewshots_ablation(events)
+        elif mode == "ablate_rules":
+            res = run_rules_ablation(events)
+        elif mode == "ablate_think":
+            res = run_think_ablation(events)
+        else:
+            raise SystemExit(f"Unknown mode: {mode}")
+
+        per_xml_results.append(res)
+
+    if not per_xml_results:
+        raise SystemExit("No results produced for any XML files.")
+
+    # ------------------------
+    # Aggregate overall metrics
+    # ------------------------
+    metric_keys = [
+        "cosine_mean",
+        "rougeL_mean",
+        "cross_mean",
+        "bertF1_mean",
+    ]
+
+    overall_tmp: Dict[str, Dict[str, float]] = {}
+
+    for res in per_xml_results:
+        for ab in res.get(ablation_field, []):
+            name = ab.get("name", "unknown")
+            m = ab.get("metrics") or {}
+            pairs = m.get("num_pairs", 0)
+            if not pairs:
+                continue
+
+            agg = overall_tmp.setdefault(name, {"num_pairs": 0.0})
+            agg["num_pairs"] += float(pairs)
+            for key in metric_keys:
+                if key in m:
+                    agg_key = key + "_sum"
+                    agg[agg_key] = agg.get(agg_key, 0.0) + float(pairs) * float(m[key])
+
+    overall_metrics: Dict[str, Dict[str, float]] = {}
+    for name, agg in overall_tmp.items():
+        pairs = agg.get("num_pairs", 0.0)
+        combined: Dict[str, float] = {"num_pairs": float(pairs)}
+        if pairs > 0:
+            for key in metric_keys:
+                sum_key = key + "_sum"
+                if sum_key in agg:
+                    combined[key] = agg[sum_key] / pairs
+        overall_metrics[name] = combined
+
+    final_results = {
+        "mode": mode,
+        "multi_xml": True,
+        "xml_root": str(root),
+        "per_xml_results": per_xml_results,
+        "overall_metrics": overall_metrics,
+    }
+
+    # ------------------------
+    # Human-readable metrics file
+    # ------------------------
+    summary_filename = f"{mode}_metrics_summary.txt"
+    try:
+        with open(summary_filename, "w", encoding="utf-8") as f:
+            f.write(f"Mode: {mode}\n")
+            f.write(f"XML root: {root}\n\n")
+
+            f.write("Overall aggregated metrics (weighted by num_pairs):\n")
+            for ab_name in sorted(overall_metrics.keys()):
+                met = overall_metrics[ab_name]
+                pairs = float(met.get("num_pairs", 0.0))
+                cos = float(met.get("cosine_mean", 0.0))
+                rouge = float(met.get("rougeL_mean", 0.0))
+                cross = float(met.get("cross_mean", 0.0))
+                bert = float(met.get("bertF1_mean", 0.0))
+                if pairs > 0:
+                    f.write(
+                        f"- {ab_name}: pairs={int(pairs)} "
+                        f"cos_mean={cos:.4f} rougeL_mean={rouge:.4f} "
+                        f"cross_mean={cross:.4f} bertF1_mean={bert:.4f}\n"
+                    )
+                else:
+                    f.write(f"- {ab_name}: pairs=0\n")
+
+            f.write("\nPer-XML metrics (means only):\n")
+            for res in per_xml_results:
+                xml_path = res.get("xml_path", "<unknown>")
+                f.write(f"\nXML: {xml_path}\n")
+                for ab in res.get(ablation_field, []):
+                    m = ab.get("metrics") or {}
+                    pairs = int(m.get("num_pairs", 0) or 0)
+                    if not pairs:
+                        continue
+                    cos = float(m.get("cosine_mean", 0.0))
+                    rouge = float(m.get("rougeL_mean", 0.0))
+                    cross = float(m.get("cross_mean", 0.0))
+                    bert = float(m.get("bertF1_mean", 0.0))
+                    f.write(
+                        f"  {ab.get('name', 'unknown')}: "
+                        f"pairs={pairs} "
+                        f"cos_mean={cos:.4f} rougeL_mean={rouge:.4f} "
+                        f"cross_mean={cross:.4f} bertF1_mean={bert:.4f}\n"
+                    )
+
+        print(f"[INFO] Wrote metrics summary to {summary_filename}", file=sys.stderr)
+    except Exception as e:
+        print(f"[WARN] Failed to write metrics summary: {e}", file=sys.stderr)
+
+    # JSON dump to stdout (for programmatic consumption)
+    print(json.dumps(final_results, ensure_ascii=False, indent=2))

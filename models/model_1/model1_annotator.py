@@ -15,8 +15,6 @@ Model-1 streamed annotator - vLLM version (shared core + simple inference)
     - run_flushes (simple inference loop)
 """
 
-from __future__ import annotations
-
 import json
 import os
 import re
@@ -43,6 +41,13 @@ DTYPE = "bfloat16"
 
 MAX_NEW_TOKENS = 2500
 SUMMARY_WORD_LIMIT = 50
+
+# Parallelism / memory controls (env overridable)
+TP_SIZE = int(os.getenv("VLLM_TP", "1"))          # e.g. 2 or 3 on your A40 box
+
+
+# Global singleton LLM
+_GLOBAL_LLM: Optional[LLM] = None
 
 
 # Flush parameters
@@ -759,7 +764,7 @@ def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) 
 
 <think_first>
 - Keep reasoning CONCISE and FOCUSED
-- In <think>...</think>: analyze the command, check depth logic, then conclude
+- In <think>...</think>: analyze the event, check depth logic, then conclude
 </think_first>
 
 <rules>
@@ -789,7 +794,6 @@ for each target_event, output exactly one json with "annotation" first, then "de
 
 def build_messages(instruction: str) -> List[Dict[str, str]]:
     return [
-        {"role": "system", "content": SYSTEM_ROLE},
         {"role": "user", "content": instruction},
     ]
 
@@ -797,18 +801,39 @@ def build_messages(instruction: str) -> List[Dict[str, str]]:
 # ------------------------------
 # Model loading (vLLM)
 # ------------------------------
-def load_model():
-    print(f"Loading model with vLLM: {MODEL_ID}")
+def load_model() -> LLM:
+    """Singleton vLLM loader with tensor parallel support."""
+    global _GLOBAL_LLM
+
+    if _GLOBAL_LLM is not None:
+        return _GLOBAL_LLM
+
+    visible = os.getenv("CUDA_VISIBLE_DEVICES", "(default)")
+    print(
+        "[load_model] Loading model with vLLM\n"
+        f"  model                 : {MODEL_ID}\n"
+        f"  CUDA_VISIBLE_DEVICES  : {visible}\n"
+        f"  tensor_parallel_size  : {TP_SIZE}\n"
+        f"  gpu_memory_utilization: {GPU_UTIL}\n"
+        f"  max_model_len         : {MAX_MODEL_LEN}\n"
+        f"  dtype                 : {DTYPE}",
+        flush=True,
+    )
+
     llm = LLM(
         model=MODEL_ID,
+        tensor_parallel_size=TP_SIZE,        # <--- key line: shard across GPUs
         gpu_memory_utilization=GPU_UTIL,
         max_model_len=MAX_MODEL_LEN,
         trust_remote_code=True,
         dtype=DTYPE,
         seed=42,
     )
-    print("Model loaded successfully")
+
+    print("[load_model] Model loaded successfully", flush=True)
+    _GLOBAL_LLM = llm
     return llm
+
 
 
 # ------------------------------
