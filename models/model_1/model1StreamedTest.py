@@ -10,18 +10,22 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from lxml import etree
+from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
+
+import argparse
 
 import json
 
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/inputs/1727009556_parsed.xml"
-GT_PATH = "../../data/model_1/outputs/1727009556_training.txt"
+XML_PATH = "../../data/model_1/expanded_inputs/1719264285_training.xml"
+GT_PATH = "../../data/model_1/expanded_outputs/1727009556_training.txt"
 
 # Model settings
 MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"  # ONE reasoning model for everything
@@ -37,6 +41,13 @@ K_TARGET = 1
 N_NEIGH = 20
 
 INCLUDE_FEWSHOTS_DEFAULT = True
+
+DEBUG_PROMPT_PREAMBLE = (
+    "IMPORTANT: This prompt is part of a sequential trace. "
+    "The neighbors/currDepth metadata describe everything that happened before this target, "
+    "so use them when deciding depth (use -1 when entering new contexts, +1 when exiting). "
+    "Do not default to depth 0; follow the stack rules exactly."
+)
 
 # ------------------------------
 # Statics
@@ -387,7 +398,11 @@ def make_flush_package(upto_idx: int, K: int = 1, N: int = 20) -> Dict:
     }
 
 
-def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
+def build_instruction(
+    pkg: Dict,
+    use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT,
+    extra_prefix: Optional[str] = None,
+) -> str:
     # Build neighbor XML
     neighbor_items = []
     if pkg.get("neighbor_info"):
@@ -456,6 +471,8 @@ for each target_event, output exactly one json with "annotation" first, then "de
 {targets_xml}
   </target_events>
 </inputs>"""
+    if extra_prefix:
+        prompt = f"{extra_prefix}\n\n{prompt}"
     return prompt
 
 
@@ -488,7 +505,7 @@ def load_model():
 # ------------------------------
 # Generation (vLLM)
 # ------------------------------
-def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[str, str]:
+def generate_with_thinking(llm, messages: List[Dict[str, str]]) -> Tuple[str, str]:
     """
     Generate with thinking model using vLLM.
     Returns: (full_output_with_thinking, extracted_json)
@@ -682,9 +699,54 @@ def run_flushes(evs: List[Event]) -> None:
 # ------------------------------
 # Entry point
 # ------------------------------
+def dump_processed_prompts(evs: List[Event], dump_dir: str, add_generation_prompt: bool = True) -> None:
+    """Write the fully processed prompt (after chat template) for each event."""
+    global events
+    events = evs
+
+    out_dir = Path(dump_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
+
+    for upto in range(len(events)):
+        pkg = make_flush_package(upto_idx=upto, K=K_TARGET, N=N_NEIGH)
+        instr = build_instruction(
+            pkg,
+            use_fewshots=INCLUDE_FEWSHOTS_DEFAULT,
+            extra_prefix=DEBUG_PROMPT_PREAMBLE,
+        )
+        messages = build_messages(instr)
+        prompt = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=add_generation_prompt,
+        )
+
+        out_file = out_dir / f"prompt_{upto:04d}.txt"
+        out_file.write_text(prompt)
+
+    print(f"Wrote {len(events)} prompt files to {out_dir}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Model-1 streamed annotator")
+    parser.add_argument(
+        "--dump-prompts",
+        metavar="DIR",
+        help="Dump processed prompts to DIR and exit without running inference",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    args = parse_args()
     events = load_events(XML_PATH)
     print(f"Loaded {len(events)} usable events")
     if events:
         print(events[0].xml[:300] + "...\n")
-    run_flushes(events)
+
+    if args.dump_prompts:
+        dump_processed_prompts(events, args.dump_prompts)
+    else:
+        run_flushes(events)

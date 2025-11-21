@@ -1,0 +1,8 @@
+Connect via SSH to remote host at 10.0.7.138 and log in successfully.
+0
+Change the demo account password using passwd, confirming a new phrase-based password.
+0
+Log out from the remote SSH session and close the connection.
+1
+Exit the local shell session.
+1

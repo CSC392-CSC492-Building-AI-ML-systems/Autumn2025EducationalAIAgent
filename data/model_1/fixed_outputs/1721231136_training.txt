@@ -1,0 +1,4 @@
+Attach to screen, run FAI build installing packages; build fails with 'No space left on device'; check filesystem usage with df.
+0
+Detach from remote screen session and return to shell.
+0

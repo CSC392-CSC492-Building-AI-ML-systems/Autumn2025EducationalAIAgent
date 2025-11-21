@@ -1,0 +1,8 @@
+Attempts to connect to remote host 172.16.0.17 via SSH but fails password attempt.
+0
+Connects to remote host 172.16.0.17 via SSH and logs in successfully.
+-1
+Log out from remote host and close SSH connection.
+1
+Exit shell session on local host.
+1

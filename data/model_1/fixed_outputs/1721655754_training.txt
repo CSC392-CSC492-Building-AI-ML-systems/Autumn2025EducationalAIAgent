@@ -1,0 +1,20 @@
+Attach to a screen session and monitor a FAI build installing packages and creating the fai_cd.iso image.
+0
+Invoke reverse-i-search in the shell history.
+0
+Secure-copy fai_cd.iso to 172.16.0.1 and wait for the transfer to complete.
+0
+Open top to inspect CPU, memory, and processes on the host.
+-1
+Attempt to reattach to screen session 'faiserver-tearoff-9', but no matching session exists.
+0
+Remove logical volume 'faiserver-tearoff-9' and attempt to delete related VM files (some not found)
+0
+Attempt to manage VM session: kill and start 'faiserver-tearoff-9', then create a VM with ISO autocomplete and boot it via GRUB inside screen; session terminates.
+0
+List available detached screen sessions with sudo and attempt to reattach to session 95; show session list and launch TinTin++ output.
+0
+Change directory to VM preseed path and launch KVM with FAI ISO; attach via screen and issue GRUB serial boot commands to start installation."
+-1
+Exit the screen/TinTin++ session and return to the shell prompt.
+1
