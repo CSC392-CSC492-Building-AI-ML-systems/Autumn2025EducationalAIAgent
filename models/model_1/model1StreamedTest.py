@@ -11,22 +11,20 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Tuple
 
 from lxml import etree
 from transformers import AutoTokenizer
+from vllm import LLM, SamplingParams
 
 import argparse
 
 import json
 
-if TYPE_CHECKING:  # pragma: no cover - typing only
-    from vllm import LLM  # type: ignore
-
 # ------------------------------
 # Config
 # ------------------------------
-XML_PATH = "../../data/model_1/expanded_inputs/1728643499_parsed.xml"
+XML_PATH = "../../data/model_1/expanded_inputs/1719264285_training.xml"
 GT_PATH = "../../data/model_1/expanded_outputs/1727009556_training.txt"
 
 # Model settings
@@ -492,8 +490,6 @@ def load_model():
     print(f"Loading model with vLLM: {MODEL_ID}")
     
     # vLLM initialization parameters
-    from vllm import LLM  # Imported lazily to avoid dependency when dumping prompts
-
     llm = LLM(
         model=MODEL_ID,
         gpu_memory_utilization=0.9,  # Use 90% of GPU memory
@@ -525,8 +521,6 @@ def generate_with_thinking(llm, messages: List[Dict[str, str]]) -> Tuple[str, st
     )
     
     # Define sampling parameters (equivalent to your transformers settings)
-    from vllm import SamplingParams  # Lazy import to keep dump-only mode lightweight
-
     sampling_params = SamplingParams(
         temperature=0.0,  # Greedy decoding (do_sample=False equivalent)
         max_tokens=MAX_NEW_TOKENS,
