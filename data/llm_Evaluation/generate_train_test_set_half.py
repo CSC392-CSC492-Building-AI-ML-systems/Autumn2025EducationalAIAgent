@@ -30,29 +30,14 @@ def main():
     random.seed(RANDOM_SEED)
     selected = random.sample(files, min(n, len(files)))
 
-    # cutoff_index = int((1 - ratio) * len(selected))
-    # train_selected = selected[:cutoff_index] # 70% of files is training set
-    # test_selected = selected[cutoff_index:] # 30% of files is test set
-
-    # test_selected = [Path('../../model0_data_test/1728666941.jsonl')]
-
     ds = load_dataset('json', data_files=[str(f) for f in selected])
 
-    # data = {
-    #     "train": [str(f) for f in train_selected],
-    #     "test": [str(f) for f in test_selected]
-    # }
-
-    # ds = load_dataset("json", data_files=data)
-    # ds.push_to_hub(REPO_ID)
     indices = []
-    print(ds)
-    print(ds['train'])
     outputs = ds['train']['output']
 
     for i in range(len(outputs)):
         if i % 10000 == 0:
-            print("i={}".format(i))
+            print("i={}".format(i)) # Just so you know its running
         answer = outputs[i]
         if answer == 'Answer: NEW':
             indices.append(i)
