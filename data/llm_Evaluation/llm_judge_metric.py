@@ -189,11 +189,23 @@ def score_reasoning_model1(preds, refs):
     for i in range(len(refs)):
         ref, pred = refs[i], preds[i]
         
-        json_str = re.findall('\\{.*\\}', pred, re.DOTALL)[0]
-        json_1 = json.loads(json_str)
+        reasoning_pred = ''
+        temp = re.findall("(.*)assistantfinal", pred, re.DOTALL)
+        if temp != []:
+            reasoning_pred = temp[0]
+        else:
+            temp = re.findall("(.*)\n{", pred, re.DOTALL)
+            if temp != []:
+                reasoning_pred = temp[0]
 
-        reasoning_pred = re.findall(".*\\{", pred, re.DOTALL)[0]
-        reasoning_ref = re.findall(".*\\{", ref, re.DOTALL)[0]
+        temp = re.findall("(.*)assistantfinal", ref, re.DOTALL)
+        reasoning_ref = ''
+        if temp != []:
+            reasoning_ref = temp[0]
+        else:
+            temp = re.findall("(.*)\n{", ref, re.DOTALL)
+            if temp != []:
+                reasoning_ref = temp[0]
 
         prompt_filled = model1_jprompt_reason.format(reasoning = reasoning_pred, ref_reasoning = reasoning_ref)
         batch.append(prompt_filled)
@@ -218,8 +230,25 @@ def score_annotations_model1(preds, refs):
     for i in range(len(refs)):
         ref, pred = refs[i], preds[i]
         
-        json_str_1 = re.findall('\\{.*\\}', ref)[0]
-        json_str_2 = re.findall('\\{.*\\}', pred)[0]
+        json_str_1 = '{}'
+        temp = re.findall('assistantfinal({.*})', ref)
+        if temp != []:
+            json_str_1 = temp[0]
+        else:
+           temp = re.findall('\n({.*})', ref)
+           if temp != []:
+               json_str_1 = temp[0]
+
+        json_str_2 = '{}'
+
+        temp = re.findall('assistantfinal({.*})', pred)
+        if temp != []:
+            json_str_2 = temp[0]
+        else:
+           temp = re.findall('\n({.*})', pred)
+           if temp != []:
+               json_str_2 = temp[0]
+
         json_1 = json.loads(json_str_1)
         json_2 = json.loads(json_str_2)
 

@@ -8,7 +8,7 @@ doc_to_text: "{{prompt}}"
 doc_to_target: "{{thinking}}\n{{output}}"
 
 generation_kwargs:
-  max_gen_toks: 100
+  max_gen_toks: 10000
   until: []
 
 metric_list:
