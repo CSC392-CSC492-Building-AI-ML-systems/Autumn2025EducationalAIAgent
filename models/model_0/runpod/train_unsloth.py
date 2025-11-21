@@ -4,19 +4,19 @@ from datasets import load_dataset
 from trl import SFTTrainer
 import torch
 
-max_seq_length = 2048
+max_seq_length = 4096
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name="deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
     max_seq_length=max_seq_length,
-    load_in_4bit=False,
-    dtype=None,
+    load_in_4bit=True,
+    dtype=torch.bfloat16,
 )
 
 model = FastLanguageModel.get_peft_model(
     model,
-    r=16,  
+    r=32,  
     target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-    lora_alpha=16,
+    lora_alpha=32,
     lora_dropout=0,
     bias="none",
     use_gradient_checkpointing="unsloth",
@@ -25,18 +25,8 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,
 )
 
-dataset = load_dataset("patea4/educational-ai-agent-small", split="train")
+dataset = load_dataset("Profit967/educational-ai-agent-final", split="train")
 
-alpaca_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
-{}
-
-### Input:
-{}
-
-### Response:
-{}"""
 
 EOS_TOKEN = tokenizer.eos_token
 
@@ -47,13 +37,21 @@ def formatting_prompts_func(examples):
     texts = []
     
     for instruction, input_text, output in zip(instructions, inputs, outputs):
-        text = alpaca_prompt.format(
-            instruction,
-            input_text if input_text else "",
-            output
-        ) + EOS_TOKEN
+        user_prompt = f"{instruction}\n\n{input_text}"
+
+        messages = [
+            {"role": "user", "content": user_prompt},
+            {"role": "assistant", "content": output},
+        ]
+        text = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=False,
+        )
+        print(text)
+        text = text + tokenizer.eos_token
         texts.append(text)
-    
+
     return {"text": texts}
 
 dataset = dataset.map(formatting_prompts_func, batched=True)
@@ -66,23 +64,23 @@ trainer = SFTTrainer(
     max_seq_length=max_seq_length,
     data_collator=None,
     dataset_num_proc=2,
-    packing=False,
+    packing=True,
     args=UnslothTrainingArguments(
-        per_device_train_batch_size=3,
-        gradient_accumulation_steps=4,
-        warmup_steps=5,
-        num_train_epochs=1,
-        learning_rate=2e-4,
+        per_device_train_batch_size=4,
+        gradient_accumulation_steps=2,
+        warmup_steps=0,
+        num_train_epochs=3,
+        learning_rate=2e-5,
         fp16=not is_bfloat16_supported(),
         bf16=is_bfloat16_supported(),
-        logging_steps=1,
+        logging_steps=10,
         optim="adamw_8bit",
         weight_decay=0.01,
-        lr_scheduler_type="linear",
+        lr_scheduler_type="cosine",
         seed=3407,
         output_dir="outputs",
         report_to="none",
-        save_steps=1000,
+        save_steps=50,
         save_total_limit=2,
     ),
 )
@@ -92,5 +90,5 @@ trainer_stats = trainer.train()
 model.save_pretrained("lora_model")
 tokenizer.save_pretrained("lora_model")
 
-model.push_to_hub("patea4/deepseek-r1-educational-lora")
-tokenizer.push_to_hub("patea4/deepseek-r1-educational-lora")
+model.push_to_hub("patea4/deepseek-r1-educational-lora-tuned")
+tokenizer.push_to_hub("patea4/deepseek-r1-educational-lora-tuned")
