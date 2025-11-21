@@ -32,6 +32,11 @@ lm_eval --model hf --model_args pretrained=<your_hf_base_llm_model> --tasks educ
 
 This should give you the accuracy and the score. To modify the prompt, feel free to do so in the yaml file to not have to do all the reupload steps for the whole dataset.
 
+You are also able to test the model 1 prompting, and model metrics using lm eval. There is an implemented LLM Judge for both the reasoning and the annotation to score them. The rubrics of these are available in the llm_judge_metrics.py file. Move any required yamls from this repository to the location of the lm_eval package. This can be run using the following command:
+
+```
+lm_eval --model hf --model_args pretrained=<your_hf_base_llm_model> --tasks educational-ai-agent-model1 --device cuda:0 --apply_chat_template --batch_size auto
+```
 
 # NOTE
 If the metrics are ever updated in lm_eval that this needs to be updated, only the metric functions for model0 and model1 need to be moved.
