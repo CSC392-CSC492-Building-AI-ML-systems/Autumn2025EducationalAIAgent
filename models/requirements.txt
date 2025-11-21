@@ -4,3 +4,5 @@ datasets
 transformers
 trl
 lm_eval
+python-dotenv
+openai
