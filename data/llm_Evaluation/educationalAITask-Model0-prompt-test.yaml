@@ -1,0 +1,104 @@
+task: educational-ai-agent-model-0-prompt-test
+dataset_path: <hf_username>/educational-ai-agent-small
+test_split: test 
+
+output_type: generate_until
+
+doc_to_text: "# Goal
+Your goal is to use a set of higher-level-communications (HLCs) and one final possibly incomplete HLC to assign a group to the last event, by determining whether it should be considered to be a part of the current HLC.
+
+# Definitions
+A higher-level communication (HLC) is a series of related events, representing a single idea, concept, or value.
+ * The first HLC starts at the beginning of the dataset you are evaluating.
+ * Events in an HLC are contiguous, no event from any other HLC will occur between the first and last event of a given HLC.
+ * HLCs are complete only when the content of the HLC represents an idea such as one of the examples given; You cannot reason about HLC membership without examining the content.
+ * Each HLC will have a unique `group` assigned.
+
+Examples of HLCs include:
+ * A Bash shell prompt
+ * A Bash shell command
+ * A response to a shell command
+ * A complete keyboard shortcut
+ * A series of backspaces, deletions, navigations, or additions causing a typo
+ * A series of backspaces, deletions, navigations, or additions correcting a typo
+
+An event captures communication in a terminal session.
+ * Events can be one of:
+   * `<user_input>` -- user keyboard presses or cut-and-paste buffer pastes.
+   * `<system_output>` -- responses from software.
+ * All events include a `timestamp` (in seconds) that indicates how much time has passed since the session began.
+ * Events are always provided in non-decreasing timestamp order; ties are in-order in the dataset.
+ * Events that are part of the same HLC will have the same `group`, with the exception of the final HLC, which may need many events added to it to become a complete HLC.
+ * Only the last event will have a `sortme` attribute; there will only be one event with a `sortme` attribute in the dataset.
+
+Each `group` is identified by 0, or a positive integer.
+ * They are used to identify a HLC, are unique, contiguous, and increase by 1 in the dataset each time one HLC stops, and another starts.
+
+The last event is the event immediately prior to the dataset's end:
+ * The last event has a `sortme` attribute set to `True`.
+ * The last event has no group assigned. This implies nothing about its HLC membership.
+ * The last event has the highest `timestamp` in the dataset.
+ * The event before the last event is always a part of the current HLC.
+
+The current HLC is the last HLC in the input.
+ * The current HLC may or may not be complete.
+ * The current HLC always contains the event prior to the last event.
+ * The last event may or may not be a part of the current HLC.
+
+# Instructions:
+You will be given a dataset to be evaluated within a pair of `data` tags which will contain a series of terminal session events. At the end of the dataset, you can find the final HLC, and the last event.
+
+Your task is to determine what group the last event should have, by considering whether in should be a part of the final HLC.
+
+## How to Respond:
+
+Respond with the following two items:
+ * An explanation in English less than or equal to 200 characters in length on why you believe the last event should be considered to be a part of the current HLC, or why it should not.
+   * Do not add code blocks, or other multi-line formatting.
+ * An answer, either:
+   * The integer `group` of the final HLC -- If you mean to imply that the last event should be joined to the final HLC
+   * `NEW` -- If you mean to imply that an HLC should be assigned to the next integer after the current final HLC's `group`, and you mean to imply the last event should be in that new `group`
+
+Use the following template to format your response:
+
+```  
+<!-- 200 or fewer characters in English here -->
+Answer: <!-- Integer or `NEW` here -->
+```
+
+### Example Responses
+```
+The last Event belongs to the current HLC, because it continues the input of the `ssh` command at the Bash prompt.
+Answer: 1
+```
+
+```
+The last Event belongs to a new HLC, because it contains the first characters of the response to the `ssh` command the user entered at the Bash prompt.
+Answer: NEW
+```
+
+# Notes:
+ * Do not rely only on `group`s; use content and interaction flow. Do not try to solve this problem by writing code; work in algorithms written in English.
+ * Most of the time, the dataset will end in an incomplete HLC, even if you were to add the last element to the current HLC; this is normal, as we are processing terminal input as it arrives, not a complete terminal session.
+ * In a terminal session, if the remote software wants the user to see what they are typing, it has to repeat the characters back to the user. Echoed characters are common, and usually are a part of the same HLC.
+
+# Dataset to be evaluated:
+
+{{input}}<｜Assistant｜>"
+
+doc_to_target: "{{output}}"
+
+generation_kwargs:
+  max_gen_toks: 1000
+  until: []
+
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+    regexes_to_ignore:
+      - "(?s)^(.*?)(?=Answer:\\s*(?:NEW|\\d+))"
+      - "^\\s" # Remove Leading whitespace
+  - metric: model0_reasoning # Metric to score reasoning average from 1-5
