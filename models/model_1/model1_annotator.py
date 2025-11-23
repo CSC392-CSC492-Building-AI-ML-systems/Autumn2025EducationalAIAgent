@@ -43,7 +43,7 @@ MAX_NEW_TOKENS = 2500
 SUMMARY_WORD_LIMIT = 50
 
 # Parallelism / memory controls (env overridable)
-TP_SIZE = int(os.getenv("VLLM_TP", "1"))          # e.g. 2 or 3 on your A40 box
+TP_SIZE = int(os.getenv("VLLM_TP", "1"))
 
 
 # Global singleton LLM
@@ -61,28 +61,36 @@ INCLUDE_FEWSHOTS_DEFAULT = True
 # ------------------------------
 FEWSEP = "═══════════════════════════════════════════════════════════════════════════════"
 
+SYSTEM_ROLE = f"""You are an expert terminal session annotator. Your goal is to identify goals/subgoals and generate concise action summaries.
+
+Rules:
+- Summaries must be ≤{SUMMARY_WORD_LIMIT} words, action-oriented (avoid "user", "typed", "enters")
+- Depth represents goal transitions: -1=start subtask, 0=continue, +N=finish N levels
+- Reconstruct full commands from keystroke sequences before interpreting
+- Output valid JSON only
+""".strip()
+
+# ------------------------------
+# Few-shot examples - streamlined
+# ------------------------------
 FEWSHOTS_BLOCK = """
-EXAMPLES (for format/logic only — do not output these)
+EXAMPLES (for reference only)
 
-NOTE: Event XML often shows keystroke-by-keystroke input with echoed characters, not full commands.
+DEPTH LOGIC:
+- depth=-1: STARTING a new subtask (multi-step goal like "create backup", "run tests", "edit config")
+- depth=0: CONTINUING the same subtask
+- depth=+N: FINISHING N subtasks (returning to parent goal)
 
-DEPTH SEMANTICS:
-- depth = -1: STARTING a new subtask (a multi-step goal, often spanning several events)
-- depth = 0:  CONTINUING at the same level (still inside the current subtask)
-- depth > 0:  FINISHING one or more subtasks and returning toward the parent level
-
-A “subtask” is not only an editor or tool; it can also be a logical unit of work
-like “create a backup”, “run and debug tests”, or “set up a data pipeline”.
+NOTE: XML shows keystroke-by-keystroke input. Reconstruct full commands first.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE A — Starting a backup subtask (depth = -1)
-Context: User has been exploring a project folder and decides to create a backup archive.
+EXAMPLE A — Starting a backup subtask (depth=-1)
 
 neighbor_tail:
   - id=0 depth=0  summary="List project directory contents"
   - id=1 depth=0  summary="Inspect size of source and data folders"
-currDepth before target: 0
+currDepth: 0
 
 input xml:
 <event>
@@ -109,30 +117,23 @@ input xml:
   <user_input>s</user_input><system_output>s</system_output>
   <user_input>r</user_input><system_output>r</system_output>
   <user_input>c</user_input><system_output>c</system_output>
-  <user_input>/</user_input><system_output>/</system_output>
-  <user_input>d</user_input><system_output>d</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <system_output>Compressing files into backup.tar...</system_output>
+  <system_output>Creating backup.tar...</system_output>
 </event>
 
-Expected output:
-{"annotation": "Create a compressed backup archive of the source data.", "depth": -1}
+output:
+{"annotation": "Create compressed backup archive of source data", "depth": -1}
 
-Why depth = -1? The user is beginning a multi-step backup subtask that will likely
-include verifying and possibly moving the archive.
+Why: Starting a new multi-step backup workflow (compress, verify, move).
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE B — Continuing the backup subtask (depth = 0)
-Context: After creating the archive, the user verifies the file and checks its size.
+EXAMPLE B — Continuing backup subtask (depth=0)
 
 neighbor_tail:
   - id=0 depth=0  summary="List project directory contents"
   - id=1 depth=0  summary="Inspect size of source and data folders"
-  - id=2 depth=-1 summary="Create a compressed backup archive of the source data"
-currDepth before target: -1
+  - id=2 depth=-1 summary="Create compressed backup archive of source data"
+currDepth: -1
 
 input xml:
 <event>
@@ -153,26 +154,24 @@ input xml:
   <user_input>t</user_input><system_output>t</system_output>
   <user_input>a</user_input><system_output>a</system_output>
   <user_input>r</user_input><system_output>r</system_output>
-  <system_output>-rw-r--r--  1 user  staff  42M backup.tar</system_output>
+  <system_output>-rw-r--r-- 1 user staff 42M backup.tar</system_output>
 </event>
 
-Expected output:
-{"annotation": "Verify the newly created backup archive and inspect its size.", "depth": 0}
+output:
+{"annotation": "Verify backup archive and check file size", "depth": 0}
 
-Why depth = 0? The user is still in the same backup subtask, checking the result
-of the archive they just created.
+Why: Still in backup workflow, checking result of previous step.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE C — Finishing the backup subtask (depth = +1)
-Context: The user moves the backup to a separate folder and marks the operation as done.
+EXAMPLE C — Finishing backup subtask (depth=+1)
 
 neighbor_tail:
   - id=0 depth=0  summary="List project directory contents"
   - id=1 depth=0  summary="Inspect size of source and data folders"
-  - id=2 depth=-1 summary="Create a compressed backup archive of the source data"
-  - id=3 depth=0  summary="Verify the newly created backup archive and inspect its size"
-currDepth before target: -1
+  - id=2 depth=-1 summary="Create compressed backup archive of source data"
+  - id=3 depth=0  summary="Verify backup archive and check file size"
+currDepth: -1
 
 input xml:
 <event>
@@ -197,25 +196,22 @@ input xml:
   <user_input>i</user_input><system_output>i</system_output>
   <user_input>v</user_input><system_output>v</system_output>
   <user_input>e</user_input><system_output>e</system_output>
-  <system_output>backup.tar -> archive/backup.tar</system_output>
-  <system_output>Backup completed.</system_output>
+  <system_output>Moved to archive/</system_output>
 </event>
 
-Expected output:
-{"annotation": "Move the backup archive to an archive folder and finish the backup task.", "depth": 1}
+output:
+{"annotation": "Move backup to archive folder and complete backup task", "depth": 1}
 
-Why depth = +1? The user is wrapping up the backup workflow and returning to the
-previous level of work.
+Why: Backup workflow complete, returning to general work.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE D — Starting a test/debug subtask (depth = -1)
-Context: After normal shell navigation, the user begins a focused testing session.
+EXAMPLE D — Starting test/debug subtask (depth=-1)
 
 neighbor_tail:
-  - id=0 depth=0  summary="Open project root directory"
-  - id=1 depth=0  summary="View current Git branch and status"
-currDepth before target: 0
+  - id=0 depth=0  summary="Navigate to project root"
+  - id=1 depth=0  summary="Check Git branch status"
+currDepth: 0
 
 input xml:
 <event>
@@ -225,98 +221,23 @@ input xml:
   <user_input>e</user_input><system_output>e</system_output>
   <user_input>s</user_input><system_output>s</system_output>
   <user_input>t</user_input><system_output>t</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <system_output>================= test session starts =================</system_output>
+  <system_output>===== test session starts =====</system_output>
 </event>
 
-Expected output:
-{"annotation": "Start a focused test run for the project using pytest.", "depth": -1}
+output:
+{"annotation": "Start pytest test run for project", "depth": -1}
 
-Why depth = -1? Running the test suite begins a dedicated testing/debugging subtask.
+Why: Beginning focused testing/debugging workflow.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE E — Continuing the test/debug subtask (depth = 0)
-Context: The user reruns tests after editing code, still within the same testing workflow.
+EXAMPLE E — Nested editor within environment setup (depth=-1)
 
 neighbor_tail:
-  - id=0 depth=0  summary="Open project root directory"
-  - id=1 depth=0  summary="View current Git branch and status"
-  - id=2 depth=-1 summary="Start a focused test run for the project using pytest"
-  - id=3 depth=0  summary="Inspect failing test output and error trace"
-currDepth before target: -1
-
-input xml:
-<event>
-  <user_input>p</user_input><system_output>p</system_output>
-  <user_input>y</user_input><system_output>y</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>s</user_input><system_output>s</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>-</user_input><system_output>-</system_output>
-  <user_input>k</user_input><system_output>k</system_output>
-  <user_input> </user_input><system_output> </system_output>
-  <user_input>f</user_input><system_output>f</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>i</user_input><system_output>i</system_output>
-  <user_input>l</user_input><system_output>l</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>d</user_input><system_output>d</system_output>
-  <system_output>Re-running failed tests...</system_output>
-</event>
-
-Expected output:
-{"annotation": "Re-run only the previously failing tests to check the fix.", "depth": 0}
-
-Why depth = 0? The user remains in the same testing subtask, iterating on failures.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE F — Finishing the test/debug subtask (depth = +1)
-Context: All tests pass and the user leaves the focused testing workflow.
-
-neighbor_tail:
-  - id=0 depth=0  summary="Open project root directory"
-  - id=1 depth=0  summary="View current Git branch and status"
-  - id=2 depth=-1 summary="Start a focused test run for the project using pytest"
-  - id=3 depth=0  summary="Inspect failing test output and error trace"
-  - id=4 depth=0  summary="Re-run only the previously failing tests to check the fix"
-currDepth before target: -1
-
-input xml:
-<event>
-  <system_output>================= 20 passed in 3.21s =================</system_output>
-  <user_input>c</user_input><system_output>c</system_output>
-  <user_input>l</user_input><system_output>l</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>r</user_input><system_output>r</system_output>
-  <user_input></user_input><system_output>$ </system_output>
-</event>
-
-Expected output:
-{"annotation": "Finish the test run after all tests pass and return to regular shell work.", "depth": 1}
-
-Why depth = +1? The dedicated testing subtask is complete; depth returns to the
-parent level.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE G — Starting a nested editor subtask (depth = -1)
-Context: Inside an environment-setup subtask, the user opens a config file in an editor.
-
-neighbor_tail:
-  - id=0 depth=0  summary="Enter project environment setup directory"
-  - id=1 depth=-1 summary="Create and activate a virtual environment for the project"
-  - id=2 depth=0  summary="Install core dependencies into the virtual environment"
-currDepth before target: -1
+  - id=0 depth=0  summary="Enter project setup directory"
+  - id=1 depth=-1 summary="Create and activate virtual environment"
+  - id=2 depth=0  summary="Install core dependencies"
+currDepth: -1
 
 input xml:
 <event>
@@ -335,94 +256,44 @@ input xml:
   <user_input>a</user_input><system_output>a</system_output>
   <user_input>m</user_input><system_output>m</system_output>
   <user_input>l</user_input><system_output>l</system_output>
-  <system_output>Opening config.yaml in vim...</system_output>
+  <system_output>Opening vim...</system_output>
 </event>
 
-Expected output:
-{"annotation": "Open the project configuration file in vim while setting up the environment.", "depth": -1}
+output:
+{"annotation": "Open config file in vim during environment setup", "depth": -1}
 
-Why depth = -1? Editing the config is a nested subtask inside the broader
-environment-setup workflow.
+Why: Nested subtask within the environment setup workflow.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-EXAMPLE H — Exiting the nested editor subtask but staying in the parent subtask (depth = +1)
-Context: The user saves the config file and returns to the environment-setup work.
+EXAMPLE F — Exit editor, stay in parent task (depth=+1)
 
 neighbor_tail:
-  - id=0 depth=0  summary="Enter project environment setup directory"
-  - id=1 depth=-1 summary="Create and activate a virtual environment for the project"
-  - id=2 depth=0  summary="Install core dependencies into the virtual environment"
-  - id=3 depth=-1 summary="Open the project configuration file in vim while setting up the environment"
-currDepth before target: -2
+  - id=0 depth=0  summary="Enter project setup directory"
+  - id=1 depth=-1 summary="Create and activate virtual environment"
+  - id=2 depth=0  summary="Install core dependencies"
+  - id=3 depth=-1 summary="Open config file in vim during environment setup"
+currDepth: -2
 
 input xml:
 <event>
   <user_input>:</user_input><system_output>:</system_output>
   <user_input>w</user_input><system_output>w</system_output>
   <user_input>q</user_input><system_output>q</system_output>
-  <user_input></user_input>
   <system_output>config.yaml written</system_output>
-  <system_output>(back to shell inside virtual environment)</system_output>
+  <system_output>(venv) $</system_output>
 </event>
 
-Expected output:
-{"annotation": "Save changes in vim and return to the environment-setup shell.", "depth": 1}
+output:
+{"annotation": "Save config changes and exit vim", "depth": 1}
 
-Why depth = +1? The nested editor subtask ends, but the user is still inside the
-higher-level environment-setup subtask.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-EXAMPLE I — Exiting multiple nested subtasks at once (depth = +2)
-Context: After finishing environment setup, the user deactivates the environment
-and returns to regular shell work.
-
-neighbor_tail:
-  - id=0 depth=0  summary="Enter project environment setup directory"
-  - id=1 depth=-1 summary="Create and activate a virtual environment for the project"
-  - id=2 depth=0  summary="Install core dependencies into the virtual environment"
-  - id=3 depth=-1 summary="Open the project configuration file in vim while setting up the environment"
-  - id=4 depth=1  summary="Save changes in vim and return to the environment-setup shell."
-currDepth before target: -1
-
-input xml:
-<event>
-  <user_input>d</user_input><system_output>d</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>c</user_input><system_output>c</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>i</user_input><system_output>i</system_output>
-  <user_input>v</user_input><system_output>v</system_output>
-  <user_input>a</user_input><system_output>a</system_output>
-  <user_input>t</user_input><system_output>t</system_output>
-  <user_input>e</user_input><system_output>e</system_output>
-  <system_output>(virtual environment deactivated)</system_output>
-  <system_output>$ </system_output>
-</event>
-
-Expected output:
-{"annotation": "Deactivate the virtual environment and return to general shell work.", "depth": 1}
-
-Why depth = +1 (and not +2)? Only the environment-setup subtask is being closed
-here; the editor was already exited in the previous event. If the user had left
-both a nested tool and its parent subtask in a single step, depth could be 2.
-Here, only one level is closed.
+Why: Editor task done, back to environment setup level.
 """.strip()
 
-
-# Optional: pre-split few-shots for ablation runner
+# Pre-split for ablation if needed
 _raw_parts = FEWSHOTS_BLOCK.split(FEWSEP)
 FEWSHOTS_PREAMBLE = _raw_parts[0].strip()
-FEWSHOTS_EXAMPLES: List[str] = [p.strip() for p in _raw_parts[1:] if p.strip()]
-
-SYSTEM_ROLE = f"""You are an expert terminal session annotator. Your goal is to generate concise summaries of user actions.
-Rules:
-- summaries must not exceed {SUMMARY_WORD_LIMIT} words
-- depth changes: -1=enter subtask, 0=continue same, +1=exit one level
-- output must be valid JSON
-""".strip()
+FEWSHOTS_EXAMPLES = [p.strip() for p in _raw_parts[1:] if p.strip()]
 
 # ------------------------------
 # Event model
@@ -748,40 +619,49 @@ def _targets_to_xml(pkg: Dict) -> str:
     )
 
 
-def build_instruction(pkg: Dict, use_fewshots: bool = INCLUDE_FEWSHOTS_DEFAULT) -> str:
-    neighbors_xml = _neighbors_to_xml(pkg)
-    targets_xml = _targets_to_xml(pkg)
-
-    examples_xml = (
-        f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>" if use_fewshots else ""
-    )
-
-    prompt = f"""<role>you are an event annotator for a linux terminal session.</role>
+def build_instruction(pkg: dict, use_fewshots: bool = True) -> str:
+    """Build the prompt with minimal but effective structure."""
+    
+    # Format neighbors
+    neighbors_xml = _format_neighbors(pkg)
+    
+    # Format targets
+    targets_xml = _format_targets(pkg)
+    
+    # Include examples if requested
+    examples_section = f"\n<examples>\n{FEWSHOTS_BLOCK}\n</examples>\n" if use_fewshots else ""
+    
+    return f"""<task>
+Annotate terminal events by identifying goals/subgoals and depth transitions.
+</task>
 
 <output_format>
-  {{"annotation": "<one sentence (≤ {SUMMARY_WORD_LIMIT} words)>", "depth": <An integer greater than or equal to -1>}}
+{{"annotation": "<action summary ≤{SUMMARY_WORD_LIMIT} words>", "depth": <integer ≥ -1>}}
 </output_format>
 
-<think_first>
-- Keep reasoning CONCISE and FOCUSED
-- In <think>...</think>: analyze the event, check depth logic, then conclude
-</think_first>
+<depth_logic>
+Ask: Is this event...
+1. STARTING a new subtask (backup, testing, editing)? → depth = -1
+2. CONTINUING the current subtask? → depth = 0  
+3. FINISHING one or more subtasks? → depth = +N (count levels)
 
-<rules>
-- the user's keystrokes appear separately; combine them to form the full command before interpreting it
-- depth is an integer (≥ -1); -1 for subevent (new task started), 0 for same level (still doing the same task), >0 to exit levels (ended one or multiple tasks)
-- maintain stack invariant: currDepth ≤ 0; if depth == -1 then currDepth -= 1; if depth > 0 then currDepth += depth
-- write action-oriented summaries; avoid "user", "they", "typed", "inputs", "enters a command"
-</rules>
+Stack rule: currDepth + depth_change must stay ≤ 0
+</depth_logic>
 
-{examples_xml}
-
+<summary_rules>
+- Action-oriented: "Compile program" not "User runs make"
+- Combine keystrokes into full commands before interpreting
+- Include purpose when clear from context
+- Avoid: "user", "typed", "inputs", "enters"
+</summary_rules>
+{examples_section}
 <instruction>
-for each target_event, output exactly one json with "annotation" first, then "depth".
+For each target event, output one JSON object.
+Think briefly, then output your annotation.
 </instruction>
 
 <inputs>
-  <curr_depth_max>{pkg.get("currDepth")}</curr_depth_max>
+  <curr_depth>{pkg.get("currDepth", 0)}</curr_depth>
   <neighbors>
 {neighbors_xml}
   </neighbors>
@@ -789,8 +669,41 @@ for each target_event, output exactly one json with "annotation" first, then "de
 {targets_xml}
   </target_events>
 </inputs>"""
-    return prompt
 
+
+def _format_neighbors(pkg: dict) -> str:
+    """Format neighbor information as XML."""
+    import re
+    
+    neighbor_items = []
+    if pkg.get("neighbor_info"):
+        for line in pkg["neighbor_info"]:
+            match = re.match(r"- id=(\d+) depth=(-?\d+)\s+summary=(.+)", line)
+            if match:
+                nid, ndepth, nsummary = match.groups()
+                neighbor_items.append(
+                    {"id": nid, "depth": ndepth, "summary": nsummary}
+                )
+    
+    if not neighbor_items:
+        return "    <neighbor>(none)</neighbor>"
+    
+    return "\n".join(
+        f'    <neighbor id="{n["id"]}" depth="{n["depth"]}">{n["summary"]}</neighbor>'
+        for n in neighbor_items
+    )
+
+
+def _format_targets(pkg: dict) -> str:
+    """Format target events as XML."""
+    target_items = [
+        {"id": idx, "xml": xml_str}
+        for idx, xml_str in zip(pkg["target_idxs"], pkg["target_events"])
+    ]
+    return "\n".join(
+        f'  <target id="{t["id"]}">\n{t["xml"]}\n  </target>' 
+        for t in target_items
+    )
 
 def build_messages(instruction: str) -> List[Dict[str, str]]:
     return [
