@@ -66,18 +66,23 @@ def compute_curr_depth_from_history(history: List[Dict]) -> int:
     return curr
 
 
-def build_model1_inputs_block(group_id: int, group_xml_inner: str, history: List[Dict]) -> str:
+def build_model1_inputs_block(
+    group_id: int, group_xml_inner: str, history: List[Dict]
+) -> str:
     """Build the <inputs> block for Model 1 - matches model1test.py exactly"""
     # Get last TAIL_K neighbors
     neighbors_tail = history[-TAIL_K:] if len(history) > 0 else []
 
     # Build neighbors XML
-    neighbors_xml = "\n".join(
-        [
-            f'        <neighbor id="{t["gid"]}" depth="{t.get("depth", 0)}">{t.get("annotation", "")}</neighbor>'
-            for t in neighbors_tail
-        ]
-    ) or "        <neighbor>(none)</neighbor>"
+    neighbors_xml = (
+        "\n".join(
+            [
+                f'        <neighbor id="{t["gid"]}" depth="{t.get("depth", 0)}">{t.get("annotation", "")}</neighbor>'
+                for t in neighbors_tail
+            ]
+        )
+        or "        <neighbor>(none)</neighbor>"
+    )
 
     # Build targets XML
     targets_xml = f'        <target id="{group_id}">\n          <event>\n{group_xml_inner}\n          </event>\n        </target>'
@@ -109,7 +114,7 @@ def send_vllm_request(url, headers, payload, max_retries=3):
         except requests.exceptions.Timeout:
             print(f"Request timed out. Attempt {attempt + 1}/{max_retries}")
             if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)  # Exponential backoff
+                time.sleep(2**attempt)  # Exponential backoff
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 429:
                 print("Rate limit exceeded. Waiting before retry...")
@@ -117,13 +122,13 @@ def send_vllm_request(url, headers, payload, max_retries=3):
             elif e.response.status_code >= 500:
                 print(f"Server error: {e.response.status_code}")
                 if attempt < max_retries - 1:
-                    time.sleep(2 ** attempt)
+                    time.sleep(2**attempt)
             else:
                 raise
         except requests.exceptions.RequestException as e:
             print(f"Request failed: {e}")
             if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
 
     raise Exception("Max retries exceeded")
 
@@ -145,23 +150,21 @@ class Model1:
         self.status_url_base = f"https://api.runpod.ai/v2/{self.endpoint_id}/status"
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         print(f"Model 1 configured for endpoint: {self.endpoint_id}")
 
     def submit_job(self, messages: List[Dict[str, str]]) -> str:
         """Submit async job and return job ID"""
-        payload = {
-            "input": {
-                "messages": messages
-            }
-        }
+        payload = {"input": {"messages": messages}}
 
         print(f"Submitting Model 1 job with {len(messages)} messages")
 
         try:
-            result = send_vllm_request(self.run_url, self.headers, payload, max_retries=3)
+            result = send_vllm_request(
+                self.run_url, self.headers, payload, max_retries=3
+            )
             job_id = result.get("id")
             if not job_id:
                 raise Exception(f"No job ID in response: {result}")
@@ -180,9 +183,7 @@ class Model1:
         for attempt in range(max_attempts):
             try:
                 response = requests.get(
-                    f"{self.status_url_base}/{job_id}",
-                    headers=self.headers,
-                    timeout=10
+                    f"{self.status_url_base}/{job_id}", headers=self.headers, timeout=10
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -214,37 +215,35 @@ class Model1:
 class Model0:
     def __init__(self):
         print("Initializing Model 0 vLLM client...")
-        self.tokenizer = AutoTokenizer.from_pretrained("deepseek-ai/DeepSeek-R1-Distill-Llama-8B")
-
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
+        )
 
         self.base_url = os.environ.get("MODEL0_BASE_URL")
         self.api_key = os.environ.get("MODEL0_API_KEY")
-        
+
         self.url = f"{self.base_url}/v1/completions"
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
 
         print(f"Model 0 configured for endpoint: {self.base_url}")
 
     def generate(self, prompt: str) -> str:
-        
         messages = [{"role": "user", "content": prompt}]
         formatted_prompt = self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True
         )
         formatted_prompt = formatted_prompt.replace("<think>", "")
 
         print(formatted_prompt)
-        
+
         payload = {
             "model": "educational",
             "prompt": formatted_prompt,
             "temperature": 0.5,
-            "max_tokens": 512
+            "max_tokens": 512,
         }
 
         print(f"Calling Model 0 API with prompt length: {len(prompt)}")
@@ -254,7 +253,7 @@ class Model0:
 
             if "choices" in result and len(result["choices"]) > 0:
                 generated_text = result["choices"][0]["text"]
-                generated_text = generated_text.replace('</think>', '').strip()
+                generated_text = generated_text.replace("</think>", "").strip()
                 print(f"Model 0 response received: {len(generated_text)} chars")
                 return generated_text.strip()
             else:
@@ -269,7 +268,7 @@ class Model0:
 
 
 def extract_clean_event(event_with_attrs: str) -> str:
-    return re.sub(r'\s+(group|sortme)="[^"]*"', '', event_with_attrs)
+    return re.sub(r'\s+(group|sortme)="[^"]*"', "", event_with_attrs)
 
 
 def parse_model0_response(text: str) -> str:
@@ -320,23 +319,27 @@ async def process_model1(group_id: int, events: List[str]):
         ]
 
         # Send to frontend showing input
-        await broadcast_message({
-            "type": "model1_input",
-            "data": {
-                "group_id": group_id,
-                "neighbors": neighbor_display,
-                "events": events,
-                "current_depth": curr_depth_val
+        await broadcast_message(
+            {
+                "type": "model1_input",
+                "data": {
+                    "group_id": group_id,
+                    "neighbors": neighbor_display,
+                    "events": events,
+                    "current_depth": curr_depth_val,
+                },
             }
-        })
+        )
 
         # Build the <inputs> block using exact same logic as model1test.py
-        user_content = build_model1_inputs_block(group_id, group_xml_inner, model1_history)
+        user_content = build_model1_inputs_block(
+            group_id, group_xml_inner, model1_history
+        )
 
         # Build messages with system prompt from file
         messages = [
             {"role": "system", "content": model1_system_prompt},
-            {"role": "user", "content": user_content}
+            {"role": "user", "content": user_content},
         ]
 
         # Submit job to RunPod
@@ -354,12 +357,16 @@ async def process_model1(group_id: int, events: List[str]):
         if "error" in json_output and json_output.get("error") == "no_valid_json":
             # Try to extract JSON from raw text
             raw_text = json_output.get("raw", "")
-            print(f"JSON parsing failed, attempting to extract from raw text: {raw_text[:200]}...")
+            print(
+                f"JSON parsing failed, attempting to extract from raw text: {raw_text[:200]}..."
+            )
 
             import json as json_module
 
             # First try to find markdown code blocks with JSON using regex
-            markdown_match = re.search(r'```(?:json)?\s*\n(.*?)\n```', raw_text, re.DOTALL)
+            markdown_match = re.search(
+                r"```(?:json)?\s*\n(.*?)\n```", raw_text, re.DOTALL
+            )
             if markdown_match:
                 print("Found JSON in markdown code block")
                 json_text = markdown_match.group(1).strip()
@@ -368,64 +375,70 @@ async def process_model1(group_id: int, events: List[str]):
                     print(f"Successfully extracted JSON from markdown: {json_output}")
                 except Exception as e:
                     print(f"Failed to parse markdown JSON: {e}")
-                    json_output = {"annotation": "Failed to parse model response", "depth": 0}
+                    json_output = {
+                        "annotation": "Failed to parse model response",
+                        "depth": 0,
+                    }
             else:
                 # Fallback: Remove markdown code blocks if text starts with them
                 cleaned = raw_text.strip()
                 if cleaned.startswith("```"):
                     # Remove ```json and trailing ```
-                    lines = cleaned.split('\n')
+                    lines = cleaned.split("\n")
                     if lines[0].startswith("```"):
                         lines = lines[1:]
                     if lines and lines[-1].strip() == "```":
                         lines = lines[:-1]
-                    cleaned = '\n'.join(lines)
+                    cleaned = "\n".join(lines)
 
                 try:
                     json_output = json_module.loads(cleaned.strip())
                     print(f"Successfully extracted JSON: {json_output}")
                 except Exception as e:
                     print(f"Failed to extract JSON: {e}")
-                    json_output = {"annotation": "Failed to parse model response", "depth": 0}
+                    json_output = {
+                        "annotation": "Failed to parse model response",
+                        "depth": 0,
+                    }
 
         annotation = json_output.get("annotation", "No summary generated")
         depth = json_output.get("depth", 0)
 
         # Update rolling history (matches model1test.py)
-        model1_history.append({
-            "gid": group_id,
-            "annotation": annotation,
-            "depth": depth
-        })
+        model1_history.append(
+            {"gid": group_id, "annotation": annotation, "depth": depth}
+        )
 
         # Send result to frontend
-        await broadcast_message({
-            "type": "model1_summary",
-            "data": {
-                "group_id": group_id,
-                "summary": annotation,
-                "depth": depth,
-                "thinking": thinking,
-                "json": json_output
+        await broadcast_message(
+            {
+                "type": "model1_summary",
+                "data": {
+                    "group_id": group_id,
+                    "summary": annotation,
+                    "depth": depth,
+                    "thinking": thinking,
+                    "json": json_output,
+                },
             }
-        })
+        )
 
     except Exception as e:
         error_msg = f"Error in Model 1 processing: {str(e)}"
         print(error_msg)
-        await broadcast_message({
-            "type": "model1_error",
-            "data": {
-                "group_id": group_id,
-                "error": error_msg
-            }
-        })
+        await broadcast_message(
+            {"type": "model1_error", "data": {"group_id": group_id, "error": error_msg}}
+        )
 
 
 async def process_model0_pipeline(dataset, system_prompt: str, model1_sys_prompt: str):
     """Process Model 0 pipeline - continues while Model 1 runs in background"""
     global current_group_events, current_group_id, model0_instance, model1_instance
-    global processing_complete, processing_in_progress, model1_history, model1_system_prompt
+    global \
+        processing_complete, \
+        processing_in_progress, \
+        model1_history, \
+        model1_system_prompt
 
     if processing_in_progress or processing_complete:
         return
@@ -442,9 +455,9 @@ async def process_model0_pipeline(dataset, system_prompt: str, model1_sys_prompt
     current_group_events = []
     current_group_id = 0
 
-    for idx, example in enumerate(dataset['train']):
-        input_xml = example['input']
-        expected_output = example['output']
+    for idx, example in enumerate(dataset["train"]):
+        input_xml = example["input"]
+        expected_output = example["output"]
 
         # Extract the new event
         sortme_match = sortme_pattern.search(input_xml)
@@ -454,64 +467,62 @@ async def process_model0_pipeline(dataset, system_prompt: str, model1_sys_prompt
         sortme_event = sortme_match.group(0)
         clean_event = extract_clean_event(sortme_event)
 
-        await broadcast_message({
-            "type": "raw_event",
-            "data": clean_event
-        })
+        await broadcast_message({"type": "raw_event", "data": clean_event})
 
-        await broadcast_message({
-            "type": "model0_input",
-            "data": {
-                "input_xml": input_xml,
-                "current_event": clean_event,
-                "group_id": current_group_id
+        await broadcast_message(
+            {
+                "type": "model0_input",
+                "data": {
+                    "input_xml": input_xml,
+                    "current_event": clean_event,
+                    "group_id": current_group_id,
+                },
             }
-        })
+        )
 
         # Generate Model 0 response
         prompt = f"{system_prompt}\n\n{input_xml}"
         response = model0_instance.generate(prompt)
 
         # Send Model 0 full response for visualization
-        await broadcast_message({
-            "type": "model0_thinking",
-            "data": {
-                "full_response": response
-            }
-        })
+        await broadcast_message(
+            {"type": "model0_thinking", "data": {"full_response": response}}
+        )
 
         prediction_type = parse_model0_response(expected_output)
 
         # Send Model 0 answer for visualization
-        await broadcast_message({
-            "type": "model0_answer",
-            "data": {
-                "answer": prediction_type,
-                "group_id": current_group_id
+        await broadcast_message(
+            {
+                "type": "model0_answer",
+                "data": {"answer": prediction_type, "group_id": current_group_id},
             }
-        })
+        )
 
         if prediction_type == "NEW":
             if current_group_events:
-                asyncio.create_task(process_model1(current_group_id, current_group_events.copy()))
+                asyncio.create_task(
+                    process_model1(current_group_id, current_group_events.copy())
+                )
 
             current_group_id += 1
             current_group_events = [clean_event]
         else:
             current_group_events.append(clean_event)
 
-        await broadcast_message({
-            "type": "current_group_update",
-            "data": {
-                "group_id": current_group_id,
-                "events": current_group_events
+        await broadcast_message(
+            {
+                "type": "current_group_update",
+                "data": {"group_id": current_group_id, "events": current_group_events},
             }
-        })
+        )
 
         await asyncio.sleep(0.3)
 
     if current_group_events:
-        asyncio.create_task(process_model1(current_group_id, current_group_events.copy()))
+        asyncio.create_task(
+            process_model1(current_group_id, current_group_events.copy())
+        )
 
     await broadcast_message({"type": "complete"})
     processing_complete = True
@@ -521,7 +532,11 @@ async def process_model0_pipeline(dataset, system_prompt: str, model1_sys_prompt
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket endpoint for streaming updates"""
-    global connected_clients, message_history, processing_complete, processing_in_progress
+    global \
+        connected_clients, \
+        message_history, \
+        processing_complete, \
+        processing_in_progress
 
     await websocket.accept()
     connected_clients.append(websocket)
@@ -535,21 +550,28 @@ async def websocket_endpoint(websocket: WebSocket):
 
         if not processing_complete and not processing_in_progress:
             dataset = load_dataset(
-                "patea4/educational-ai-agent-small",
-                data_files="1721655754.jsonl"
+                "patea4/educational-ai-agent-small", data_files="1721655754.jsonl"
             )
 
             # Load Model 0 system prompt
-            model0_prompt_file = os.environ.get("MODEL0_SYSTEM_PROMPT", "model_0/system_prompt.txt")
+            model0_prompt_file = os.environ.get(
+                "MODEL0_SYSTEM_PROMPT", "model_0/system_prompt.txt"
+            )
             model0_prompt_path = Path(__file__).parent / model0_prompt_file
             model0_system_prompt = model0_prompt_path.read_text()
 
             # Load Model 1 system prompt (can be overridden via env var)
-            model1_prompt_file = os.environ.get("MODEL1_SYSTEM_PROMPT", "model_1/model1_system_prompt.txt")
+            model1_prompt_file = os.environ.get(
+                "MODEL1_SYSTEM_PROMPT", "model_1/model1_system_prompt.txt"
+            )
             model1_prompt_path = Path(__file__).parent / model1_prompt_file
             model1_system_prompt = model1_prompt_path.read_text()
 
-            asyncio.create_task(process_model0_pipeline(dataset, model0_system_prompt, model1_system_prompt))
+            asyncio.create_task(
+                process_model0_pipeline(
+                    dataset, model0_system_prompt, model1_system_prompt
+                )
+            )
 
         while True:
             try:
@@ -562,10 +584,7 @@ async def websocket_endpoint(websocket: WebSocket):
     except Exception as e:
         print(f"Error: {e}")
         try:
-            await websocket.send_json({
-                "type": "error",
-                "data": str(e)
-            })
+            await websocket.send_json({"type": "error", "data": str(e)})
         except:
             pass
     finally:
@@ -584,16 +603,14 @@ if __name__ == "__main__":
     import argparse
     import uvicorn
 
-    parser = argparse.ArgumentParser(description="Demo server for Model 0 and Model 1 pipelines")
-    parser.add_argument(
-        "--system_prompt_model1",
-        type=str,
-        help="Path to Model 1 system prompt file "
+    parser = argparse.ArgumentParser(
+        description="Demo server for Model 0 and Model 1 pipelines"
     )
     parser.add_argument(
-        "--system_prompt_model0",
-        type=str,
-        help="Path to Model 0 system prompt file "
+        "--system_prompt_model1", type=str, help="Path to Model 1 system prompt file "
+    )
+    parser.add_argument(
+        "--system_prompt_model0", type=str, help="Path to Model 0 system prompt file "
     )
     args = parser.parse_args()
 
