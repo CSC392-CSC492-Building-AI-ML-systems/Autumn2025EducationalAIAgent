@@ -1,30 +1,35 @@
 base_model: deepseek-ai/DeepSeek-R1-Distill-Llama-8B
+model_type: LlamaForCausalLM
+tokenizer_type: AutoTokenizer
+trust_remote_code: true
 
-plugins:
-  - axolotl.integrations.cut_cross_entropy.CutCrossEntropyPlugin
-strict: false
-
-hf_use_auth_token: true
+# Dataset
 datasets:
-  - path: patea4/educational-ai-agent
+  - path: patea4/educational-ai-agent-small
     type: alpaca
     split: train
+val_set_size: 0.05
+output_dir: ./outputs/deepseek-r1-finetuned
+dataset_prepared_path: ./prepared_data
+dataset_prepared_on_disk: true
 
-
-val_set_size: 0.0
-output_dir: ./outputs/out
-dataset_prepared_path: last_run_prepared
-
-sequence_len: 8192
+# Sequence and packing
+sequence_len: 2048
 sample_packing: true
-eval_sample_packing: true
+pad_to_sequence_len: true
 
-load_in_4bit: false # qlora
-load_in_8bit: true # disable for full weights
+# QLoRA configuration (4-bit quantization)
+load_in_4bit: true  # Enable QLoRA
+load_in_8bit: false
+bnb_4bit_compute_dtype: bfloat16  # Use bf16 for computation
+bnb_4bit_quant_type: nf4  # NormalFloat4 quantization
+bnb_4bit_use_double_quant: true  # Nested quantization for extra memory savings
+
+# LoRA configuration
 adapter: lora
-lora_r: 16
-lora_alpha: 16
-lora_dropout: 0.0
+lora_r: 64
+lora_alpha: 128
+lora_dropout: 0.05
 lora_target_modules:
   - q_proj
   - k_proj
@@ -33,32 +38,41 @@ lora_target_modules:
   - gate_proj
   - up_proj
   - down_proj
-bias: "none"
+lora_fan_in_fan_out: false
 
-
-gradient_accumulation_steps: 8
-micro_batch_size: 1
-num_epochs: 1
-optimizer: adamw_torch_fused
-#optimizer: adamw_bnb_8bit
-lr_scheduler: linear
-learning_rate: 2.0e-4
-
-bf16: true
-tf32: true
-
+# Training parameters (can use larger batch size with QLoRA)
+micro_batch_size: 8  # Doubled from 4 thanks to QLoRA
+gradient_accumulation_steps: 2  # Effective batch size = 16
+num_epochs: 3
 gradient_checkpointing: true
-resume_from_checkpoint:
-logging_steps: 10
-flash_attention: true
+gradient_checkpointing_kwargs:
+  use_reentrant: false
 
-warmup_steps: 50
-evals_per_epoch: 0
-saves_per_epoch: 0
+# Optimizer
+optimizer: paged_adamw_8bit  # Memory-efficient optimizer for QLoRA
+lr_scheduler: cosine
+learning_rate: 2.0e-4
 weight_decay: 0.01
-special_tokens:
+warmup_ratio: 0.05
+max_grad_norm: 1.0
 
+# Precision
+bf16: auto
+tf32: true
+fp16: false
+
+# Flash Attention
+flash_attention: true
+flash_attn_cross_entropy: true
+flash_attn_rms_norm: true
+
+# Logging and saving
+logging_steps: 10
+save_strategy: steps
+save_steps: 500
+eval_steps: 500
+save_total_limit: 3
+
+# Training settings
 train_on_inputs: false
-train_on_eos: turn
-
-# save_first_step: true  # uncomment to quickly verify checkpoint saving
+group_by_length: false
