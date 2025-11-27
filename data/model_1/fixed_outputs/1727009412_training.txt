@@ -1,0 +1,10 @@
+Connect to remote host 10.0.7.138 via SSH.
+0
+Authenticate to 10.0.7.138 with the demo account password.
+0
+Install asciinema using sudo apt and complete post-install system and process scan.
+0
+Log out from remote host and return to local shell.
+1
+Exit the local shell session.
+1
