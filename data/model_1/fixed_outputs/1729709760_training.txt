@@ -1,0 +1,6 @@
+Attempts SSH connection to host 172.16.0.17 but the connection fails due to no route to host.
+0
+Lists active tear-off servers and their statuses, then retrieves their corresponding IP addresses.
+0
+Exit current shell session.
+1

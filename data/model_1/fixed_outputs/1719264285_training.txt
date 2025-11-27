@@ -1,0 +1,20 @@
+Attach to existing screen session (screen -dr), switching to full-screen and showing an installed packages listing.
+0
+Switch between GNU screen windows and run apt update in window 1, which fails due to unresolved host and 404s
+0
+Exit pager/view and return to the shell prompt.
+1
+Remove GTK accessibility packages with apt: uninstall libgail-common, then autoremove libgail18 and process libc-bin triggers.
+0
+Attempt to run sudo debootstrap but abort immediately due to unresolved host configuration.
+0
+Pipe full package list to less for review after considering cleanup commands (deborphan, autoremove, remove libgail-common)
+0
+Review installed packages listing (dpkg/apt output)
+0
+Quit current viewer/pager and return to shell.
+1
+Remove liblink-grammar4 and liblink-grammar4-dev with apt using sudo.
+0
+Pipe dpkg package list into less to page through installed packages.
+-1

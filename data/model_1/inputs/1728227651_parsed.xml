@@ -1,6 +1,9 @@
+
+</event>
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="319" height="92" timestamp="1728227651">
-<event depth="0">
+<event >
   <system_output timestamp="0.009109">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.760023">l</user_input>
   <system_output timestamp="0.760619">l</system_output>
@@ -54,11 +57,9 @@
   <system_output timestamp="7.832635">Backscatter-CA3100E-3.sch   BD135-1.sym                 ca3100-3.sym                faikvm.com/                 isos/                       Media/                      primecoin/                  show_obsolete_preseeds.sh~  unknown_encrypted_android/  wordpress_backup.sh         wordpress_restore.sh~
 Backscatter-CA3100E-4.sch   ca3100-1.sym                cold_storage/               HacDC/                      jussie/                     mirror/                     radioshack_box/             stereoscan.zip              usr_share/                  wordpress_backup.sh~        
 demo@stephost:~$ ls -la /disk1/</system_output>
-<annotation>
-User lists the contents of the '/disk1/' directory in long format, including hidden files.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <user_input timestamp="19.231808"></user_input>
   <system_output timestamp="19.232214">[K</system_output>
   <user_input timestamp="19.920285"></user_input>
@@ -93,9 +94,7 @@ User lists the contents of the '/disk1/' directory in long format, including hid
 </system_output>
   <system_output timestamp="21.538336">exit
 </system_output>
-<annotation>
-User exits the current terminal session after clearing the input line.
-</annotation>
+
 </event>
 <event >
 </recording>

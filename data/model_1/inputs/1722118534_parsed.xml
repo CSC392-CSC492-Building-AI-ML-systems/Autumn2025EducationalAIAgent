@@ -1,6 +1,9 @@
+
+</event>
+<event >
 <?xml version="1.0" ?>
 <recording version="2" width="239" height="196" timestamp="1722118534">
-<event depth="1">
+<event >
   <system_output timestamp="0.006251">[?2004hdemo@stephost:~$ </system_output>
   <user_input timestamp="0.801466"/>
   <system_output timestamp="0.801806">
@@ -68,11 +71,9 @@ demo@faiserver:/home/fai/config$ sudo cat /root/.ssh/id_ed25519.pub
 sudo: unable to resolve host faiserver: Name or service not known
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM0w6go6EkUZXUY9e1xabbVDHooXZEhcLPNFAjPEd1BZ root@faiserver
 demo@faiserver:/home/fai/config$[?2004h </system_output>
-<annotation>
-User utilized screen -dr.
-</annotation>
+
 </event>
-<event depth="1">
+<event >
   <user_input timestamp="36.846178">g</user_input>
   <system_output timestamp="36.847508">g</system_output>
   <user_input timestamp="36.966177">i</user_input>
@@ -1205,11 +1206,9 @@ demo@faiserver:/home/fai/config$ </system_output>
  create mode 100755 class/60-HACK-FIX_INSTALL_PACKAGES
  rename hooks/{savelog.LAST.source =&gt; savelog.LAST} (100%)
 </system_output>
-<annotation>
-User commits a Initial FAI configurations, including a "temporary hack" for package installation.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <system_output timestamp="4998.790212">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5431.642826">l</user_input>
   <system_output timestamp="5431.644233">l</system_output>
@@ -1459,11 +1458,9 @@ dr-xr-xr-x 8 root root 4096 Jul 28 00:38 [1m[34m..[0m
 -rwxr-xr-x 1 root root 4262 Sep 13  2010 [1m[32mpre-rebase[0m
 -rwxr-xr-x 1 root root 2910 Sep 13  2010 [1m[32mupdate[0m
 </system_output>
-<annotation>
-User investigates using ls and chmod to resolve non-executable Git hook permissions and confirms it works.
-</annotation>
+
 </event>
-<event depth="-1">
+<event >
   <system_output timestamp="5541.198533">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5551.695436">OA</user_input>
   <system_output timestamp="5551.696739">ls -la .git/hooks/</system_output>
@@ -1728,11 +1725,9 @@ demo@faiserver:/home/fai/config$ sudo git add files/etc/modprobe.d/blacklist-vmw
   <system_output timestamp="5593.737942"> 1 file changed, 2 insertions(+)
  create mode 100644 files/etc/modprobe.d/blacklist-vmwgfx.conf/QEMUCLIENT
 </system_output>
-<annotation>
-User disables VMware graphics by commit.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <system_output timestamp="5593.739647">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5594.665557">OA</user_input>
   <system_output timestamp="5594.680821">sudo git commit -m 'disable vmware graphics adapter loading.'</system_output>
@@ -2208,11 +2203,9 @@ demo@faiserver:/home/fai/config$ </system_output>
   <system_output timestamp="5677.272648"> 1 file changed, 11 insertions(+)
  create mode 100644 files/etc/systemd/system/implicitcad_website.service/DEFAULT
 </system_output>
-<annotation>
-User committed a systemd service file (implicitcad_website.service) to launch the ImplicitCAD website shell script on boot, making it a persistent service after exiting.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <system_output timestamp="5677.274378">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5678.344095">g</user_input>
   <system_output timestamp="5678.362198">g</system_output>
@@ -2647,17 +2640,13 @@ demo@faiserver:/home/fai/config$ sudo git status[K</system_output>
   <system_output timestamp="5787.234606"> 1 file changed, 4 insertions(+)
  create mode 100755 scripts/QEMUCLIENT/30-copy_blacklist.sh
 </system_output>
-<annotation>
-User adds and commits a new FAI package configuration file (package_config/HASUNTRUSTEDDATA) that defines a class for machines handling untrusted data, ensuring the installation of aptitude and clamav for virus scanning.
-</annotation>
+
 </event>
-<event depth="1">
+<event >
   <system_output timestamp="5787.235886">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-User continues to add comprehensive fai configuration updates via git but checks git diff before each git add/rm.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <user_input timestamp="5893.660533">c</user_input>
   <system_output timestamp="5893.661851">c</system_output>
   <user_input timestamp="5893.795891">a</user_input>
@@ -2962,11 +2951,9 @@ demo@faiserver:/home/fai/config$ </system_output>
  1 file changed, 3 insertions(+)
  create mode 100644 package_config/HASUNTRUSTEDDATA
 </system_output>
-<annotation>
-User added and committed a change to the echo command to indicate untrusted data.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <system_output timestamp="5942.837035">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="5944.35512">g</user_input>
   <system_output timestamp="5944.35654">g</system_output>
@@ -3636,11 +3623,9 @@ Other diff options
 </system_output>
   <system_output timestamp="6667.271341"> 1 file changed, 1 insertion(+), 1 deletion(-)
 </system_output>
-<annotation>
-User adds and committed changes to their FAI configuration, removing outdated comments and variables related to make-fai-nfsroot, NFSROOT, TFTPROOT, and FAI_CONFIGDIR.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <system_output timestamp="6667.27416">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6694.51729">g</user_input>
   <system_output timestamp="6694.518732">g</system_output>
@@ -4786,11 +4771,9 @@ User adds and committed changes to their FAI configuration, removing outdated co
 </system_output>
   <system_output timestamp="6797.609486"> 1 file changed, 29 insertions(+), 23 deletions(-)
 </system_output>
-<annotation>
-User performed a git remove and committed the change of a historical configuration file.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <system_output timestamp="6797.611656">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6798.237933">OA</user_input>
   <system_output timestamp="6798.251752">sudo git commit -m 'use modern ip= syntax without specifying interface name, and add UEFI firmware settings menu entry.'</system_output>
@@ -6338,11 +6321,9 @@ demo@faiserver:/home/fai/config$ sudo git diff[K</system_output>
 </system_output>
   <system_output timestamp="6932.583599"> 1 file changed, 2 insertions(+), 2 deletions(-)
 </system_output>
-<annotation>
-User adds and commits change to print errors.
-</annotation>
+
 </event>
-<event depth="0">
+<event >
   <system_output timestamp="6932.585835">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
   <user_input timestamp="6933.467443">OA</user_input>
   <system_output timestamp="6933.482225">sudo git commit -m 'print error: before errors.'</system_output>
@@ -6973,9 +6954,7 @@ User adds and commits change to print errors.
 </system_output>
   <system_output timestamp="6966.565398"> 1 file changed, 4 insertions(+), 1 deletion(-)
 </system_output>
-<annotation>
-User adds and commits change to allow demo user to login.
-</annotation>
+
 </event>
 <event >
   <system_output timestamp="6966.567566">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
@@ -7853,8 +7832,6 @@ demo@faiserver:/home/fai/config$ sudo git [19Padd scripts/DEMO/10-adduser_demo</
   <user_input timestamp="7586.589878">q</user_input>
   <system_output timestamp="7586.5979">[K</system_output>
   <system_output timestamp="7586.600197">[?2004hdemo@faiserver:/home/fai/config$ </system_output>
-<annotation>
-User checks git diff and stares at it mindlessly as the session ends
-</annotation>
+
 </event>
 </recording>

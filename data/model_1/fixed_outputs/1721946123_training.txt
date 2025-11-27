@@ -1,0 +1,26 @@
+Attach to an existing GNU Screen session displaying system boot logs and return to a shell prompt.
+-1
+Install git, Xorg, and xscreensaver, build a FAI CD ISO, then SCP the image to 172.16.0.1 with a date-stamped filename.
+0
+Attach to a GNU Screen window showing a VM kernel boot sequence, then return to the faiserver shell prompt.
+0
+Install git-core, Xorg, and xscreensaver into a FAI mirror, build a bootable ISO, then SCP it to 172.16.0.1 with host key acceptance.
+0
+View FAIBASE package list in editor, showing utilities and X11 forwarding requirement.
+0
+Issue a series of shell commands: list packages, search config for ntpsec, open FAIBASE in Emacs, and prepare to install dmidecode.
+0
+Build FAI CD image, then securely copy fai_cd.iso to 172.16.0.1 with host key confirmation.
+0
+Boot Debian in VM and reach shell prompt on faiserver.
+0
+Open FAIBASE package list in Emacs, then return to shell.
+1
+Change into config directory, then check Git status and hit a safe.directory ownership warning.
+0
+List all files in /home/fai/config with long, hidden, and directory details.
+0
+Generate a new root-owned ED25519 SSH key with 100 KDF rounds via sudo ssh-keygen.
+0
+Display the newly created root public key by catting /root/.ssh/id_ed25519.pub with sudo.
+0
