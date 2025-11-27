@@ -4,3 +4,5 @@ websockets
 requests
 datasets
 python-dotenv
+jinja2
+transformers

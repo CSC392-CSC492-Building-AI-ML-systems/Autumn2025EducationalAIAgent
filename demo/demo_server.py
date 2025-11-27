@@ -236,6 +236,9 @@ class Model0:
             tokenize=False,
             add_generation_prompt=True
         )
+        formatted_prompt = formatted_prompt.replace("<think>", "")
+
+        print(formatted_prompt)
         
         payload = {
             "model": "educational",
@@ -537,7 +540,8 @@ async def websocket_endpoint(websocket: WebSocket):
             )
 
             # Load Model 0 system prompt
-            model0_prompt_path = Path(__file__).parent / "model_0" / "system_prompt.txt"
+            model0_prompt_file = os.environ.get("MODEL0_SYSTEM_PROMPT", "model_0/system_prompt.txt")
+            model0_prompt_path = Path(__file__).parent / model0_prompt_file
             model0_system_prompt = model0_prompt_path.read_text()
 
             # Load Model 1 system prompt (can be overridden via env var)
@@ -582,14 +586,19 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Demo server for Model 0 and Model 1 pipelines")
     parser.add_argument(
-        "--system_prompt",
+        "--system_prompt_model1",
         type=str,
-        default="model_1/model1_system_prompt.txt",
-        help="Path to Model 1 system prompt file (default: model_1/model1_system_prompt.txt)"
+        help="Path to Model 1 system prompt file "
+    )
+    parser.add_argument(
+        "--system_prompt_model0",
+        type=str,
+        help="Path to Model 0 system prompt file "
     )
     args = parser.parse_args()
 
     # Store the system prompt path in environment for access in websocket handler
-    os.environ["MODEL1_SYSTEM_PROMPT"] = args.system_prompt
+    os.environ["MODEL1_SYSTEM_PROMPT"] = args.system_prompt_model1
+    os.environ["MODEL0_SYSTEM_PROMPT"] = args.system_prompt_model0
 
     uvicorn.run(app)
