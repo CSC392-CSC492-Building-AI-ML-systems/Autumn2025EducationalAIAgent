@@ -29,12 +29,41 @@ def chunk_input(xml_path: str) -> List[str]:
 
 def build_groups(output_path: str, chunks: List[str]) -> List[int]:
     out_lines = read_lines(output_path)
-    groups, current_group, curr_line = [], 0, 2
+    groups = []
+    curr_line = 2
+    groupBoundaries = [0]
+    
+    # Find last index of 0
+    last_index = len(out_lines) - 1
+    while out_lines[last_index].strip() == "0":
+        last_index -= 1
+
+    while curr_line <= last_index:
+        
+        # Map the 0s to the actual group boundary line 
+        if out_lines[curr_line].strip() == "0":
+            lines_added = 0
+            while curr_line + lines_added < len(out_lines) and out_lines[curr_line + lines_added].strip() == "0":
+                lines_added += 1
+            
+            curr_line += lines_added
+            for i in range(lines_added):
+                groupBoundaries.append(int(out_lines[curr_line + i].strip()))
+            
+            # Skip the lines in the files
+            curr_line += lines_added
+        else:
+            curr_line += 1
+            
+    groupBoundaries.append(int(out_lines[last_index].strip()) + 1)
+    current_group = 0
+    curr_line = 3
+    # Iterate over each line again, but this time over the chunks
     for ch in chunks:
-        curr_line += len(ch.splitlines())
-        groups.append(current_group)
-        if curr_line < len(out_lines) and out_lines[curr_line].strip() == "0":
+        if groupBoundaries[current_group] <= curr_line < groupBoundaries[current_group + 1]:
             current_group += 1
+        groups.append(current_group - 1)
+        curr_line += len(ch.splitlines())
     return groups
 
 
@@ -177,6 +206,7 @@ def main():
     ap.add_argument("--target_tokens", type=int, default=2048,
                     help="Cap for full Alpaca prompt")
     args = ap.parse_args()
+    print("Starting...")
 
     sys_prompt = read_text(args.system_prompt)
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_model, use_fast=True)
