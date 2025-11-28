@@ -1,0 +1,10 @@
+Run two cm commands piped to grep to list faiserver-tearoff instances and their IPs.
+0
+Invoke cm without arguments to display its usage and available subcommands.
+0
+Attempt to set a descriptive note on faiserver-tearoff-12, but permission denied.
+0
+Attempt to run sudo and exit when no password is provided.
+0
+Exit the current shell session.
+0

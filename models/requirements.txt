@@ -3,6 +3,11 @@ torch
 datasets
 transformers
 trl
+accelerate
+bitsandbytes 
+lxml 
+lm-format-enforcer
+lm_eval
 lm_eval
 python-dotenv
 openai

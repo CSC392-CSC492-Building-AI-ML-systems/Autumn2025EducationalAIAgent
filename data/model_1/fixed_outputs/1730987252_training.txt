@@ -1,0 +1,6 @@
+Attempt to connect to remote host 172.16.0.17 via SSH, but connection fails due to network unreachable.
+0
+List active servers or virtual machine instances using `cm list` command.
+0
+Exit the current shell session.
+1

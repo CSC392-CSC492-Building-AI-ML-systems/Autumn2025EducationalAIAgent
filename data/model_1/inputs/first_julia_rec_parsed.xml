@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <recording version="2" width="319" height="92" timestamp="1727009412">
-<event depth="-2">
+<event >
   <system_output timestamp="0.096022">[?2004h]0;demo@boxtop: ~demo@boxtop:~$ </system_output>
   <user_input timestamp="9.163614">s</user_input>
   <system_output timestamp="9.164051">s</system_output>
@@ -45,10 +45,9 @@
   <user_input timestamp="16.599216">5</user_input>
   <user_input timestamp="16.683584">6</user_input>
   <user_input timestamp="17.022337">7</user_input>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <user_input timestamp="17.189268">!</user_input>
   <user_input timestamp="17.357498">
 </user_input>
@@ -117,10 +116,9 @@ Last login: Sun Sep 22 12:24:17 2024
   <system_output timestamp="55.194304">a</system_output>
   <user_input timestamp="55.521296">
 </user_input>
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="55.531082">
 [?2004l
 </system_output>
@@ -466,10 +464,9 @@ Scanning linux images... [======================================================
 </system_output>
   <system_output timestamp="137.382422">Scanning linux images...  
 </system_output>                                                                                                                                                                                                                                                                                                     
-<annotation>
-</annotation>
+
 </event>
-<event depth="-2">
+<event >
   <system_output timestamp="137.383961">
 Running kernel seems to be up-to-date.
 
@@ -498,7 +495,6 @@ logout
 
 exit
 </system_output>
-<annotation>
-</annotation>
+
 </event>
 </recording>

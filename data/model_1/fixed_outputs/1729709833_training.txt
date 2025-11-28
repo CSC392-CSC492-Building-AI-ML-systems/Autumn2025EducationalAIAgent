@@ -1,0 +1,26 @@
+List running virtual machine tearoffs using cmlist command.
+0
+Open SSH connection to 172.16.0.17, provide password and land on the faiserver shell.
+-1
+Change directory to /home/fai/config.
+0
+Attempt to view repo history with `git log`, hit “dubious ownership”; rerun via `sudo git log` and open commit history (pager).
+-1
+Exit git log pager and return to shell.
+1
+Run `git diff master~1`, receiving a “Not a git repository” warning and usage output.
+0
+View incremental diffs of `scripts/GRUBEFI/10-setup` using `sudo git diff` against multiple ancestor commits (master~10, ~12, ~20, ~30).
+0
+Review diffs for GRUB EFI: compare `scripts/GRUBEFI/10-setup` (master~30) and then `package_config/GRUBEFI` against master~30/~20/~10/~5, confirming new GRUBEFI config (HWAMD64 + grub-efi-amd64).
+0
+Query APT cache for “grub-efi” packages and list available EFI variants.
+0
+Recall history, tab-complete to disk_config/HWPHYS, authenticate sudo, and run `git diff master~15` to review HWPHYS changes (GPT+EFI partitioning and updated RAID/UUID layout).
+0
+Log out of remote SSH session and return to local shell.
+1
+Attempt to view /run/mdadm/map; permission denied.
+0
+Re-run `cat /run/mdadm/map` command, then exit the shell session.
+1
