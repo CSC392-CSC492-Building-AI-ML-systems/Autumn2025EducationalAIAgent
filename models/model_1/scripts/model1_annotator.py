@@ -15,6 +15,7 @@ Model-1 streamed annotator - vLLM version (shared core + simple inference)
     - run_flushes (simple inference loop)
 """
 
+import argparse
 import json
 import os
 import re
@@ -962,12 +963,6 @@ def run_flushes(evs: List[Event]) -> None:
                 events[idx].depth_xml = depth
                 events[idx].summary_xml = summary
 
-
-            pred[idx] = {"depth": depth, "summary": summary}
-            if 0 <= idx < len(events):
-                events[idx].depth_xml = depth
-                events[idx].summary_xml = summary
-
         print("\n- Recorded predictions -")
         for idx in pkg["target_idxs"]:
             v = pred.get(idx, {})
@@ -993,17 +988,71 @@ def run_flushes(evs: List[Event]) -> None:
 # ------------------------------
 # Entry point
 # ------------------------------
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Run Model 1 inference with optional ground truth evaluation.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Use default paths from script
+  python model1_annotator.py
+
+  # Override XML path only
+  python model1_annotator.py --xml-path path/to/input.xml
+
+  # Override both XML and GT paths
+  python model1_annotator.py --xml-path path/to/input.xml --gt-path path/to/gt.txt
+
+  # Skip GT evaluation even if GT path exists
+  python model1_annotator.py --xml-path path/to/input.xml --no-eval
+        """
+    )
+    parser.add_argument(
+        "--xml-path",
+        type=str,
+        default=None,
+        help="Path to XML file containing <event> nodes",
+    )
+    parser.add_argument(
+        "--gt-path",
+        type=str,
+        default=None,
+        help="Path to ground truth .txt file for evaluation",
+    )
+    parser.add_argument(
+        "--no-eval",
+        action="store_true",
+        help="Skip ground truth evaluation even if GT path is provided",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    args = parse_args()
+    
+    # Override paths if provided via command line
+    xml_path = args.xml_path if args.xml_path is not None else XML_PATH
+    gt_path = args.gt_path if args.gt_path is not None else GT_PATH
+    
+    # Update module-level constants for compatibility with other scripts
+    # (No global keyword needed since we're at module scope)
+    XML_PATH = xml_path
+    GT_PATH = gt_path
+    
     events = load_events(XML_PATH)
     print(f"Loaded {len(events)} usable events")
     if events:
         print(events[0].xml[:300] + "...\n")
     run_flushes(events)
 
-    if os.path.exists(GT_PATH):
+    # Evaluate against ground truth if GT path exists and evaluation is not disabled
+    if not args.no_eval and os.path.exists(GT_PATH):
         print("\n" + "=" * 80)
         print("EMBEDDING-BASED SIMILARITY BETWEEN GT AND MODEL ANNOTATIONS")
         print("=" * 80)
         score_annotations_with_embeddings(pred, GT_PATH)
-    else:
+    elif args.gt_path and not os.path.exists(GT_PATH):
         print(f"[WARN] GT_PATH does not exist: {GT_PATH}")
+    elif not args.no_eval:
+        print(f"[INFO] No ground truth evaluation (GT_PATH not set or does not exist)")
