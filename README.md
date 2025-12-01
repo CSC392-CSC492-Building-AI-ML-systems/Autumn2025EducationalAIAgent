@@ -69,6 +69,8 @@ It provides:
 * annotation correctness metrics for Model 1
 * a reusable structure for future benchmark additions
 
+All of these files are available in the data/llm_Evaluation folder. There is also a worflow file data/llm_Evaluation/Model_Evaluation_Worflow.md that explains how to set up the metrics and tasks, as well as creating the data files and splitting them into a train/test split.
+
 ---
 
 ## Demo
