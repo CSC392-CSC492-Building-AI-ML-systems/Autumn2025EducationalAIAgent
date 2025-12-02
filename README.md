@@ -22,13 +22,18 @@ The project is part of an open collaboration between the Human Feedback Foundati
 │       ├── inputs/            
 │       └── outputs/           
 │
-└── models/                    # Training + inference scripts
-    ├── model_0/        
-    │   ├── runpod/ 
-    │   └── scripts/           
-    └── model_1/
-        └── scripts/
-            └── utils/       
+├── demo/                      # Demo files
+|
+├── models/                    # Training + inference scripts
+|   ├── model_0/        
+|   │   ├── runpod/ 
+|   │   └── scripts/           
+|   └── model_1/
+|       └── scripts/
+|           └── utils/
+└── runpod/                    # Runpod files
+    ├── model0/              
+    └── model1/       
 ```
 
 > **Each model folder contains its own README** with more details and information on how to run.
