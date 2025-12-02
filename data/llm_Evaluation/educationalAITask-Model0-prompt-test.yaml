@@ -1,4 +1,10 @@
-# Goal
+task: educational-ai-agent-model-0-prompt-test
+dataset_path: <hf_username>/educational-ai-agent-small
+test_split: test 
+
+output_type: generate_until
+
+doc_to_text: "# Goal
 Your goal is to use a set of higher-level-communications (HLCs) and one final possibly incomplete HLC to assign a group to the last event, by determining whether it should be considered to be a part of the current HLC.
 
 # Definitions
@@ -55,7 +61,7 @@ Respond with the following two items:
 
 Use the following template to format your response:
 
-```
+```  
 <!-- 200 or fewer characters in English here -->
 Answer: <!-- Integer or `NEW` here -->
 ```
@@ -77,3 +83,22 @@ Answer: NEW
  * In a terminal session, if the remote software wants the user to see what they are typing, it has to repeat the characters back to the user. Echoed characters are common, and usually are a part of the same HLC.
 
 # Dataset to be evaluated:
+
+{{input}}<｜Assistant｜>"
+
+doc_to_target: "{{output}}"
+
+generation_kwargs:
+  max_gen_toks: 1000
+  until: []
+
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+    regexes_to_ignore:
+      - "(?s)^(.*?)(?=Answer:\\s*(?:NEW|\\d+))"
+      - "^\\s" # Remove Leading whitespace
+  - metric: model0_reasoning # Metric to score reasoning average from 1-5

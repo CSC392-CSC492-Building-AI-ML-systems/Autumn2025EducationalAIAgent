@@ -1,0 +1,16 @@
+task: educational-ai-agent-model1
+dataset_path: <your_hf_username>/educational-ai-agent-model1
+test_split: test 
+
+output_type: generate_until
+
+doc_to_text: "{{prompt}}"
+doc_to_target: "{{thinking}}\n{{output}}"
+
+generation_kwargs:
+  max_gen_toks: 10000
+  until: []
+
+metric_list:
+  - metric: model1_reasoning
+  - metric: model1_annotation     

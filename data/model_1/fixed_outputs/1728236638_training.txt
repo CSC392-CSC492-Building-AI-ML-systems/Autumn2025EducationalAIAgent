@@ -1,0 +1,22 @@
+Establish SSH connection to remote host 172.16.0.17 and log in.
+0
+Change directory to /home/fai/config on the remote server.
+0
+Run git diff and receive a usage warning because the current directory is not a Git repository.
+0
+List directory contents in /home/fai/config.
+0
+Run git status and receive a fatal dubious ownership error for /home/fai/config.
+0
+Run sudo git diff to inspect grub.cfg changes in a pager and scroll through the output.
+-1
+Exit pager showing git diff and return to shell in /home/fai/config.
+1
+Run sudo git add to stage files/etc/fai/grub.cfg/SERVERFAI, seeing a host resolution warning.
+0
+Create Git commit for GRUB EFI video configuration changes using sudo git commit with a descriptive message.
+0
+Close SSH session to 172.16.0.17 and return to local shell.
+1
+Exit the current shell session.
+1

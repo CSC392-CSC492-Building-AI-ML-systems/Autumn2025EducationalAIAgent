@@ -1,0 +1,14 @@
+Reattach to screen session, add SERVERQEMUDEV file with sudo, and initiate git commit in /home/fai/config.
+0
+Commit changes with message 'libgnutls30-dev is not in debian 9.' using sudo after resolving permission lock.
+0
+Show staged diffs with git diff and page through long output in a pager.
+-1
+Exit the pager and return to the shell prompt.
+1
+Stage package_config/SERVERNTOP with git add, using sudo authentication due to permission issues.
+0
+Commit change converting ntop to ntopng with sudo-authenticated git commit.
+0
+Stage changes by adding package_config/SERVERNAGIOS via git add with path autocompletion.
+0

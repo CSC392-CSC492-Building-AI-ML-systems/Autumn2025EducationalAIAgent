@@ -1,0 +1,42 @@
+Connect from stephost to remote server over SSH.
+0
+Change to /home/fai and list its contents."
+0
+Change into the config directory and list its subdirectories.
+0
+Change into the disk_config directory and list its files.
+0
+Open HWPHYS disk configuration file in Emacs for inspection.
+-1
+Reopen HWPHYS disk configuration file in Emacs using sudo for elevated access.
+-1
+Review and edit HWPHYS disk configuration file in Emacs.
+0
+Navigate within Emacs HWPHYS disk configuration, editing fields around ':missing' raid entries.
+0
+Run 'sudo git diff' in disk_config directory to review recent HWPHYS RAID configuration changes.
+0
+Compose a 'sudo git commit -am' command using shell history and navigation keys, preparing to commit HWPHYS changes.
+0
+Open the HWPHYS disk configuration file in Emacs, navigate through it, mark the buffer as modified, then write and save a detailed problem description about systems with two disks before returning to the shell.
+-1
+Run a git commit with a detailed message explaining that the hardened disk configuration now requires 25 disks in the wrong order before causing trouble.
+0
+Change directory two levels up in the filesystem.
+0
+Search shell history for the previous timed make-fai-cd build command.
+0
+Run sudo creation command that debootstraps and configures a Debian base system with required core packages.
+0
+Create and configure a Debian base system with debootstrap.
+0
+Install and configure FAI NFSROOT, downloading and setting up many Debian packages inside /srv/fai/nfsroot.
+0
+Build a bootable FAI CD ISO image by copying configuration and mirror data, creating a SquashFS filesystem, formatting with FAT, and writing fai_cd.iso.
+0
+Log out from the remote shell session and close the SSH connection.
+1
+Copy fai_cd.iso from remote host 172.16.0.17 to a local ISO file using scp, watching transfer complete.
+0
+Exit the interactive shell session on stephost.
+1

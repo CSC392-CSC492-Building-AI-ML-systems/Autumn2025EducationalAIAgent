@@ -24,8 +24,8 @@ XML_PATH = "../../data/model_1/inputs/1727009556_parsed.xml"
 GT_PATH = "../../data/model_1/outputs/1727009556_training.txt"
 
 # Model settings
-MODEL_ID = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"  # ONE reasoning model for everything
-USE_INT4 = True  # vLLM will handle quantization differently
+MODEL_ID = "openai/gpt-oss-20b"  # GPT-OSS 20B reasoning model
+USE_INT4 = True  # MXFP4-style quant is baked into the weights via HF/vLLM
 MAX_NEW_TOKENS = 2500
 SUMMARY_WORD_LIMIT = 50
 
@@ -281,6 +281,7 @@ Rules:
 - summaries must not exceed {SUMMARY_WORD_LIMIT} words
 - depth changes: -1=enter subtask, 0=continue same, +1=exit one level
 - output must be valid JSON
+- Reasoning: high
 """.strip()
 
 
@@ -476,9 +477,9 @@ def load_model():
     llm = LLM(
         model=MODEL_ID,
         gpu_memory_utilization=0.9,  # Use 90% of GPU memory
-        max_model_len=8192,  # Adjust based on your prompt length needs
+        max_model_len=8192,          # Harmony context window
         trust_remote_code=True,
-        dtype="bfloat16",
+        dtype="bfloat16",            # Matches HF card (BF16 weights)
     )
     
     print(f"Model loaded successfully")
@@ -496,16 +497,16 @@ def generate_with_thinking(llm: LLM, messages: List[Dict[str, str]]) -> Tuple[st
     # Get tokenizer from vLLM model
     tokenizer = llm.get_tokenizer()
     
-    # Apply chat template
+    # Apply chat template (this applies Harmony format for gpt-oss)
     prompt = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
         add_generation_prompt=True,
     )
     
-    # Define sampling parameters (equivalent to your transformers settings)
+    # Define sampling parameters
     sampling_params = SamplingParams(
-        temperature=0.0,  # Greedy decoding (do_sample=False equivalent)
+        temperature=0.0,  # Greedy decoding
         max_tokens=MAX_NEW_TOKENS,
         repetition_penalty=1.2,
         skip_special_tokens=True,
